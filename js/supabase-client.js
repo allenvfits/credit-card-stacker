@@ -1,9 +1,8 @@
-const SUPABASE_URL = "https://wsdhcosfuupowoavwgfp.supabase.co";
-const SUPABASE_ANON_KEY = "PeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzZGhjb3NmdXVwb3dvYXZ3Z2ZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTM0NDUsImV4cCI6MjA5MjY2OTQ0NX0.ypjjgJZMwXEEj3oH0c1GykygFAWYXlVpT_AoiC8CsGI";
-
+﻿window.CREDIT_STACKER_SUPABASE_URL = "https://wsdhcosfuupowoavwgfp.supabase.co";
+window.CREDIT_STACKER_SUPABASE_ANON_KEY = "PeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndzZGhjb3NmdXVwb3dvYXZ3Z2ZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwOTM0NDUsImV4cCI6MjA5MjY2OTQ0NX0.ypjjgJZMwXEEj3oH0c1GykygFAWYXlVpT_AoiC8CsGIE";
 
 if (!window.supabaseClient) {
-  window.supabaseClient = supabase.createClient(
+  window.supabaseClient = window.supabase.createClient(
     window.CREDIT_STACKER_SUPABASE_URL,
     window.CREDIT_STACKER_SUPABASE_ANON_KEY
   );
