@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget Planner | Credit Card Stacker</title>
+  <meta name="description" content="Plan monthly credit card payments, split a payoff budget across cards, and create a simple payment strategy." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    .shell { width: min(1200px, calc(100% - 30px)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 1000; letter-spacing: -.04em; font-size: 1.1rem; }
+    .logo-mark {
+      width: 38px; height: 38px; border-radius: 14px; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f; box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+    .top-links { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: .94rem; flex-wrap: wrap; }
+    .top-links a:hover { color: var(--text); }
+    .btn {
+      border: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 999px; padding: 12px 16px; font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease; white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #06111f; box-shadow: 0 18px 44px rgba(96,165,250,.25); }
+    .btn-ghost { background: rgba(255,255,255,.075); color: var(--text); border: 1px solid var(--line); }
+    .btn-warning { background: rgba(251,191,36,.12); color: #fde68a; border: 1px solid rgba(251,191,36,.28); }
+    .btn-danger { background: rgba(251,113,133,.12); color: #fecdd3; border: 1px solid rgba(251,113,133,.28); }
+    .btn-full { width: 100%; }
+    .hero { padding: 46px 0 24px; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 18px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px; color: #c9ffee; background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24); border-radius: 999px; padding: 8px 12px; font-size: .84rem; font-weight: 900; margin-bottom: 14px;
+    }
+    h1 { font-size: clamp(2.4rem, 5vw, 5.2rem); letter-spacing: -.075em; line-height: .96; max-width: 900px; }
+    .hero p { color: var(--muted); line-height: 1.7; max-width: 820px; margin-top: 16px; font-size: 1.05rem; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; }
+    .stat { border-radius: 22px; padding: 18px; background: rgba(255,255,255,.065); border: 1px solid var(--line); min-height: 118px; }
+    .stat span { display: block; color: var(--muted); font-size: .82rem; margin-bottom: 8px; }
+    .stat strong { font-size: 1.85rem; letter-spacing: -.065em; line-height: 1; }
+    .stat small { display: block; color: var(--muted); margin-top: 7px; line-height: 1.4; }
+    .stat.good strong { color: var(--success); }
+    .stat.warn strong { color: var(--warning); }
+    .stat.bad strong { color: var(--danger); }
+    .layout { display: grid; grid-template-columns: .9fr 1.35fr; gap: 18px; align-items: start; padding: 18px 0 70px; }
+    .panel { border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 60px rgba(0,0,0,.14); overflow: hidden; }
+    .panel-pad { padding: 24px; }
+    .sticky-panel {
+      position: sticky; top: 92px;
+      background: radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%), rgba(255,255,255,.085);
+    }
+    .panel-head { display: flex; align-items: start; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+    .panel-head h2, .panel h2 { font-size: 1.35rem; letter-spacing: -.045em; }
+    .panel-head p, .subtext { color: var(--muted); line-height: 1.6; margin-top: 6px; font-size: .94rem; }
+    .form-grid { display: grid; gap: 14px; }
+    .two-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .field label { display: block; color: var(--muted); font-weight: 850; margin-bottom: 7px; font-size: .9rem; }
+    .field input, .field select {
+      width: 100%; border: 1px solid var(--line); background: rgba(255,255,255,.07); color: var(--text);
+      border-radius: 16px; padding: 14px; outline: none; min-height: 48px;
+    }
+    .field select option { color: #07101d; }
+    .field input:focus, .field select:focus { border-color: rgba(110,231,183,.72); box-shadow: 0 0 0 4px rgba(110,231,183,.09); }
+    .budget-meter { border-radius: 24px; padding: 18px; background: rgba(255,255,255,.058); border: 1px solid var(--line); margin-bottom: 18px; }
+    .meter-top { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 12px; }
+    .meter-top strong { letter-spacing: -.04em; }
+    .meter-top span { color: var(--muted); font-size: .92rem; }
+    .meter-track { height: 14px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; }
+    .meter-fill { height: 100%; width: 0%; border-radius: inherit; background: linear-gradient(90deg, var(--brand), var(--brand-2)); transition: width .2s ease; }
+    .plan-list { display: grid; gap: 12px; }
+    .plan-card { border-radius: 24px; padding: 18px; background: rgba(255,255,255,.062); border: 1px solid var(--line); }
+    .plan-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 12px; }
+    .plan-card h3 { letter-spacing: -.04em; margin-bottom: 5px; }
+    .plan-card p { color: var(--muted); line-height: 1.55; font-size: .94rem; }
+    .pay-bar { height: 12px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; margin: 14px 0 10px; }
+    .pay-bar span { display: block; height: 100%; border-radius: inherit; width: 0%; background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+    .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .tag { display: inline-flex; align-items: center; border-radius: 999px; padding: 7px 10px; font-size: .76rem; font-weight: 900; background: rgba(255,255,255,.08); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+    .tag.good { background: rgba(52,211,153,.12); color: #bbf7d0; border-color: rgba(52,211,153,.28); }
+    .tag.warn { background: rgba(251,191,36,.12); color: #fde68a; border-color: rgba(251,191,36,.28); }
+    .tag.bad { background: rgba(251,113,133,.12); color: #fecdd3; border-color: rgba(251,113,133,.28); }
+    .tag.blue { background: rgba(96,165,250,.12); color: #dbeafe; border-color: rgba(96,165,250,.28); }
+    .strategy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .strategy { border-radius: 22px; padding: 18px; background: rgba(255,255,255,.06); border: 1px solid var(--line); cursor: pointer; transition: transform .18s ease, border-color .18s ease; }
+    .strategy:hover { transform: translateY(-2px); border-color: rgba(110,231,183,.32); }
+    .strategy.active { border-color: rgba(110,231,183,.65); background: rgba(110,231,183,.09); }
+    .strategy strong { display: block; letter-spacing: -.04em; margin-bottom: 8px; }
+    .strategy p { color: var(--muted); line-height: 1.55; font-size: .92rem; }
+    .month-grid { display: grid; gap: 12px; }
+    .month-row { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 16px; border-radius: 22px; background: rgba(255,255,255,.062); border: 1px solid var(--line); }
+    .month-badge { width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center; background: rgba(110,231,183,.13); border: 1px solid rgba(110,231,183,.25); font-weight: 1000; }
+    .month-row strong { display: block; letter-spacing: -.035em; margin-bottom: 5px; }
+    .month-row p { color: var(--muted); line-height: 1.55; font-size: .92rem; }
+    .notice { border-radius: 20px; padding: 16px; color: #f9eac0; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.24); line-height: 1.65; font-size: .92rem; margin-top: 16px; }
+    .empty { border-radius: 22px; padding: 24px; color: var(--muted); background: rgba(255,255,255,.052); border: 1px dashed rgba(255,255,255,.2); text-align: center; line-height: 1.65; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .toast { position: fixed; right: 18px; bottom: 18px; z-index: 110; max-width: 390px; border-radius: 18px; padding: 14px 16px; background: #0f2138; color: var(--text); border: 1px solid var(--line); box-shadow: var(--shadow); line-height: 1.5; transform: translateY(130%); transition: transform .24s ease; }
+    .toast.active { transform: translateY(0); }
+    @media (max-width: 1080px) { .layout, .hero { grid-template-columns: 1fr; } .sticky-panel { position: static; } .summary-grid, .strategy-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 760px) { .topbar-inner { display: block; } .top-links { margin-top: 12px; } .two-col, .summary-grid, .strategy-grid { grid-template-columns: 1fr; } .panel-pad { padding: 18px; } .button-row { flex-direction: column; align-items: stretch; } .plan-top, .meter-top { display: block; } .plan-top .tag, .meter-top span { margin-top: 8px; display: inline-flex; } .month-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="goals.html">Goals</a>
+        <a href="coach.html">Coach</a>
+        <a href="simulator.html">Simulator</a>
+        <a href="reports.html">Reports</a>
+        <a href="help.html">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Budget planner • Payment split • Educational payoff plan</div>
+        <h1>Tell the app your monthly budget. It builds the payment plan.</h1>
+        <p>
+          Enter how much you can put toward credit cards this month, choose a strategy, and get a simple split across saved cards. This is a planning tool, not a bank payment system.
+        </p>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" onclick="buildPlan()">Build Plan</button>
+        <button class="btn btn-ghost" onclick="loadSampleCards()">Load Samples</button>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="stat" id="utilStat"><span>Current utilization</span><strong id="currentUtil">0%</strong><small>From saved cards</small></div>
+      <div class="stat"><span>Total balance</span><strong id="totalBalance">$0</strong><small>Across saved cards</small></div>
+      <div class="stat good"><span>Monthly budget</span><strong id="budgetText">$250</strong><small>Available for payments</small></div>
+      <div class="stat" id="afterStat"><span>After-plan utilization</span><strong id="afterUtil">0%</strong><small>Estimated after payments</small></div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Payment Budget</h2>
+              <p>Set your monthly amount and strategy.</p>
+            </div>
+          </div>
+
+          <div class="budget-meter">
+            <div class="meter-top">
+              <strong>Budget coverage</strong>
+              <span id="coverageText">0% of balance</span>
+            </div>
+            <div class="meter-track"><div class="meter-fill" id="coverageFill"></div></div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="monthlyBudget">Monthly payment budget</label>
+              <input id="monthlyBudget" type="number" min="0" step="1" value="250" oninput="buildPlan()" />
+            </div>
+            <div class="field">
+              <label for="minimumPayment">Minimum payment estimate per card</label>
+              <select id="minimumPayment" onchange="buildPlan()">
+                <option value="25" selected>$25 each card</option>
+                <option value="35">$35 each card</option>
+                <option value="50">$50 each card</option>
+                <option value="0">Ignore minimums for demo</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="targetUtilization">Target utilization</label>
+              <select id="targetUtilization" onchange="buildPlan()">
+                <option value="30">Under 30%</option>
+                <option value="10" selected>Under 10%</option>
+                <option value="1">Close to 1%</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="btn btn-primary btn-full" onclick="buildPlan()">Refresh Plan</button>
+            <button class="btn btn-ghost btn-full" onclick="copyPlan()">Copy Plan</button>
+            <button class="btn btn-warning btn-full" onclick="savePlan()">Save Plan</button>
+          </div>
+
+          <div class="notice">
+            Budget disclaimer: This planner does not make payments and does not know your real minimum payment. Always verify required payment amounts with your card issuer.
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Choose Strategy</h2>
+              <p>Pick how the app should split the money.</p>
+            </div>
+          </div>
+          <div class="strategy-grid">
+            <button class="strategy active" data-strategy="utilization" onclick="setStrategy('utilization', this)"><strong>Highest utilization first</strong><p>Best for cleaning up cards with high balance-to-limit percentages.</p></button>
+            <button class="strategy" data-strategy="snowball" onclick="setStrategy('snowball', this)"><strong>Smallest balance first</strong><p>Good for quick wins and motivation.</p></button>
+            <button class="strategy" data-strategy="equal" onclick="setStrategy('equal', this)"><strong>Even split</strong><p>Simple plan that spreads money across cards.</p></button>
+          </div>
+        </div>
+
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>This Month's Payment Split</h2>
+              <p>Recommended split based on your selected strategy.</p>
+            </div>
+          </div>
+          <div class="plan-list" id="planList"></div>
+        </div>
+
+        <div class="panel panel-pad">
+          <div class="panel-head">
+            <div>
+              <h2>Three-Month Preview</h2>
+              <p>A simple projection if the same monthly budget is repeated.</p>
+            </div>
+          </div>
+          <div class="month-grid" id="monthGrid"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const CARDS_KEY = "creditCardStackerCards";
+    const BUDGET_PLAN_KEY = "creditCardStackerBudgetPlan";
+    let cards = [];
+    let selectedStrategy = "utilization";
+    let lastPlan = null;
+
+    function getJson(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+      catch { return fallback; }
+    }
+    function saveJson(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+    function money(value) { return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Math.max(0, Number(value) || 0)); }
+    function percent(value) { return Number.isFinite(value) ? value.toFixed(1) + "%" : "0%"; }
+    function cardUtil(card) { return (Number(card.balance || 0) / Math.max(1, Number(card.limit || 1))) * 100; }
+
+    function loadCards() { cards = getJson(CARDS_KEY, []); }
+    function totals(list) {
+      const balance = list.reduce((sum, card) => sum + Number(card.balance || 0), 0);
+      const limit = list.reduce((sum, card) => sum + Number(card.limit || 0), 0);
+      const utilization = limit > 0 ? (balance / limit) * 100 : 0;
+      return { balance, limit, utilization };
+    }
+
+    function setStrategy(strategy, button) {
+      selectedStrategy = strategy;
+      document.querySelectorAll(".strategy").forEach(item => item.classList.remove("active"));
+      button.classList.add("active");
+      buildPlan();
+    }
+
+    function allocatePayments() {
+      const budget = Math.max(0, Number(document.getElementById("monthlyBudget").value || 0));
+      const minPay = Math.max(0, Number(document.getElementById("minimumPayment").value || 0));
+      let remaining = budget;
+      const working = cards.map(card => ({ ...card, payment: 0 }));
+
+      if (!working.length || budget <= 0) return working;
+
+      working.forEach(card => {
+        const base = Math.min(Number(card.balance || 0), minPay, remaining);
+        card.payment += base;
+        remaining -= base;
+      });
+
+      if (remaining <= 0) return working;
+
+      let ordered = [...working];
+      if (selectedStrategy === "utilization") ordered.sort((a, b) => cardUtil(b) - cardUtil(a));
+      if (selectedStrategy === "snowball") ordered.sort((a, b) => Number(a.balance || 0) - Number(b.balance || 0));
+      if (selectedStrategy === "equal") {
+        const perCard = remaining / working.length;
+        working.forEach(card => {
+          const extra = Math.min(perCard, Math.max(0, Number(card.balance || 0) - card.payment));
+          card.payment += extra;
+        });
+        return working;
+      }
+
+      for (const card of ordered) {
+        if (remaining <= 0) break;
+        const room = Math.max(0, Number(card.balance || 0) - card.payment);
+        const extra = Math.min(room, remaining);
+        card.payment += extra;
+        remaining -= extra;
+      }
+
+      return working;
+    }
+
+    function buildPlan() {
+      loadCards();
+      const before = totals(cards);
+      const planned = allocatePayments();
+      const afterCards = planned.map(card => ({ ...card, balance: Math.max(0, Number(card.balance || 0) - Number(card.payment || 0)) }));
+      const after = totals(afterCards);
+      const budget = Math.max(0, Number(document.getElementById("monthlyBudget").value || 0));
+      const coverage = before.balance > 0 ? Math.min(100, (budget / before.balance) * 100) : 0;
+
+      lastPlan = { budget, strategy: selectedStrategy, before, after, planned, createdAt: new Date().toISOString() };
+      renderSummary(before, after, budget, coverage);
+      renderPlan(planned, before.balance);
+      renderPreview();
+    }
+
+    function renderSummary(before, after, budget, coverage) {
+      const utilStat = document.getElementById("utilStat");
+      const afterStat = document.getElementById("afterStat");
+      utilStat.classList.remove("good", "warn", "bad");
+      afterStat.classList.remove("good", "warn", "bad");
+      utilStat.classList.add(before.utilization < 10 ? "good" : before.utilization < 30 ? "warn" : "bad");
+      afterStat.classList.add(after.utilization < 10 ? "good" : after.utilization < 30 ? "warn" : "bad");
+      document.getElementById("currentUtil").textContent = percent(before.utilization);
+      document.getElementById("afterUtil").textContent = percent(after.utilization);
+      document.getElementById("totalBalance").textContent = money(before.balance);
+      document.getElementById("budgetText").textContent = money(budget);
+      document.getElementById("coverageText").textContent = `${coverage.toFixed(1)}% of balance`;
+      document.getElementById("coverageFill").style.width = `${coverage}%`;
+    }
+
+    function renderPlan(planned, totalBalance) {
+      const list = document.getElementById("planList");
+      if (!planned.length) {
+        list.innerHTML = `<div class="empty">No saved cards found. Add cards in dashboard.html or load sample cards.</div>`;
+        return;
+      }
+
+      list.innerHTML = planned.map(card => {
+        const payment = Number(card.payment || 0);
+        const balance = Number(card.balance || 0);
+        const afterBalance = Math.max(0, balance - payment);
+        const share = totalBalance > 0 ? (payment / Math.max(1, planned.reduce((sum, c) => sum + Number(c.payment || 0), 0))) * 100 : 0;
+        const utilBefore = cardUtil(card);
+        const utilAfter = (afterBalance / Math.max(1, Number(card.limit || 1))) * 100;
+        const tagClass = utilAfter < 10 ? "good" : utilAfter < 30 ? "warn" : "bad";
+        return `
+          <article class="plan-card">
+            <div class="plan-top">
+              <div>
+                <h3>${escapeHtml(card.name || "Unnamed card")}</h3>
+                <p>Pay ${money(payment)} this month. Balance moves from ${money(balance)} to ${money(afterBalance)}.</p>
+              </div>
+              <span class="tag ${tagClass}">${percent(utilAfter)} after</span>
+            </div>
+            <div class="pay-bar"><span style="width:${Math.min(100, share)}%"></span></div>
+            <div class="tag-row">
+              <span class="tag blue">Payment: ${money(payment)}</span>
+              <span class="tag">Before: ${percent(utilBefore)}</span>
+              <span class="tag ${tagClass}">After: ${percent(utilAfter)}</span>
+              <span class="tag">Limit: ${money(card.limit)}</span>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderPreview() {
+      const grid = document.getElementById("monthGrid");
+      if (!lastPlan || !cards.length) {
+        grid.innerHTML = `<div class="empty">No preview yet. Add cards or load samples.</div>`;
+        return;
+      }
+
+      let previewCards = cards.map(card => ({ ...card }));
+      const rows = [];
+      for (let month = 1; month <= 3; month++) {
+        const originalCards = cards;
+        cards = previewCards;
+        const planned = allocatePayments();
+        previewCards = planned.map(card => ({ ...card, balance: Math.max(0, Number(card.balance || 0) - Number(card.payment || 0)) }));
+        const t = totals(previewCards);
+        rows.push({ month, balance: t.balance, utilization: t.utilization, paid: planned.reduce((sum, card) => sum + Number(card.payment || 0), 0) });
+        cards = originalCards;
+      }
+
+      grid.innerHTML = rows.map(row => `
+        <div class="month-row">
+          <div class="month-badge">${row.month}</div>
+          <div>
+            <strong>Month ${row.month}</strong>
+            <p>Estimated balance: ${money(row.balance)} • Estimated utilization: ${percent(row.utilization)}</p>
+          </div>
+          <span class="tag ${row.utilization < 10 ? "good" : row.utilization < 30 ? "warn" : "bad"}">Paid ${money(row.paid)}</span>
+        </div>
+      `).join("");
+    }
+
+    async function copyPlan() {
+      buildPlan();
+      if (!lastPlan) return;
+      const lines = [
+        "Credit Card Stacker Budget Plan",
+        `Monthly budget: ${money(lastPlan.budget)}`,
+        `Strategy: ${lastPlan.strategy}`,
+        `Before utilization: ${percent(lastPlan.before.utilization)}`,
+        `After utilization: ${percent(lastPlan.after.utilization)}`,
+        "",
+        "Payment split:",
+        ...lastPlan.planned.map(card => `- ${card.name}: ${money(card.payment)} payment`),
+        "",
+        "Educational planning only. Confirm minimum payments with your card issuer."
+      ];
+      try {
+        await navigator.clipboard.writeText(lines.join("\n"));
+        showToast("Budget plan copied.");
+      } catch {
+        showToast("Could not copy automatically.");
+      }
+    }
+
+    function savePlan() {
+      buildPlan();
+      saveJson(BUDGET_PLAN_KEY, lastPlan);
+      showToast("Budget plan saved in this browser.");
+    }
+
+    function loadSampleCards() {
+      saveJson(CARDS_KEY, [
+        { id: "budget-card-1", name: "Capital One Secured", balance: 238, limit: 500, statementDate: "2026-05-04", dueDate: "2026-05-18" },
+        { id: "budget-card-2", name: "Starter Rewards Card", balance: 84, limit: 1000, statementDate: "2026-05-11", dueDate: "2026-05-25" },
+        { id: "budget-card-3", name: "Store Card", balance: 390, limit: 700, statementDate: "2026-05-16", dueDate: "2026-05-29" }
+      ]);
+      buildPlan();
+      showToast("Sample cards loaded.");
+    }
+
+    function escapeHtml(text) {
+      return String(text).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    buildPlan();
+  </script>
+</body>
+</html>

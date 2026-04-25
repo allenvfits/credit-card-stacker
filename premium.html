@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Premium | Credit Card Stacker</title>
+  <meta name="description" content="Upgrade to Credit Card Stacker Premium for multi-card tracking, advanced payoff targets, statement reminders, and card strategy planning." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --panel-2: rgba(255,255,255,.115);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(167,139,250,.2), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 30px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover {
+      color: var(--text);
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96,165,250,.25);
+    }
+
+    .btn-premium {
+      background: linear-gradient(135deg, #fbbf24, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(251,191,36,.18);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-danger {
+      background: rgba(251,113,133,.12);
+      color: #fecdd3;
+      border: 1px solid rgba(251,113,133,.28);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 58px 0 30px;
+      display: grid;
+      grid-template-columns: 1.04fr .96fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.7rem, 6vw, 5.8rem);
+      letter-spacing: -.085em;
+      line-height: .92;
+      max-width: 820px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #fff, var(--brand), var(--brand-2), var(--brand-3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 760px;
+      margin-top: 18px;
+      font-size: 1.08rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .premium-preview {
+      position: relative;
+      border-radius: 36px;
+      padding: 18px;
+      background: linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .premium-preview::before {
+      content: "";
+      position: absolute;
+      inset: -80px -80px auto auto;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      background: rgba(251,191,36,.2);
+      filter: blur(18px);
+    }
+
+    .phone-card {
+      position: relative;
+      border-radius: 28px;
+      padding: 22px;
+      background: #091426;
+      border: 1px solid var(--line);
+      min-height: 520px;
+    }
+
+    .premium-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #06111f;
+      background: linear-gradient(135deg, #fbbf24, var(--brand));
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: .78rem;
+      font-weight: 1000;
+      margin-bottom: 18px;
+    }
+
+    .phone-card h2 {
+      font-size: 2.1rem;
+      line-height: 1;
+      letter-spacing: -.065em;
+      margin-bottom: 12px;
+    }
+
+    .phone-card p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 18px;
+    }
+
+    .mini-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .mini-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+
+    .mini-row strong {
+      color: var(--text);
+      letter-spacing: -.03em;
+    }
+
+    section {
+      padding: 46px 0;
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 24px;
+    }
+
+    .section-head.center {
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .eyebrow {
+      color: var(--brand);
+      text-transform: uppercase;
+      font-weight: 1000;
+      letter-spacing: .12em;
+      font-size: .78rem;
+      margin-bottom: 10px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(2rem, 4vw, 4rem);
+      letter-spacing: -.07em;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1.03rem;
+    }
+
+    .status-panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .status-panel strong {
+      display: block;
+      font-size: 1.3rem;
+      letter-spacing: -.045em;
+      margin-bottom: 6px;
+    }
+
+    .status-panel span {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .toggle-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--line);
+      margin: 0 auto 24px;
+    }
+
+    .toggle-btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 900;
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .toggle-btn.active {
+      color: #06111f;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .price-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      padding: 26px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0,0,0,.14);
+      display: flex;
+      flex-direction: column;
+      min-height: 590px;
+    }
+
+    .price-card.featured {
+      background:
+        radial-gradient(circle at top right, rgba(251,191,36,.18), transparent 32%),
+        radial-gradient(circle at bottom left, rgba(96,165,250,.15), transparent 34%),
+        rgba(255,255,255,.105);
+      border-color: rgba(251,191,36,.32);
+      box-shadow: 0 24px 80px rgba(251,191,36,.12);
+      transform: translateY(-10px);
+    }
+
+    .price-card h3 {
+      font-size: 1.45rem;
+      letter-spacing: -.045em;
+      margin-bottom: 8px;
+    }
+
+    .price-card p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .price {
+      font-size: 3.1rem;
+      font-weight: 1000;
+      letter-spacing: -.08em;
+      line-height: .95;
+      margin-bottom: 8px;
+    }
+
+    .price small {
+      font-size: 1rem;
+      color: var(--muted);
+      letter-spacing: -.02em;
+    }
+
+    .save-note {
+      color: #fde68a;
+      font-weight: 900;
+      margin-bottom: 18px;
+      font-size: .92rem;
+      min-height: 24px;
+    }
+
+    .feature-list {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+      margin: 20px 0 24px;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .feature-list li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      line-height: 1.45;
+    }
+
+    .feature-list li::before {
+      content: "✓";
+      color: var(--brand);
+      font-weight: 1000;
+    }
+
+    .feature-list li.locked::before {
+      content: "•";
+      color: var(--muted);
+    }
+
+    .comparison {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: .78rem;
+      letter-spacing: .1em;
+    }
+
+    td {
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .yes {
+      color: var(--brand);
+      font-weight: 1000;
+    }
+
+    .no {
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    details {
+      border-radius: 22px;
+      padding: 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 1000;
+      letter-spacing: -.035em;
+    }
+
+    details p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-top: 12px;
+    }
+
+    .notice {
+      border-radius: 22px;
+      padding: 18px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.7;
+      font-size: .94rem;
+    }
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: rgba(0,0,0,.68);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-bg.active {
+      display: flex;
+    }
+
+    .modal {
+      width: min(560px, 100%);
+      border-radius: 30px;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .modal h2 {
+      font-size: 1.8rem;
+      letter-spacing: -.055em;
+      margin-bottom: 8px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+
+    .checkout-box {
+      border-radius: 22px;
+      padding: 16px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+      margin: 16px 0;
+    }
+
+    .checkout-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+    }
+
+    .checkout-row:last-child {
+      border-bottom: 0;
+    }
+
+    .checkout-row strong {
+      color: var(--text);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 110;
+      max-width: 380px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1040px) {
+      .hero, .pricing-grid {
+        grid-template-columns: 1fr;
+      }
+      .price-card.featured {
+        transform: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner, .status-panel {
+        display: block;
+      }
+      .top-links {
+        margin-top: 12px;
+      }
+      .hero-actions, .modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+      .price-card {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="onboarding.html">Onboarding</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="card-finder.html">Card Finder</a>
+        <a href="learn.html">Learn</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="shell hero">
+      <div>
+        <div class="badge">Premium page • Stripe-ready mockup • Local demo mode</div>
+        <h1>Upgrade to a smarter <span class="gradient-text">credit card plan.</span></h1>
+        <p>
+          Premium gives users multi-card strategy, statement reminders, payoff targets, watchlist tools, and a cleaner rebuilding plan. This page is front-end ready and can connect to Stripe Checkout later.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-premium" onclick="openCheckout('monthly')">Start Premium</button>
+          <a class="btn btn-ghost" href="#plans">Compare plans</a>
+        </div>
+      </div>
+
+      <div class="premium-preview">
+        <div class="phone-card">
+          <span class="premium-tag">⚡ Premium unlocked</span>
+          <h2>Advanced credit plan</h2>
+          <p>Track every card, get smarter payoff targets, and see what move matters before your next statement date.</p>
+          <div class="mini-grid">
+            <div class="mini-row"><span>Multi-card utilization</span><strong>Enabled</strong></div>
+            <div class="mini-row"><span>Statement alerts</span><strong>7 days before</strong></div>
+            <div class="mini-row"><span>Paydown target</span><strong>Under 10%</strong></div>
+            <div class="mini-row"><span>Application warning</span><strong>Active</strong></div>
+            <div class="mini-row"><span>Card watchlist</span><strong>Saved</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell" id="plans">
+      <div class="status-panel" id="premiumStatusPanel">
+        <div>
+          <strong id="premiumStatusTitle">Current plan: Free</strong>
+          <span id="premiumStatusText">You are in demo mode. Premium status is saved in this browser only until you connect Supabase and Stripe.</span>
+        </div>
+        <button class="btn btn-ghost" onclick="toggleDemoPremium()" id="demoToggleBtn">Turn on demo premium</button>
+      </div>
+
+      <div class="section-head center">
+        <div class="eyebrow">Pricing</div>
+        <h2>Simple plans for different credit stages.</h2>
+        <p>The prices and plan names can be changed later. This version is built to look like a real subscription page while staying honest about results.</p>
+      </div>
+
+      <div style="text-align:center;">
+        <div class="toggle-wrap" aria-label="Billing toggle">
+          <button class="toggle-btn active" id="monthlyBtn" onclick="setBilling('monthly')">Monthly</button>
+          <button class="toggle-btn" id="yearlyBtn" onclick="setBilling('yearly')">Yearly</button>
+        </div>
+      </div>
+
+      <div class="pricing-grid">
+        <article class="price-card">
+          <div class="badge">Starter</div>
+          <h3>Free</h3>
+          <p>For users who want to learn the basics and track one or two cards.</p>
+          <div class="price">$0 <small>/ month</small></div>
+          <div class="save-note"></div>
+          <ul class="feature-list">
+            <li>Manual score range entry</li>
+            <li>Basic utilization calculator</li>
+            <li>Credit lessons and glossary</li>
+            <li>Card category finder</li>
+            <li class="locked">Limited advanced planning</li>
+            <li class="locked">No premium reminders</li>
+          </ul>
+          <button class="btn btn-ghost btn-full" onclick="setFreePlan()">Use Free</button>
+        </article>
+
+        <article class="price-card featured">
+          <div class="badge">Best value</div>
+          <h3>Premium</h3>
+          <p>For users rebuilding credit and managing multiple cards.</p>
+          <div class="price" id="premiumPrice">$4.99 <small>/ month</small></div>
+          <div class="save-note" id="premiumSaveNote">Cancel anytime in the app store or billing portal.</div>
+          <ul class="feature-list">
+            <li>Multi-card utilization dashboard</li>
+            <li>Statement closing date reminders</li>
+            <li>Advanced payoff targets</li>
+            <li>Card application warning system</li>
+            <li>Saved card watchlist</li>
+            <li>Premium rebuilding timeline</li>
+          </ul>
+          <button class="btn btn-premium btn-full" onclick="openCheckout(currentBilling)">Start Premium</button>
+        </article>
+
+        <article class="price-card">
+          <div class="badge">Future plan</div>
+          <h3>Premium Plus</h3>
+          <p>For a later version with credit score connection and stronger automation.</p>
+          <div class="price" id="plusPrice">$9.99 <small>/ month</small></div>
+          <div class="save-note" id="plusSaveNote">Future feature idea.</div>
+          <ul class="feature-list">
+            <li>Everything in Premium</li>
+            <li>Credit bureau connection placeholder</li>
+            <li>AI credit action summaries</li>
+            <li>Advanced trend reports</li>
+            <li>Priority reminders</li>
+            <li class="locked">Requires legal/API setup later</li>
+          </ul>
+          <button class="btn btn-ghost btn-full" onclick="openCheckout('plus')">Join Plus Waitlist</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="shell">
+      <div class="section-head">
+        <div class="eyebrow">Compare</div>
+        <h2>What users unlock.</h2>
+        <p>This table helps people understand what they are paying for without overpromising credit results.</p>
+      </div>
+
+      <div class="comparison">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Free</th>
+                <th>Premium</th>
+                <th>Why it matters</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Basic utilization calculator</strong></td>
+                <td class="yes">Yes</td>
+                <td class="yes">Yes</td>
+                <td>Shows how balances compare to limits.</td>
+              </tr>
+              <tr>
+                <td><strong>Multi-card payoff targets</strong></td>
+                <td class="no">Limited</td>
+                <td class="yes">Yes</td>
+                <td>Helps users decide which card to pay first.</td>
+              </tr>
+              <tr>
+                <td><strong>Statement date reminders</strong></td>
+                <td class="no">No</td>
+                <td class="yes">Yes</td>
+                <td>Helps users lower balances before they may report.</td>
+              </tr>
+              <tr>
+                <td><strong>Application warning system</strong></td>
+                <td class="no">No</td>
+                <td class="yes">Yes</td>
+                <td>Warns users when utilization or inquiries are too high.</td>
+              </tr>
+              <tr>
+                <td><strong>Card finder watchlist</strong></td>
+                <td class="yes">Basic</td>
+                <td class="yes">Advanced</td>
+                <td>Lets users compare card categories before applying.</td>
+              </tr>
+              <tr>
+                <td><strong>Credit score guarantee</strong></td>
+                <td class="no">No</td>
+                <td class="no">No</td>
+                <td>No plan should guarantee credit score increases.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell">
+      <div class="section-head center">
+        <div class="eyebrow">FAQ</div>
+        <h2>Subscription questions.</h2>
+      </div>
+
+      <div class="faq-grid">
+        <details open>
+          <summary>Does Premium guarantee my credit score will go up?</summary>
+          <p>No. Premium gives planning tools, reminders, and educational guidance. It does not guarantee score increases, approval, or lender decisions.</p>
+        </details>
+
+        <details>
+          <summary>Does this page charge real money right now?</summary>
+          <p>No. This is a front-end demo. The checkout button only simulates premium status in your browser. Connect it to Stripe Checkout later.</p>
+        </details>
+
+        <details>
+          <summary>How would Stripe connect later?</summary>
+          <p>The Premium button should call a server-side endpoint or Supabase Edge Function that creates a Stripe Checkout Session. After payment, your Stripe webhook updates the user profile to premium.</p>
+        </details>
+
+        <details>
+          <summary>Can users cancel?</summary>
+          <p>Yes. Once real billing is connected, add a billing portal link so users can cancel or manage subscriptions clearly.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="shell">
+      <div class="notice">
+        <strong>Legal-friendly billing copy:</strong> Premium is an educational planning tool. It is not a credit repair service, lender, bank, credit bureau, or financial advisor. Premium does not guarantee credit approval, specific score changes, or better credit terms. If real card links or affiliate offers are added later, disclose compensation clearly near each offer.
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-bg" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h2 id="modalTitle">Start Premium</h2>
+      <p id="modalText">This is demo checkout. Later, connect this button to Stripe Checkout.</p>
+
+      <div class="checkout-box">
+        <div class="checkout-row"><span>Plan</span><strong id="checkoutPlan">Premium Monthly</strong></div>
+        <div class="checkout-row"><span>Price</span><strong id="checkoutPrice">$4.99/month</strong></div>
+        <div class="checkout-row"><span>Billing</span><strong id="checkoutBilling">Renews monthly</strong></div>
+        <div class="checkout-row"><span>Status</span><strong>Demo mode</strong></div>
+      </div>
+
+      <div class="notice" style="margin-bottom:16px;">
+        Real payment setup should happen on the server, not inside plain HTML. Do not put Stripe secret keys in this file.
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeCheckout()">Cancel</button>
+        <button class="btn btn-premium" onclick="simulateCheckout()">Simulate Upgrade</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const PREMIUM_KEY = "creditCardStackerPremium";
+    let currentBilling = "monthly";
+    let pendingPlan = "monthly";
+
+    function setBilling(type) {
+      currentBilling = type;
+      document.getElementById("monthlyBtn").classList.toggle("active", type === "monthly");
+      document.getElementById("yearlyBtn").classList.toggle("active", type === "yearly");
+
+      if (type === "monthly") {
+        document.getElementById("premiumPrice").innerHTML = "$4.99 <small>/ month</small>";
+        document.getElementById("plusPrice").innerHTML = "$9.99 <small>/ month</small>";
+        document.getElementById("premiumSaveNote").textContent = "Cancel anytime in the app store or billing portal.";
+        document.getElementById("plusSaveNote").textContent = "Future feature idea.";
+      } else {
+        document.getElementById("premiumPrice").innerHTML = "$49.99 <small>/ year</small>";
+        document.getElementById("plusPrice").innerHTML = "$99.99 <small>/ year</small>";
+        document.getElementById("premiumSaveNote").textContent = "About 2 months free compared with monthly.";
+        document.getElementById("plusSaveNote").textContent = "Future yearly option.";
+      }
+    }
+
+    function getPremiumStatus() {
+      return JSON.parse(localStorage.getItem(PREMIUM_KEY) || "null");
+    }
+
+    function savePremiumStatus(status) {
+      localStorage.setItem(PREMIUM_KEY, JSON.stringify(status));
+      renderPremiumStatus();
+    }
+
+    function renderPremiumStatus() {
+      const status = getPremiumStatus();
+      const title = document.getElementById("premiumStatusTitle");
+      const text = document.getElementById("premiumStatusText");
+      const btn = document.getElementById("demoToggleBtn");
+
+      if (status && status.active) {
+        title.textContent = `Current plan: ${status.planName}`;
+        text.textContent = `Premium is active in demo mode. Activated ${new Date(status.startedAt).toLocaleDateString()}. Connect Supabase + Stripe later for real subscriptions.`;
+        btn.textContent = "Turn off demo premium";
+      } else {
+        title.textContent = "Current plan: Free";
+        text.textContent = "You are in demo mode. Premium status is saved in this browser only until you connect Supabase and Stripe.";
+        btn.textContent = "Turn on demo premium";
+      }
+    }
+
+    function toggleDemoPremium() {
+      const status = getPremiumStatus();
+      if (status && status.active) {
+        localStorage.removeItem(PREMIUM_KEY);
+        renderPremiumStatus();
+        showToast("Demo premium turned off.");
+      } else {
+        savePremiumStatus({
+          active: true,
+          planName: "Premium Demo",
+          billing: "demo",
+          startedAt: new Date().toISOString()
+        });
+        showToast("Demo premium turned on.");
+      }
+    }
+
+    function setFreePlan() {
+      localStorage.removeItem(PREMIUM_KEY);
+      renderPremiumStatus();
+      showToast("Free plan selected.");
+    }
+
+    function openCheckout(plan) {
+      pendingPlan = plan;
+      const title = document.getElementById("modalTitle");
+      const text = document.getElementById("modalText");
+      const checkoutPlan = document.getElementById("checkoutPlan");
+      const checkoutPrice = document.getElementById("checkoutPrice");
+      const checkoutBilling = document.getElementById("checkoutBilling");
+
+      if (plan === "plus") {
+        title.textContent = "Join Premium Plus Waitlist";
+        text.textContent = "Premium Plus is a future plan. This demo saves interest in the browser only.";
+        checkoutPlan.textContent = "Premium Plus Waitlist";
+        checkoutPrice.textContent = currentBilling === "monthly" ? "$9.99/month future idea" : "$99.99/year future idea";
+        checkoutBilling.textContent = "Not charging now";
+      } else if (plan === "yearly") {
+        title.textContent = "Start Premium Yearly";
+        text.textContent = "This is demo checkout. Later, this button should create a Stripe Checkout Session for the yearly price.";
+        checkoutPlan.textContent = "Premium Yearly";
+        checkoutPrice.textContent = "$49.99/year";
+        checkoutBilling.textContent = "Renews yearly";
+      } else {
+        title.textContent = "Start Premium Monthly";
+        text.textContent = "This is demo checkout. Later, this button should create a Stripe Checkout Session for the monthly price.";
+        checkoutPlan.textContent = "Premium Monthly";
+        checkoutPrice.textContent = "$4.99/month";
+        checkoutBilling.textContent = "Renews monthly";
+      }
+
+      document.getElementById("checkoutModal").classList.add("active");
+    }
+
+    function closeCheckout() {
+      document.getElementById("checkoutModal").classList.remove("active");
+    }
+
+    function simulateCheckout() {
+      if (pendingPlan === "plus") {
+        localStorage.setItem("creditCardStackerPlusWaitlist", JSON.stringify({
+          joined: true,
+          joinedAt: new Date().toISOString()
+        }));
+        closeCheckout();
+        showToast("Premium Plus waitlist saved in demo mode.");
+        return;
+      }
+
+      const planName = pendingPlan === "yearly" ? "Premium Yearly Demo" : "Premium Monthly Demo";
+      savePremiumStatus({
+        active: true,
+        planName,
+        billing: pendingPlan,
+        startedAt: new Date().toISOString()
+      });
+      closeCheckout();
+      showToast("Premium activated in demo mode.");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    document.getElementById("checkoutModal").addEventListener("click", function(event) {
+      if (event.target.id === "checkoutModal") closeCheckout();
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") closeCheckout();
+    });
+
+    renderPremiumStatus();
+  </script>
+</body>
+</html>

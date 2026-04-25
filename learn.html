@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Learn Credit | Credit Card Stacker</title>
+  <meta name="description" content="Learn credit basics, utilization, statement dates, secured cards, inquiries, and credit card strategy with beginner-friendly lessons." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --panel-2: rgba(255,255,255,.115);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1200px, calc(100% - 30px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover {
+      color: var(--text);
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96,165,250,.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-danger {
+      background: rgba(251,113,133,.12);
+      color: #fecdd3;
+      border: 1px solid rgba(251,113,133,.28);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 46px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 5.3rem);
+      letter-spacing: -.075em;
+      line-height: .96;
+      max-width: 820px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 760px;
+      margin-top: 16px;
+      font-size: 1.05rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: .88fr 1.4fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 70px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+
+    .panel-pad {
+      padding: 24px;
+    }
+
+    .sticky-panel {
+      position: sticky;
+      top: 92px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2, .panel h2 {
+      font-size: 1.35rem;
+      letter-spacing: -.045em;
+    }
+
+    .panel-head p, .subtext {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 6px;
+      font-size: .94rem;
+    }
+
+    .progress-card {
+      background:
+        radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%),
+        rgba(255,255,255,.085);
+      margin-bottom: 18px;
+    }
+
+    .progress-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin: 10px auto 18px;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--brand) 0deg, var(--brand-2) 0deg, rgba(255,255,255,.1) 0deg 360deg);
+      position: relative;
+      box-shadow: 0 18px 50px rgba(96,165,250,.18);
+    }
+
+    .progress-circle::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      background: #0a1728;
+      border: 1px solid var(--line);
+    }
+
+    .progress-circle strong {
+      position: relative;
+      z-index: 1;
+      font-size: 2rem;
+      letter-spacing: -.06em;
+    }
+
+    .progress-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .progress-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--muted);
+    }
+
+    .progress-item span {
+      line-height: 1.45;
+      font-size: .92rem;
+    }
+
+    .check {
+      width: 28px;
+      height: 28px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.075);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-weight: 1000;
+      flex: 0 0 auto;
+    }
+
+    .progress-item.done {
+      color: var(--text);
+      border-color: rgba(110,231,183,.24);
+      background: rgba(110,231,183,.09);
+    }
+
+    .progress-item.done .check {
+      background: var(--brand);
+      color: #06111f;
+      border-color: transparent;
+    }
+
+    .lesson-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.065);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 10px 13px;
+      cursor: pointer;
+      font-weight: 850;
+    }
+
+    .tab.active {
+      color: #06111f;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      border-color: transparent;
+    }
+
+    .lesson-card {
+      display: none;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at top right, rgba(96,165,250,.13), transparent 34%),
+        rgba(255,255,255,.068);
+      border: 1px solid var(--line);
+      padding: 26px;
+      animation: fadeUp .24s ease both;
+    }
+
+    .lesson-card.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .lesson-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .lesson-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      font-size: 1.6rem;
+      font-weight: 1000;
+      box-shadow: 0 18px 40px rgba(96,165,250,.2);
+      flex: 0 0 auto;
+    }
+
+    .lesson-card h3 {
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      line-height: 1;
+      letter-spacing: -.065em;
+      margin-bottom: 10px;
+    }
+
+    .lesson-card p {
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 14px;
+    }
+
+    .lesson-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    .lesson-box {
+      border-radius: 20px;
+      padding: 17px;
+      background: rgba(255,255,255,.058);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .lesson-box strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 8px;
+    }
+
+    .lesson-box span {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: .94rem;
+    }
+
+    .example {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(110,231,183,.09);
+      border: 1px solid rgba(110,231,183,.23);
+      color: #d8fff1;
+      line-height: 1.7;
+      margin: 18px 0;
+    }
+
+    .example strong {
+      color: #fff;
+    }
+
+    .lesson-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .quiz-panel {
+      margin-top: 18px;
+    }
+
+    .quiz-question {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,.062);
+      border: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .quiz-question h3 {
+      font-size: 1.15rem;
+      letter-spacing: -.035em;
+      margin-bottom: 14px;
+      line-height: 1.35;
+    }
+
+    .answers {
+      display: grid;
+      gap: 10px;
+    }
+
+    .answer {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.058);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 13px;
+      cursor: pointer;
+      text-align: left;
+      line-height: 1.45;
+      transition: background .18s ease, border-color .18s ease;
+    }
+
+    .answer:hover {
+      border-color: rgba(110,231,183,.32);
+    }
+
+    .answer.correct {
+      background: rgba(52,211,153,.13);
+      border-color: rgba(52,211,153,.34);
+      color: #d8fff1;
+    }
+
+    .answer.wrong {
+      background: rgba(251,113,133,.12);
+      border-color: rgba(251,113,133,.32);
+      color: #ffe4e6;
+    }
+
+    .quiz-result {
+      display: none;
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(96,165,250,.09);
+      border: 1px solid rgba(96,165,250,.24);
+      color: #dbeafe;
+      line-height: 1.7;
+      margin-top: 14px;
+    }
+
+    .quiz-result.active {
+      display: block;
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .term-card {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    .term-card strong {
+      display: block;
+      letter-spacing: -.04em;
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    .term-card p {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: .94rem;
+      margin: 0;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+      cursor: pointer;
+    }
+
+    .task input {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--brand);
+    }
+
+    .task strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 4px;
+    }
+
+    .task span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .92rem;
+    }
+
+    .notice {
+      border-radius: 20px;
+      padding: 16px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 100;
+      max-width: 380px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1040px) {
+      .layout, .hero {
+        grid-template-columns: 1fr;
+      }
+      .sticky-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        display: block;
+      }
+      .top-links {
+        margin-top: 12px;
+      }
+      .lesson-grid, .glossary-grid {
+        grid-template-columns: 1fr;
+      }
+      .panel-pad, .lesson-card {
+        padding: 18px;
+      }
+      .lesson-top {
+        display: block;
+      }
+      .lesson-icon {
+        margin-bottom: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="onboarding.html">Onboarding</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="card-finder.html">Card Finder</a>
+        <a href="#quiz">Quiz</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Learning center • Beginner-friendly • Educational only</div>
+        <h1>Learn the credit card rules before you play the game.</h1>
+        <p>
+          This page teaches users the core stuff: utilization, statement dates, secured cards, inquiries, and why applying too fast can backfire. It keeps your app useful without pretending to be a credit bureau.
+        </p>
+      </div>
+      <div>
+        <button class="btn btn-primary" onclick="markAllCoreLessons()">Mark core lessons done</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel progress-card">
+          <div class="panel-head">
+            <div>
+              <h2>Learning Progress</h2>
+              <p>Saved in this browser.</p>
+            </div>
+          </div>
+
+          <div class="progress-circle" id="progressCircle">
+            <strong id="progressPercent">0%</strong>
+          </div>
+
+          <div class="progress-list" id="progressList"></div>
+
+          <div class="notice" style="margin-top:18px;">
+            This content is educational only. It does not guarantee credit score changes, approval odds, or lender decisions.
+          </div>
+        </div>
+
+        <div class="panel panel-pad" style="margin-top:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Quick Action Checklist</h2>
+              <p>Things users can do before applying for another card.</p>
+            </div>
+          </div>
+
+          <div class="checklist" id="checklist">
+            <label class="task">
+              <input type="checkbox" data-task="check-utilization" onchange="saveTasks()" />
+              <span><strong>Check utilization</strong><span>Know your balance divided by your credit limit before applying.</span></span>
+            </label>
+            <label class="task">
+              <input type="checkbox" data-task="find-statement" onchange="saveTasks()" />
+              <span><strong>Find statement closing date</strong><span>This is the date that often matters for what balance gets reported.</span></span>
+            </label>
+            <label class="task">
+              <input type="checkbox" data-task="avoid-rush" onchange="saveTasks()" />
+              <span><strong>Avoid application rushing</strong><span>Too many recent applications can make approvals harder.</span></span>
+            </label>
+            <label class="task">
+              <input type="checkbox" data-task="compare-fees" onchange="saveTasks()" />
+              <span><strong>Compare fees first</strong><span>A card with a high annual fee can be a bad move for rebuilding.</span></span>
+            </label>
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="panel panel-pad">
+          <div class="panel-head">
+            <div>
+              <h2>Credit Lessons</h2>
+              <p>Use this as the educational part of your app.</p>
+            </div>
+          </div>
+
+          <div class="lesson-tabs" role="tablist" aria-label="Credit lessons">
+            <button class="tab active" onclick="showLesson('utilization', this)">Utilization</button>
+            <button class="tab" onclick="showLesson('statement', this)">Statement Dates</button>
+            <button class="tab" onclick="showLesson('secured', this)">Secured Cards</button>
+            <button class="tab" onclick="showLesson('inquiries', this)">Inquiries</button>
+            <button class="tab" onclick="showLesson('approval', this)">Approval Safety</button>
+          </div>
+
+          <article class="lesson-card active" id="lesson-utilization">
+            <div class="lesson-top">
+              <div>
+                <h3>Credit utilization is the balance game.</h3>
+                <p>Utilization is how much of your credit limit you are using. For example, if your card has a $500 limit and a $250 balance, that card is at 50% utilization.</p>
+              </div>
+              <div class="lesson-icon">%</div>
+            </div>
+
+            <div class="lesson-grid">
+              <div class="lesson-box"><strong>Why it matters</strong><span>High utilization can make your profile look risky, even if you pay on time.</span></div>
+              <div class="lesson-box"><strong>Simple target</strong><span>Many people aim under 30%, then under 10% when they want a cleaner profile.</span></div>
+            </div>
+
+            <div class="example"><strong>Example:</strong> A $500 limit with a $238 balance is 47.6% utilization. To report under 10%, the balance would need to be around $50 or less.</div>
+
+            <p>The app should not promise that lowering utilization will increase a score by a specific amount. A safer message is: “Lower utilization may help your credit profile look cleaner, but results vary.”</p>
+
+            <div class="lesson-actions">
+              <button class="btn btn-primary" onclick="completeLesson('utilization')">Mark lesson complete</button>
+              <a class="btn btn-ghost" href="dashboard.html">Open dashboard</a>
+            </div>
+          </article>
+
+          <article class="lesson-card" id="lesson-statement">
+            <div class="lesson-top">
+              <div>
+                <h3>Statement date is not the same as due date.</h3>
+                <p>The due date is when payment is due. The statement closing date is when the billing cycle ends, and that balance may be what gets reported.</p>
+              </div>
+              <div class="lesson-icon">⏰</div>
+            </div>
+
+            <div class="lesson-grid">
+              <div class="lesson-box"><strong>Due date</strong><span>Pay by this date to avoid late fees and protect payment history.</span></div>
+              <div class="lesson-box"><strong>Statement date</strong><span>Pay before this date if you want a lower balance to report.</span></div>
+            </div>
+
+            <div class="example"><strong>Example:</strong> If your due date is May 20 but your statement closes May 25, paying before May 25 can help the lower balance show up on the next statement.</div>
+
+            <p>This is one of the best features for your app because many beginners only watch the due date and forget about what balance gets reported.</p>
+
+            <div class="lesson-actions">
+              <button class="btn btn-primary" onclick="completeLesson('statement')">Mark lesson complete</button>
+              <a class="btn btn-ghost" href="onboarding.html">Add statement dates</a>
+            </div>
+          </article>
+
+          <article class="lesson-card" id="lesson-secured">
+            <div class="lesson-top">
+              <div>
+                <h3>Secured cards can be a rebuilding tool.</h3>
+                <p>A secured card usually requires a deposit. That deposit often becomes the credit limit. It can help users build payment history when used carefully.</p>
+              </div>
+              <div class="lesson-icon">🔒</div>
+            </div>
+
+            <div class="lesson-grid">
+              <div class="lesson-box"><strong>Good for</strong><span>New credit, rebuilding credit, or users who keep getting denied for unsecured cards.</span></div>
+              <div class="lesson-box"><strong>Watch out</strong><span>Fees, low limits, and cards that do not clearly report to major credit bureaus.</span></div>
+            </div>
+
+            <div class="example"><strong>Example:</strong> A $200 secured card can still help if the user keeps the reported balance low and pays on time.</div>
+
+            <p>Do not describe secured cards as guaranteed approval. Say they may be a more realistic category for some rebuilding users.</p>
+
+            <div class="lesson-actions">
+              <button class="btn btn-primary" onclick="completeLesson('secured')">Mark lesson complete</button>
+              <a class="btn btn-ghost" href="card-finder.html">View card categories</a>
+            </div>
+          </article>
+
+          <article class="lesson-card" id="lesson-inquiries">
+            <div class="lesson-top">
+              <div>
+                <h3>Applying too fast can work against you.</h3>
+                <p>When someone applies for credit, it can create a hard inquiry. One inquiry is usually not the end of the world, but many recent inquiries can make a profile look risky.</p>
+              </div>
+              <div class="lesson-icon">⚠️</div>
+            </div>
+
+            <div class="lesson-grid">
+              <div class="lesson-box"><strong>Smart move</strong><span>Compare categories first and avoid applying randomly.</span></div>
+              <div class="lesson-box"><strong>App feature</strong><span>Warn users when they say they have 3+ recent inquiries.</span></div>
+            </div>
+
+            <div class="example"><strong>Example:</strong> If a user has five recent inquiries and high utilization, the app should suggest slowing down and lowering balances first.</div>
+
+            <p>This helps your app feel like a coach instead of just a card ad machine.</p>
+
+            <div class="lesson-actions">
+              <button class="btn btn-primary" onclick="completeLesson('inquiries')">Mark lesson complete</button>
+              <a class="btn btn-ghost" href="card-finder.html">Run card finder</a>
+            </div>
+          </article>
+
+          <article class="lesson-card" id="lesson-approval">
+            <div class="lesson-top">
+              <div>
+                <h3>Never promise approval.</h3>
+                <p>Your app can show categories that may fit a profile, but the lender makes the real decision. That decision can depend on full credit history, income, debt, identity checks, and lender rules.</p>
+              </div>
+              <div class="lesson-icon">⚖️</div>
+            </div>
+
+            <div class="lesson-grid">
+              <div class="lesson-box"><strong>Bad wording</strong><span>“You are approved,” “guaranteed approval,” or “this will raise your score.”</span></div>
+              <div class="lesson-box"><strong>Safer wording</strong><span>“This category may fit your profile. Approval is not guaranteed.”</span></div>
+            </div>
+
+            <div class="example"><strong>Affiliate rule:</strong> If you earn money from card links later, disclose that clearly near the card recommendation and Apply button.</div>
+
+            <p>This lesson protects the product because financial apps can get in trouble when they make recommendations look more certain or unbiased than they really are.</p>
+
+            <div class="lesson-actions">
+              <button class="btn btn-primary" onclick="completeLesson('approval')">Mark lesson complete</button>
+              <a class="btn btn-ghost" href="card-finder.html">Review finder wording</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="panel panel-pad quiz-panel" id="quiz">
+          <div class="panel-head">
+            <div>
+              <h2>Quick Credit Quiz</h2>
+              <p>Short quiz users can take after the lessons.</p>
+            </div>
+            <button class="btn btn-ghost" onclick="resetQuiz()">Reset quiz</button>
+          </div>
+
+          <div id="quizQuestions"></div>
+          <button class="btn btn-primary" onclick="gradeQuiz()">Check answers</button>
+          <div class="quiz-result" id="quizResult"></div>
+        </div>
+
+        <div class="panel panel-pad quiz-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Glossary</h2>
+              <p>Simple explanations for users who are new to credit.</p>
+            </div>
+          </div>
+
+          <div class="glossary-grid">
+            <div class="term-card"><strong>Credit limit</strong><p>The most the card issuer allows you to borrow on that card.</p></div>
+            <div class="term-card"><strong>Balance</strong><p>How much you currently owe on the card.</p></div>
+            <div class="term-card"><strong>Utilization</strong><p>Your balance divided by your credit limit. A $100 balance on a $500 limit is 20% utilization.</p></div>
+            <div class="term-card"><strong>Statement closing date</strong><p>The date your billing cycle ends. The balance around this date may be reported.</p></div>
+            <div class="term-card"><strong>Due date</strong><p>The date your payment is due. Missing this can cause fees and hurt payment history.</p></div>
+            <div class="term-card"><strong>Hard inquiry</strong><p>A credit check that can happen when you apply for credit.</p></div>
+            <div class="term-card"><strong>Secured card</strong><p>A card that usually requires a refundable deposit and may be useful for rebuilding.</p></div>
+            <div class="term-card"><strong>Annual fee</strong><p>A yearly fee charged by some cards. Beginners should compare this carefully.</p></div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const LESSON_KEY = "creditCardStackerLessonProgress";
+    const TASK_KEY = "creditCardStackerLearningTasks";
+    const QUIZ_KEY = "creditCardStackerQuizProgress";
+
+    const lessonIds = ["utilization", "statement", "secured", "inquiries", "approval"];
+
+    const lessonLabels = {
+      utilization: "Credit utilization",
+      statement: "Statement dates",
+      secured: "Secured cards",
+      inquiries: "Hard inquiries",
+      approval: "Approval safety"
+    };
+
+    const quiz = [
+      {
+        id: "q1",
+        question: "A $250 balance on a $500 credit limit is what utilization?",
+        answers: ["10%", "25%", "50%", "100%"],
+        correct: "50%"
+      },
+      {
+        id: "q2",
+        question: "Which date is usually most important for what balance may report?",
+        answers: ["Birthday", "Statement closing date", "App download date", "Payday"],
+        correct: "Statement closing date"
+      },
+      {
+        id: "q3",
+        question: "What should this app avoid saying?",
+        answers: ["Approval is not guaranteed", "Results vary", "You are guaranteed approval", "Compare fees first"],
+        correct: "You are guaranteed approval"
+      },
+      {
+        id: "q4",
+        question: "What card category may be useful for someone rebuilding credit?",
+        answers: ["Secured card", "Premium travel card only", "Random store card", "High-fee card no matter what"],
+        correct: "Secured card"
+      }
+    ];
+
+    function getLessonProgress() {
+      return JSON.parse(localStorage.getItem(LESSON_KEY) || "{}");
+    }
+
+    function saveLessonProgress(progress) {
+      localStorage.setItem(LESSON_KEY, JSON.stringify(progress));
+    }
+
+    function showLesson(id, button) {
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".lesson-card").forEach(card => card.classList.remove("active"));
+      button.classList.add("active");
+      document.getElementById(`lesson-${id}`).classList.add("active");
+    }
+
+    function completeLesson(id) {
+      const progress = getLessonProgress();
+      progress[id] = true;
+      saveLessonProgress(progress);
+      renderProgress();
+      showToast(`${lessonLabels[id]} marked complete.`);
+    }
+
+    function markAllCoreLessons() {
+      const progress = {};
+      lessonIds.forEach(id => progress[id] = true);
+      saveLessonProgress(progress);
+      renderProgress();
+      showToast("All lessons marked complete.");
+    }
+
+    function renderProgress() {
+      const progress = getLessonProgress();
+      const doneCount = lessonIds.filter(id => progress[id]).length;
+      const percent = Math.round((doneCount / lessonIds.length) * 100);
+      const degrees = Math.round((percent / 100) * 360);
+
+      document.getElementById("progressPercent").textContent = `${percent}%`;
+      document.getElementById("progressCircle").style.background = `conic-gradient(var(--brand) 0deg, var(--brand-2) ${degrees}deg, rgba(255,255,255,.1) ${degrees}deg 360deg)`;
+
+      document.getElementById("progressList").innerHTML = lessonIds.map(id => `
+        <div class="progress-item ${progress[id] ? "done" : ""}">
+          <span>${lessonLabels[id]}</span>
+          <div class="check">${progress[id] ? "✓" : ""}</div>
+        </div>
+      `).join("");
+    }
+
+    function saveTasks() {
+      const tasks = {};
+      document.querySelectorAll("#checklist input[type='checkbox']").forEach(input => {
+        tasks[input.dataset.task] = input.checked;
+      });
+      localStorage.setItem(TASK_KEY, JSON.stringify(tasks));
+      showToast("Checklist saved.");
+    }
+
+    function loadTasks() {
+      const tasks = JSON.parse(localStorage.getItem(TASK_KEY) || "{}");
+      document.querySelectorAll("#checklist input[type='checkbox']").forEach(input => {
+        input.checked = Boolean(tasks[input.dataset.task]);
+      });
+    }
+
+    function renderQuiz() {
+      const saved = JSON.parse(localStorage.getItem(QUIZ_KEY) || "{}");
+      document.getElementById("quizQuestions").innerHTML = quiz.map((item, index) => `
+        <div class="quiz-question" data-question="${item.id}">
+          <h3>${index + 1}. ${escapeHtml(item.question)}</h3>
+          <div class="answers">
+            ${item.answers.map(answer => `
+              <button class="answer ${saved[item.id] === answer ? "selected" : ""}" onclick="selectAnswer('${item.id}', '${escapeForAttribute(answer)}', this)">${escapeHtml(answer)}</button>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function selectAnswer(questionId, answer, button) {
+      const saved = JSON.parse(localStorage.getItem(QUIZ_KEY) || "{}");
+      saved[questionId] = answer;
+      localStorage.setItem(QUIZ_KEY, JSON.stringify(saved));
+
+      const parent = button.closest(".answers");
+      parent.querySelectorAll(".answer").forEach(item => {
+        item.classList.remove("correct", "wrong");
+        item.style.borderColor = "";
+      });
+      button.style.borderColor = "rgba(110,231,183,.5)";
+    }
+
+    function gradeQuiz() {
+      const saved = JSON.parse(localStorage.getItem(QUIZ_KEY) || "{}");
+      let score = 0;
+
+      quiz.forEach(item => {
+        const question = document.querySelector(`[data-question='${item.id}']`);
+        question.querySelectorAll(".answer").forEach(button => {
+          button.classList.remove("correct", "wrong");
+          if (button.textContent === item.correct) {
+            button.classList.add("correct");
+          }
+          if (saved[item.id] === button.textContent && saved[item.id] !== item.correct) {
+            button.classList.add("wrong");
+          }
+        });
+        if (saved[item.id] === item.correct) score++;
+      });
+
+      const result = document.getElementById("quizResult");
+      result.classList.add("active");
+      result.innerHTML = `<strong>Score: ${score}/${quiz.length}</strong><br>${score === quiz.length ? "Nice. The user understands the basics." : "Review the highlighted answers and try again."}`;
+    }
+
+    function resetQuiz() {
+      localStorage.removeItem(QUIZ_KEY);
+      document.getElementById("quizResult").classList.remove("active");
+      renderQuiz();
+      showToast("Quiz reset.");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function escapeForAttribute(text) {
+      return String(text).replaceAll("'", "&#039;").replaceAll("\\", "\\\\");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2600);
+    }
+
+    renderProgress();
+    loadTasks();
+    renderQuiz();
+  </script>
+</body>
+</html>

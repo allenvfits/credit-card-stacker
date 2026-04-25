@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help Center | Credit Card Stacker</title>
+  <meta name="description" content="Help center for Credit Card Stacker with FAQs, troubleshooting, how-to guides, and support contact options." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --panel-2: rgba(255,255,255,.115);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font: inherit; }
+
+    .shell { width: min(1200px, calc(100% - 30px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover { color: var(--text); }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96,165,250,.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-warning {
+      background: rgba(251,191,36,.12);
+      color: #fde68a;
+      border: 1px solid rgba(251,191,36,.28);
+    }
+
+    .btn-full { width: 100%; }
+
+    .hero {
+      padding: 56px 0 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.7rem, 6vw, 5.8rem);
+      letter-spacing: -.085em;
+      line-height: .92;
+      max-width: 900px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #fff, var(--brand), var(--brand-2), var(--brand-3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 820px;
+      margin-top: 16px;
+      font-size: 1.05rem;
+    }
+
+    .search-card {
+      border-radius: 30px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 18px;
+      margin: 18px 0;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-card input {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 15px 18px;
+      outline: none;
+    }
+
+    .search-card input:focus {
+      border-color: rgba(110,231,183,.72);
+      box-shadow: 0 0 0 4px rgba(110,231,183,.09);
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 18px 0 28px;
+    }
+
+    .quick-card {
+      border-radius: 24px;
+      padding: 20px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+      min-height: 155px;
+      transition: transform .18s ease, border-color .18s ease;
+    }
+
+    .quick-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(110,231,183,.32);
+    }
+
+    .quick-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(110,231,183,.12);
+      border: 1px solid rgba(110,231,183,.24);
+      margin-bottom: 14px;
+      font-size: 1.25rem;
+    }
+
+    .quick-card strong {
+      display: block;
+      letter-spacing: -.04em;
+      font-size: 1.12rem;
+      margin-bottom: 8px;
+    }
+
+    .quick-card span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .92rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: .85fr 1.45fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 70px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+
+    .panel-pad { padding: 24px; }
+
+    .sticky-panel {
+      position: sticky;
+      top: 92px;
+      background:
+        radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%),
+        rgba(255,255,255,.085);
+    }
+
+    .panel-head { margin-bottom: 18px; }
+
+    .panel-head h2 {
+      font-size: 1.35rem;
+      letter-spacing: -.045em;
+      margin-bottom: 8px;
+    }
+
+    .panel-head p {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: .94rem;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-list a, .nav-list button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--muted);
+      font-weight: 850;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+    }
+
+    .nav-list a:hover, .nav-list button:hover {
+      color: var(--text);
+      border-color: rgba(110,231,183,.28);
+      background: rgba(110,231,183,.09);
+    }
+
+    .help-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section-card {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 26px;
+    }
+
+    .section-title {
+      margin-bottom: 18px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      letter-spacing: -.065em;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: .98rem;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .guide-card {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    .guide-card strong {
+      display: block;
+      letter-spacing: -.04em;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    .guide-card p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 14px;
+      font-size: .94rem;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      counter-reset: step;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.058);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .94rem;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      width: 30px;
+      height: 30px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(110,231,183,.14);
+      border: 1px solid rgba(110,231,183,.24);
+      color: #c9ffee;
+      font-weight: 1000;
+      flex: 0 0 auto;
+    }
+
+    .faq-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    details {
+      border-radius: 20px;
+      padding: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 1000;
+      letter-spacing: -.035em;
+    }
+
+    details p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin-top: 12px;
+    }
+
+    .trouble-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .trouble-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.062);
+      border: 1px solid var(--line);
+    }
+
+    .trouble-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(251,191,36,.13);
+      border: 1px solid rgba(251,191,36,.28);
+    }
+
+    .trouble-item strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 5px;
+    }
+
+    .trouble-item p {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: .94rem;
+    }
+
+    .form-grid { display: grid; gap: 14px; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 7px;
+      font-size: .9rem;
+    }
+
+    .field input, .field select, .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px;
+      outline: none;
+      min-height: 48px;
+      resize: vertical;
+    }
+
+    .field textarea { min-height: 140px; }
+    .field select option { color: #07101d; }
+
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: rgba(110,231,183,.72);
+      box-shadow: 0 0 0 4px rgba(110,231,183,.09);
+    }
+
+    .notice {
+      border-radius: 20px;
+      padding: 16px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .success-note {
+      border-radius: 20px;
+      padding: 16px;
+      color: #d8fff1;
+      background: rgba(52,211,153,.09);
+      border: 1px solid rgba(52,211,153,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .success-note.active { display: block; }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .link-card {
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    .link-card strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 6px;
+    }
+
+    .link-card span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .9rem;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 110;
+      max-width: 390px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active { transform: translateY(0); }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1080px) {
+      .layout, .hero { grid-template-columns: 1fr; }
+      .quick-grid, .link-grid { grid-template-columns: repeat(2, 1fr); }
+      .sticky-panel { position: static; }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner { display: block; }
+      .top-links { margin-top: 12px; }
+      .search-card, .guide-grid, .two-col, .quick-grid, .link-grid { grid-template-columns: 1fr; }
+      .panel-pad, .section-card { padding: 18px; }
+      .button-row { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="auth.html">Sign In</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="learn.html">Learn</a>
+        <a href="premium.html">Premium</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Help center • FAQs • Troubleshooting • Support</div>
+        <h1>How can we <span class="gradient-text">help?</span></h1>
+        <p>
+          Find quick answers, learn how to use the app, fix common issues, and send a demo support request. This page makes the product feel finished and trusted.
+        </p>
+      </div>
+      <div class="button-row">
+        <a class="btn btn-primary" href="#contact">Contact Support</a>
+        <button class="btn btn-ghost" onclick="copySupportInfo()">Copy App Info</button>
+      </div>
+    </section>
+
+    <section class="search-card">
+      <input id="helpSearch" type="search" placeholder="Search help topics like utilization, premium, reminders, data, login..." oninput="filterHelp()" />
+      <button class="btn btn-primary" onclick="filterHelp()">Search</button>
+    </section>
+
+    <section class="quick-grid">
+      <a class="quick-card" href="#getting-started" data-help="getting started setup onboarding dashboard">
+        <div class="quick-icon">🚀</div>
+        <strong>Getting started</strong>
+        <span>Set up your profile, add cards, and open your first dashboard.</span>
+      </a>
+      <a class="quick-card" href="#utilization" data-help="utilization balance credit limit paydown target">
+        <div class="quick-icon">%</div>
+        <strong>Utilization help</strong>
+        <span>Understand balances, limits, and pay-to-target numbers.</span>
+      </a>
+      <a class="quick-card" href="#premium" data-help="premium subscription billing upgrade stripe payment">
+        <div class="quick-icon">⚡</div>
+        <strong>Premium</strong>
+        <span>Learn what premium does and how demo billing works.</span>
+      </a>
+      <a class="quick-card" href="#privacy" data-help="privacy data export delete localstorage settings">
+        <div class="quick-icon">🔒</div>
+        <strong>Privacy & data</strong>
+        <span>Export, delete, and understand locally saved app data.</span>
+      </a>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel">
+          <div class="panel-head">
+            <h2>Help Menu</h2>
+            <p>Jump to the area you need.</p>
+          </div>
+
+          <nav class="nav-list" aria-label="Help sections">
+            <a href="#getting-started">Getting Started <span>›</span></a>
+            <a href="#guides">How-To Guides <span>›</span></a>
+            <a href="#faq">FAQ <span>›</span></a>
+            <a href="#troubleshooting">Troubleshooting <span>›</span></a>
+            <a href="#premium">Premium Help <span>›</span></a>
+            <a href="#privacy">Privacy Help <span>›</span></a>
+            <a href="#links">App Links <span>›</span></a>
+            <a href="#contact">Contact Support <span>›</span></a>
+          </nav>
+
+          <div class="notice">
+            Support note: This is a demo help center. The contact form saves a support draft in your browser until you connect email or a backend.
+          </div>
+        </div>
+      </aside>
+
+      <section class="help-stack">
+        <article class="section-card" id="getting-started" data-help="getting started onboarding dashboard add cards setup profile">
+          <div class="section-title">
+            <h2>Getting Started</h2>
+            <p>Use this flow to test the app from beginning to end.</p>
+          </div>
+
+          <div class="steps">
+            <div class="step">Open <strong>auth.html</strong> and click Demo User or create a demo account.</div>
+            <div class="step">Go to <strong>onboarding.html</strong> and choose your credit goal, score range, and utilization target.</div>
+            <div class="step">Add at least one card with a balance, credit limit, statement date, and due date.</div>
+            <div class="step">Open <strong>dashboard.html</strong> to see utilization, paydown targets, and the action plan.</div>
+            <div class="step">Use <strong>reminders.html</strong> and <strong>reports.html</strong> to view upcoming dates and export a report.</div>
+          </div>
+
+          <div class="button-row">
+            <a class="btn btn-primary" href="onboarding.html">Start onboarding</a>
+            <a class="btn btn-ghost" href="dashboard.html">Open dashboard</a>
+          </div>
+        </article>
+
+        <article class="section-card" id="guides" data-help="guides how to add card report reminder card finder learn">
+          <div class="section-title">
+            <h2>How-To Guides</h2>
+            <p>Short guides for the main app features.</p>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card">
+              <strong>Add a credit card</strong>
+              <p>Go to Dashboard, click Add Card, enter the card name, balance, limit, statement date, and due date.</p>
+              <a class="btn btn-ghost" href="dashboard.html">Open dashboard</a>
+            </div>
+            <div class="guide-card">
+              <strong>Find your paydown target</strong>
+              <p>Open Reports or Dashboard and select a target like under 30%, under 10%, or close to 1%.</p>
+              <a class="btn btn-ghost" href="reports.html">Open reports</a>
+            </div>
+            <div class="guide-card">
+              <strong>Compare card categories</strong>
+              <p>Use Card Finder to compare secured, starter, cashback, and travel categories without guaranteeing approval.</p>
+              <a class="btn btn-ghost" href="card-finder.html">Open card finder</a>
+            </div>
+            <div class="guide-card">
+              <strong>Export your data</strong>
+              <p>Go to Settings, open Data Management, and choose Export Data or Copy Summary.</p>
+              <a class="btn btn-ghost" href="settings.html#dataSettings">Open settings</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="section-card" id="utilization" data-help="utilization balance limit percent under 30 under 10 paydown">
+          <div class="section-title">
+            <h2>Utilization Help</h2>
+            <p>Utilization is your balance divided by your credit limit. It is one of the main things this app helps users understand.</p>
+          </div>
+
+          <div class="steps">
+            <div class="step">Example: $250 balance ÷ $500 limit = 50% utilization.</div>
+            <div class="step">A common beginner target is under 30%.</div>
+            <div class="step">A stricter rebuilding target is under 10%.</div>
+            <div class="step">The app shows how much to pay to reach your selected target.</div>
+          </div>
+
+          <div class="notice">
+            Lower utilization may help your profile look cleaner, but this app does not guarantee any specific credit score increase.
+          </div>
+        </article>
+
+        <article class="section-card" id="faq" data-help="faq questions answers credit score approval credit karma score">
+          <div class="section-title">
+            <h2>Frequently Asked Questions</h2>
+            <p>Common questions users may ask.</p>
+          </div>
+
+          <div class="faq-list">
+            <details open>
+              <summary>Does the app pull my real credit score?</summary>
+              <p>No, not in this MVP. The app uses a manually selected estimated score range. Real credit score access would require a proper credit data provider, consent flow, and stronger legal/security setup.</p>
+            </details>
+            <details>
+              <summary>Does this app guarantee approval?</summary>
+              <p>No. Credit Card Stacker never guarantees approval. Lenders make their own decisions based on full applications and credit profiles.</p>
+            </details>
+            <details>
+              <summary>Is this credit repair?</summary>
+              <p>No. The app is an educational credit card planning tool. It does not dispute credit reports, remove negative items, or promise score changes.</p>
+            </details>
+            <details>
+              <summary>Why do statement dates matter?</summary>
+              <p>The balance around the statement closing date may be what reports. Paying before the statement closes may help a lower balance show on the statement.</p>
+            </details>
+            <details>
+              <summary>Where is my data saved?</summary>
+              <p>In the demo version, data is saved in your browser using localStorage. It can be exported or deleted from Settings.</p>
+            </details>
+            <details>
+              <summary>Does Premium charge real money?</summary>
+              <p>No, not in this HTML demo. Premium is simulated in your browser. Real billing requires Stripe, Apple, Google, or another payment provider.</p>
+            </details>
+          </div>
+        </article>
+
+        <article class="section-card" id="troubleshooting" data-help="troubleshooting broken missing data localstorage sample cards buttons not working">
+          <div class="section-title">
+            <h2>Troubleshooting</h2>
+            <p>Fix common issues while testing in VS Code or Live Server.</p>
+          </div>
+
+          <div class="trouble-grid">
+            <div class="trouble-item">
+              <div class="trouble-icon">⚠️</div>
+              <div><strong>My dashboard is empty</strong><p>Add cards in onboarding or dashboard. You can also click Load Sample Cards on Dashboard, Reminders, or Reports.</p></div>
+            </div>
+            <div class="trouble-item">
+              <div class="trouble-icon">🧹</div>
+              <div><strong>I want to reset the app</strong><p>Open Settings, go to Data Management, and click Delete All App Data. This clears the local demo data.</p></div>
+            </div>
+            <div class="trouble-item">
+              <div class="trouble-icon">🖥️</div>
+              <div><strong>Links do not open correctly</strong><p>Make sure every HTML file is in the same folder and the filenames match exactly, like dashboard.html and card-finder.html.</p></div>
+            </div>
+            <div class="trouble-item">
+              <div class="trouble-icon">🔐</div>
+              <div><strong>Sign-in is not real yet</strong><p>auth.html uses a demo local session. Connect Supabase Auth later for real accounts and login security.</p></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="section-card" id="premium" data-help="premium subscription stripe payment billing portal upgrade free plan">
+          <div class="section-title">
+            <h2>Premium Help</h2>
+            <p>Premium is currently a demo feature saved in the browser.</p>
+          </div>
+
+          <div class="steps">
+            <div class="step">Open premium.html to view the pricing page.</div>
+            <div class="step">Click Start Premium to open the demo checkout popup.</div>
+            <div class="step">Click Simulate Upgrade to turn on demo premium.</div>
+            <div class="step">Open settings.html to turn demo premium on or off anytime.</div>
+          </div>
+
+          <div class="notice">
+            For real subscriptions, create checkout sessions on the server using Stripe or use App Store subscriptions. Never put secret keys in HTML.
+          </div>
+        </article>
+
+        <article class="section-card" id="privacy" data-help="privacy data export delete localstorage terms policy">
+          <div class="section-title">
+            <h2>Privacy & Data Help</h2>
+            <p>Users should have clear control over their information.</p>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-card">
+              <strong>Export data</strong>
+              <p>Download a JSON file with your saved demo profile, cards, settings, and progress.</p>
+              <a class="btn btn-ghost" href="settings.html#dataSettings">Export data</a>
+            </div>
+            <div class="guide-card">
+              <strong>Delete data</strong>
+              <p>Remove cards or delete all local demo app data from your browser.</p>
+              <a class="btn btn-ghost" href="settings.html#dataSettings">Delete data</a>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <a class="btn btn-primary" href="privacy.html">Privacy Policy</a>
+            <a class="btn btn-ghost" href="terms.html">Terms</a>
+          </div>
+        </article>
+
+        <article class="section-card" id="links" data-help="links pages navigation app files all pages">
+          <div class="section-title">
+            <h2>App Links</h2>
+            <p>Quick links to every major page.</p>
+          </div>
+
+          <div class="link-grid">
+            <a class="link-card" href="index.html"><strong>Home</strong><span>Landing page and calculator.</span></a>
+            <a class="link-card" href="auth.html"><strong>Auth</strong><span>Demo sign in and sign up.</span></a>
+            <a class="link-card" href="onboarding.html"><strong>Onboarding</strong><span>Set up credit profile.</span></a>
+            <a class="link-card" href="dashboard.html"><strong>Dashboard</strong><span>Main tracking page.</span></a>
+            <a class="link-card" href="card-finder.html"><strong>Card Finder</strong><span>Compare card categories.</span></a>
+            <a class="link-card" href="learn.html"><strong>Learn</strong><span>Lessons and quiz.</span></a>
+            <a class="link-card" href="premium.html"><strong>Premium</strong><span>Subscription mockup.</span></a>
+            <a class="link-card" href="settings.html"><strong>Settings</strong><span>Profile and data controls.</span></a>
+            <a class="link-card" href="reminders.html"><strong>Reminders</strong><span>Calendar and due dates.</span></a>
+            <a class="link-card" href="reports.html"><strong>Reports</strong><span>Reports and exports.</span></a>
+            <a class="link-card" href="privacy.html"><strong>Privacy</strong><span>Privacy policy.</span></a>
+            <a class="link-card" href="terms.html"><strong>Terms</strong><span>Terms of Service.</span></a>
+          </div>
+        </article>
+
+        <article class="section-card" id="contact" data-help="contact support help email issue bug request">
+          <div class="section-title">
+            <h2>Contact Support</h2>
+            <p>This is a demo support form. It saves a support draft in your browser so you can connect email or a backend later.</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="two-col">
+              <div class="field">
+                <label for="supportName">Name</label>
+                <input id="supportName" placeholder="Allen" />
+              </div>
+              <div class="field">
+                <label for="supportEmail">Email</label>
+                <input id="supportEmail" type="email" placeholder="you@example.com" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="supportTopic">Topic</label>
+              <select id="supportTopic">
+                <option>App setup</option>
+                <option>Dashboard issue</option>
+                <option>Premium billing</option>
+                <option>Privacy/data request</option>
+                <option>Bug report</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="supportMessage">Message</label>
+              <textarea id="supportMessage" placeholder="Explain what you need help with..."></textarea>
+            </div>
+            <div class="button-row">
+              <button class="btn btn-primary" onclick="saveSupportDraft()">Save Support Draft</button>
+              <button class="btn btn-ghost" onclick="copySupportDraft()">Copy Draft</button>
+              <button class="btn btn-warning" onclick="clearSupportDraft()">Clear</button>
+            </div>
+          </div>
+
+          <div class="success-note" id="supportSavedNote">Support draft saved in this browser.</div>
+          <div class="notice">
+            Before launch, replace this with a real support email, form backend, or ticket system. Example support email: support@creditcardstacker.app
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const SUPPORT_KEY = "creditCardStackerSupportDraft";
+    const PROFILE_KEY = "creditCardStackerUserProfile";
+
+    function getJson(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+      catch { return fallback; }
+    }
+
+    function saveJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function filterHelp() {
+      const query = document.getElementById("helpSearch").value.trim().toLowerCase();
+      const blocks = document.querySelectorAll("[data-help]");
+
+      if (!query) {
+        blocks.forEach(block => block.classList.remove("hidden"));
+        return;
+      }
+
+      blocks.forEach(block => {
+        const haystack = (block.dataset.help + " " + block.textContent).toLowerCase();
+        block.classList.toggle("hidden", !haystack.includes(query));
+      });
+    }
+
+    function saveSupportDraft() {
+      const draft = collectSupportDraft();
+      if (!draft.email || !draft.email.includes("@")) {
+        showToast("Enter a valid email before saving the draft.");
+        return;
+      }
+      if (!draft.message) {
+        showToast("Enter a message first.");
+        return;
+      }
+      saveJson(SUPPORT_KEY, draft);
+      document.getElementById("supportSavedNote").classList.add("active");
+      showToast("Support draft saved.");
+    }
+
+    function collectSupportDraft() {
+      return {
+        name: document.getElementById("supportName").value.trim(),
+        email: document.getElementById("supportEmail").value.trim(),
+        topic: document.getElementById("supportTopic").value,
+        message: document.getElementById("supportMessage").value.trim(),
+        appPage: location.pathname.split("/").pop() || "help.html",
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    async function copySupportDraft() {
+      const draft = collectSupportDraft();
+      const text = [
+        "Credit Card Stacker Support Request",
+        `Name: ${draft.name || "Not provided"}`,
+        `Email: ${draft.email || "Not provided"}`,
+        `Topic: ${draft.topic}`,
+        `Page: ${draft.appPage}`,
+        "",
+        "Message:",
+        draft.message || "Not provided"
+      ].join("\n");
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Support draft copied.");
+      } catch {
+        showToast("Could not copy automatically. Select the text manually.");
+      }
+    }
+
+    function clearSupportDraft() {
+      localStorage.removeItem(SUPPORT_KEY);
+      document.getElementById("supportName").value = "";
+      document.getElementById("supportEmail").value = "";
+      document.getElementById("supportTopic").value = "App setup";
+      document.getElementById("supportMessage").value = "";
+      document.getElementById("supportSavedNote").classList.remove("active");
+      showToast("Support draft cleared.");
+    }
+
+    function loadSupportDraft() {
+      const profile = getJson(PROFILE_KEY, {});
+      const draft = getJson(SUPPORT_KEY, null);
+
+      if (profile.displayName) document.getElementById("supportName").value = profile.displayName;
+      if (profile.email) document.getElementById("supportEmail").value = profile.email;
+
+      if (draft) {
+        document.getElementById("supportName").value = draft.name || profile.displayName || "";
+        document.getElementById("supportEmail").value = draft.email || profile.email || "";
+        document.getElementById("supportTopic").value = draft.topic || "App setup";
+        document.getElementById("supportMessage").value = draft.message || "";
+        document.getElementById("supportSavedNote").classList.add("active");
+      }
+    }
+
+    async function copySupportInfo() {
+      const info = [
+        "Credit Card Stacker App Info",
+        `Current page: ${location.pathname.split("/").pop() || "help.html"}`,
+        `Browser storage cards: ${localStorage.getItem("creditCardStackerCards") ? "Yes" : "No"}`,
+        `Demo session: ${localStorage.getItem("creditCardStackerSession") ? "Signed in" : "Not signed in"}`,
+        `Premium demo: ${localStorage.getItem("creditCardStackerPremium") ? "Saved" : "Not active"}`,
+        `Generated: ${new Date().toLocaleString()}`
+      ].join("\n");
+
+      try {
+        await navigator.clipboard.writeText(info);
+        showToast("App info copied.");
+      } catch {
+        showToast("Could not copy app info.");
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    loadSupportDraft();
+  </script>
+</body>
+</html>

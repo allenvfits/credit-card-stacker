@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings | Credit Card Stacker</title>
+  <meta name="description" content="Manage Credit Card Stacker profile settings, reminder preferences, privacy controls, data export, and premium status." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --panel-2: rgba(255,255,255,.115);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 30px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover {
+      color: var(--text);
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96,165,250,.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-danger {
+      background: rgba(251,113,133,.12);
+      color: #fecdd3;
+      border: 1px solid rgba(251,113,133,.28);
+    }
+
+    .btn-warning {
+      background: rgba(251,191,36,.12);
+      color: #fde68a;
+      border: 1px solid rgba(251,191,36,.28);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 46px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 5.2rem);
+      letter-spacing: -.075em;
+      line-height: .96;
+      max-width: 820px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 760px;
+      margin-top: 16px;
+      font-size: 1.05rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: .85fr 1.45fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 70px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+
+    .panel-pad {
+      padding: 24px;
+    }
+
+    .sticky-panel {
+      position: sticky;
+      top: 92px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2, .panel h2 {
+      font-size: 1.35rem;
+      letter-spacing: -.045em;
+    }
+
+    .panel-head p, .subtext {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 6px;
+      font-size: .94rem;
+    }
+
+    .profile-card {
+      background:
+        radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%),
+        rgba(255,255,255,.085);
+      margin-bottom: 18px;
+    }
+
+    .profile-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 22px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      font-size: 1.45rem;
+      font-weight: 1000;
+      box-shadow: 0 18px 44px rgba(96,165,250,.18);
+    }
+
+    .profile-top strong {
+      display: block;
+      font-size: 1.15rem;
+      letter-spacing: -.04em;
+      margin-bottom: 4px;
+    }
+
+    .profile-top span {
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: .92rem;
+    }
+
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .mini-stat {
+      border-radius: 18px;
+      padding: 15px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+    }
+
+    .mini-stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .8rem;
+      margin-bottom: 5px;
+    }
+
+    .mini-stat strong {
+      font-size: 1.35rem;
+      letter-spacing: -.055em;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--muted);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      font-weight: 850;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      color: var(--text);
+      border-color: rgba(110,231,183,.28);
+      background: rgba(110,231,183,.09);
+    }
+
+    .settings-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .section-card {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 24px;
+    }
+
+    .section-title {
+      margin-bottom: 18px;
+    }
+
+    .section-title h2 {
+      font-size: 1.65rem;
+      letter-spacing: -.055em;
+      margin-bottom: 8px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: .95rem;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .three-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 7px;
+      font-size: .9rem;
+    }
+
+    .field input, .field select, .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px;
+      outline: none;
+      resize: vertical;
+      min-height: 48px;
+    }
+
+    .field textarea {
+      min-height: 110px;
+    }
+
+    .field select option {
+      color: #07101d;
+    }
+
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: rgba(110,231,183,.72);
+      box-shadow: 0 0 0 4px rgba(110,231,183,.09);
+    }
+
+    .toggle-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .toggle-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.058);
+      border: 1px solid var(--line);
+    }
+
+    .toggle-row strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 5px;
+    }
+
+    .toggle-row span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .92rem;
+    }
+
+    .switch {
+      position: relative;
+      width: 56px;
+      height: 32px;
+      flex: 0 0 auto;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      background: rgba(255,255,255,.13);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      transition: .2s;
+    }
+
+    .slider::before {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      left: 3px;
+      top: 3px;
+      border-radius: 50%;
+      background: #fff;
+      transition: .2s;
+    }
+
+    .switch input:checked + .slider {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    }
+
+    .switch input:checked + .slider::before {
+      transform: translateX(24px);
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .data-box {
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255,255,255,.058);
+      border: 1px solid var(--line);
+    }
+
+    .data-box span {
+      display: block;
+      color: var(--muted);
+      font-size: .8rem;
+      margin-bottom: 6px;
+    }
+
+    .data-box strong {
+      font-size: 1.35rem;
+      letter-spacing: -.055em;
+    }
+
+    .danger-zone {
+      background:
+        radial-gradient(circle at top right, rgba(251,113,133,.13), transparent 34%),
+        rgba(251,113,133,.06);
+      border-color: rgba(251,113,133,.24);
+    }
+
+    .notice {
+      border-radius: 20px;
+      padding: 16px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .success-note {
+      border-radius: 20px;
+      padding: 16px;
+      color: #d8fff1;
+      background: rgba(52,211,153,.09);
+      border: 1px solid rgba(52,211,153,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: rgba(0,0,0,.68);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-bg.active {
+      display: flex;
+    }
+
+    .modal {
+      width: min(560px, 100%);
+      border-radius: 30px;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .modal h2 {
+      font-size: 1.8rem;
+      letter-spacing: -.055em;
+      margin-bottom: 8px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 110;
+      max-width: 390px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1040px) {
+      .layout, .hero {
+        grid-template-columns: 1fr;
+      }
+      .sticky-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        display: block;
+      }
+      .top-links {
+        margin-top: 12px;
+      }
+      .two-col, .three-col, .data-grid, .mini-stats {
+        grid-template-columns: 1fr;
+      }
+      .toggle-row {
+        grid-template-columns: 1fr;
+      }
+      .panel-pad, .section-card {
+        padding: 18px;
+      }
+      .modal-actions, .button-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="onboarding.html">Onboarding</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="card-finder.html">Card Finder</a>
+        <a href="learn.html">Learn</a>
+        <a href="premium.html">Premium</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Settings • Privacy controls • Browser demo storage</div>
+        <h1>Control your profile, reminders, and data.</h1>
+        <p>
+          This settings page gives the app a real account-management feel. It lets users change profile details, reminder preferences, privacy choices, and demo premium status while keeping data transparency clear.
+        </p>
+      </div>
+      <div>
+        <button class="btn btn-primary" onclick="saveAllSettings()">Save Settings</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel profile-card">
+          <div class="profile-top">
+            <div class="avatar" id="avatarInitial">A</div>
+            <div>
+              <strong id="profileNamePreview">Allen</strong>
+              <span id="profilePlanPreview">Free plan • Manual score mode</span>
+            </div>
+          </div>
+
+          <div class="mini-stats">
+            <div class="mini-stat">
+              <span>Cards saved</span>
+              <strong id="cardsSavedCount">0</strong>
+            </div>
+            <div class="mini-stat">
+              <span>Lessons done</span>
+              <strong id="lessonsDoneCount">0/5</strong>
+            </div>
+          </div>
+
+          <div class="nav-list">
+            <button class="nav-item active" onclick="scrollToSection('profileSettings', this)">Profile <span>›</span></button>
+            <button class="nav-item" onclick="scrollToSection('reminderSettings', this)">Reminders <span>›</span></button>
+            <button class="nav-item" onclick="scrollToSection('privacySettings', this)">Privacy <span>›</span></button>
+            <button class="nav-item" onclick="scrollToSection('premiumSettings', this)">Premium <span>›</span></button>
+            <button class="nav-item" onclick="scrollToSection('dataSettings', this)">Data <span>›</span></button>
+          </div>
+
+          <div class="notice">
+            Demo note: this app currently stores settings in your browser using localStorage. Real accounts later should use Supabase Auth and database tables.
+          </div>
+        </div>
+      </aside>
+
+      <section class="settings-stack">
+        <article class="section-card" id="profileSettings">
+          <div class="section-title">
+            <h2>Profile settings</h2>
+            <p>These values help personalize the dashboard and card finder. No real credit pull is happening.</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="two-col">
+              <div class="field">
+                <label for="displayName">Display name</label>
+                <input id="displayName" placeholder="Allen" oninput="updatePreview()" />
+              </div>
+              <div class="field">
+                <label for="email">Email</label>
+                <input id="email" type="email" placeholder="you@example.com" />
+              </div>
+            </div>
+
+            <div class="three-col">
+              <div class="field">
+                <label for="scoreRange">Estimated score range</label>
+                <select id="scoreRange">
+                  <option value="under500">Under 500</option>
+                  <option value="500-579">500–579</option>
+                  <option value="580-619" selected>580–619</option>
+                  <option value="620-659">620–659</option>
+                  <option value="660-699">660–699</option>
+                  <option value="700plus">700+</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="incomeRange">Income range</label>
+                <select id="incomeRange">
+                  <option>$0–$24k</option>
+                  <option selected>$25k–$49k</option>
+                  <option>$50k–$74k</option>
+                  <option>$75k+</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="inquiries">Recent inquiries</label>
+                <select id="inquiries">
+                  <option>0</option>
+                  <option selected>1–2</option>
+                  <option>3–4</option>
+                  <option>5+</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="goal">Utilization goal</label>
+                <select id="goal">
+                  <option value="30">Under 30%</option>
+                  <option value="10" selected>Under 10%</option>
+                  <option value="1">Close to 1%</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="mainGoal">Main credit goal</label>
+                <select id="mainGoal">
+                  <option value="lower-utilization">Lower utilization</option>
+                  <option value="build-credit">Build credit history</option>
+                  <option value="choose-card">Choose next card</option>
+                  <option value="avoid-mistakes">Avoid credit mistakes</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="profileNotes">Personal notes</label>
+              <textarea id="profileNotes" placeholder="Example: I want to pay down my secured card before the next statement closes."></textarea>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="btn btn-primary" onclick="saveProfileSettings()">Save profile</button>
+            <a class="btn btn-ghost" href="dashboard.html">Open dashboard</a>
+          </div>
+        </article>
+
+        <article class="section-card" id="reminderSettings">
+          <div class="section-title">
+            <h2>Reminder settings</h2>
+            <p>These controls are front-end settings for now. Later, connect them to push notifications, email, or text reminders.</p>
+          </div>
+
+          <div class="toggle-list">
+            <div class="toggle-row">
+              <div><strong>Statement closing reminders</strong><span>Warn me before a card statement closes so I can lower reported balances.</span></div>
+              <label class="switch"><input id="statementReminders" type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><strong>Payment due reminders</strong><span>Warn me before the due date to avoid late fees and missed payments.</span></div>
+              <label class="switch"><input id="dueReminders" type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><strong>Application warning</strong><span>Show a warning if utilization or recent inquiries are high before applying.</span></div>
+              <label class="switch"><input id="applicationWarnings" type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><strong>Weekly credit check-in</strong><span>Remind me once a week to update balances and review my plan.</span></div>
+              <label class="switch"><input id="weeklyCheckin" type="checkbox" /><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <div class="two-col" style="margin-top:14px;">
+            <div class="field">
+              <label for="reminderDays">Remind me before statement date</label>
+              <select id="reminderDays">
+                <option value="1">1 day before</option>
+                <option value="3">3 days before</option>
+                <option value="7" selected>7 days before</option>
+                <option value="14">14 days before</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="reminderMethod">Preferred reminder method</label>
+              <select id="reminderMethod">
+                <option value="in-app" selected>In-app only</option>
+                <option value="email">Email later</option>
+                <option value="push">Push notification later</option>
+                <option value="sms">SMS later</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="btn btn-primary" onclick="saveReminderSettings()">Save reminders</button>
+          </div>
+        </article>
+
+        <article class="section-card" id="privacySettings">
+          <div class="section-title">
+            <h2>Privacy settings</h2>
+            <p>Good finance apps need clear privacy controls. This gives users trust before you ever connect real credit APIs.</p>
+          </div>
+
+          <div class="toggle-list">
+            <div class="toggle-row">
+              <div><strong>Allow educational personalization</strong><span>Use my saved profile to personalize lessons, reminders, and card categories.</span></div>
+              <label class="switch"><input id="personalization" type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><strong>Allow anonymous app analytics</strong><span>Help improve the app by sharing non-identifying usage data later.</span></div>
+              <label class="switch"><input id="analytics" type="checkbox" /><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><strong>Show affiliate offer disclosures</strong><span>Always show when an offer may involve compensation.</span></div>
+              <label class="switch"><input id="affiliateDisclosures" type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><strong>Require confirmation before applying</strong><span>Show a final reminder that approval is not guaranteed before opening an application link.</span></div>
+              <label class="switch"><input id="applyConfirmation" type="checkbox" checked /><span class="slider"></span></label>
+            </div>
+          </div>
+
+          <div class="notice">
+            Privacy note: Do not store Social Security numbers or full credit reports in a beginner MVP. If you add real credit-score access later, use a proper data provider, user consent, and secure server-side storage.
+          </div>
+
+          <div class="button-row">
+            <button class="btn btn-primary" onclick="savePrivacySettings()">Save privacy settings</button>
+          </div>
+        </article>
+
+        <article class="section-card" id="premiumSettings">
+          <div class="section-title">
+            <h2>Premium settings</h2>
+            <p>Manage demo premium status. Real subscriptions later should be managed with Stripe Customer Portal or App Store subscriptions.</p>
+          </div>
+
+          <div class="data-grid">
+            <div class="data-box">
+              <span>Current plan</span>
+              <strong id="planStatus">Free</strong>
+            </div>
+            <div class="data-box">
+              <span>Billing</span>
+              <strong id="billingStatus">None</strong>
+            </div>
+            <div class="data-box">
+              <span>Started</span>
+              <strong id="startedStatus">—</strong>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <a class="btn btn-primary" href="premium.html">View premium plans</a>
+            <button class="btn btn-ghost" onclick="turnOnPremiumDemo()">Turn on demo premium</button>
+            <button class="btn btn-warning" onclick="turnOffPremiumDemo()">Turn off demo premium</button>
+          </div>
+
+          <div class="notice">
+            Billing note: never put Stripe secret keys in plain HTML. Use Supabase Edge Functions or your own backend to create checkout sessions and receive webhooks.
+          </div>
+        </article>
+
+        <article class="section-card" id="dataSettings">
+          <div class="section-title">
+            <h2>Data management</h2>
+            <p>Let users export or delete their data. This is important for privacy and App Store trust.</p>
+          </div>
+
+          <div class="data-grid">
+            <div class="data-box">
+              <span>Saved cards</span>
+              <strong id="dataCardsCount">0</strong>
+            </div>
+            <div class="data-box">
+              <span>Watchlist items</span>
+              <strong id="dataWatchlistCount">0</strong>
+            </div>
+            <div class="data-box">
+              <span>Saved settings</span>
+              <strong id="dataSettingsCount">0</strong>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="btn btn-primary" onclick="exportData()">Export data</button>
+            <button class="btn btn-ghost" onclick="copyDataSummary()">Copy summary</button>
+            <button class="btn btn-warning" onclick="resetOnboardingOnly()">Reset onboarding</button>
+          </div>
+
+          <div class="section-card danger-zone" style="margin-top:18px;">
+            <div class="section-title">
+              <h2>Danger zone</h2>
+              <p>These actions remove local demo data from this browser.</p>
+            </div>
+            <div class="button-row">
+              <button class="btn btn-danger" onclick="openDeleteModal('cards')">Delete saved cards</button>
+              <button class="btn btn-danger" onclick="openDeleteModal('all')">Delete all app data</button>
+            </div>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <div class="modal-bg" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h2 id="modalTitle">Confirm action</h2>
+      <p id="modalText">Are you sure?</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const SETTINGS_KEY = "creditCardStackerSettings";
+    const CARDS_KEY = "creditCardStackerCards";
+    const ONBOARDING_KEY = "creditCardStackerOnboarding";
+    const PREMIUM_KEY = "creditCardStackerPremium";
+    const WATCHLIST_KEY = "creditCardStackerWatchlist";
+    const LESSON_KEY = "creditCardStackerLessonProgress";
+    const TASK_KEY = "creditCardStackerLearningTasks";
+    const QUIZ_KEY = "creditCardStackerQuizProgress";
+    const PRIVACY_KEY = "creditCardStackerPrivacySettings";
+    const REMINDER_KEY = "creditCardStackerReminderSettings";
+    const PROFILE_KEY = "creditCardStackerUserProfile";
+
+    let deleteMode = null;
+
+    function getJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function scoreText(value) {
+      const map = {
+        under500: "Under 500",
+        "500-579": "500–579",
+        "580-619": "580–619",
+        "620-659": "620–659",
+        "660-699": "660–699",
+        "700plus": "700+"
+      };
+      return map[value] || "580–619";
+    }
+
+    function loadAllSettings() {
+      const profile = getJson(PROFILE_KEY, {});
+      const settings = getJson(SETTINGS_KEY, {});
+      const privacy = getJson(PRIVACY_KEY, {});
+      const reminders = getJson(REMINDER_KEY, {});
+      const onboarding = getJson(ONBOARDING_KEY, {});
+
+      document.getElementById("displayName").value = profile.displayName || "Allen";
+      document.getElementById("email").value = profile.email || "";
+      document.getElementById("profileNotes").value = profile.profileNotes || "";
+
+      const merged = { ...(onboarding.profile || {}), ...settings, ...profile };
+      if (merged.scoreRange) document.getElementById("scoreRange").value = merged.scoreRange;
+      if (merged.incomeRange) document.getElementById("incomeRange").value = merged.incomeRange;
+      if (merged.inquiries) document.getElementById("inquiries").value = merged.inquiries;
+      if (merged.goal) document.getElementById("goal").value = merged.goal;
+      if (merged.mainGoal) document.getElementById("mainGoal").value = merged.mainGoal;
+
+      document.getElementById("statementReminders").checked = reminders.statementReminders ?? true;
+      document.getElementById("dueReminders").checked = reminders.dueReminders ?? true;
+      document.getElementById("applicationWarnings").checked = reminders.applicationWarnings ?? true;
+      document.getElementById("weeklyCheckin").checked = reminders.weeklyCheckin ?? false;
+      if (reminders.reminderDays) document.getElementById("reminderDays").value = reminders.reminderDays;
+      if (reminders.reminderMethod) document.getElementById("reminderMethod").value = reminders.reminderMethod;
+
+      document.getElementById("personalization").checked = privacy.personalization ?? true;
+      document.getElementById("analytics").checked = privacy.analytics ?? false;
+      document.getElementById("affiliateDisclosures").checked = privacy.affiliateDisclosures ?? true;
+      document.getElementById("applyConfirmation").checked = privacy.applyConfirmation ?? true;
+
+      updatePreview();
+      refreshStats();
+    }
+
+    function saveProfileSettings() {
+      const profile = {
+        displayName: document.getElementById("displayName").value.trim() || "User",
+        email: document.getElementById("email").value.trim(),
+        scoreRange: document.getElementById("scoreRange").value,
+        incomeRange: document.getElementById("incomeRange").value,
+        inquiries: document.getElementById("inquiries").value,
+        goal: document.getElementById("goal").value,
+        mainGoal: document.getElementById("mainGoal").value,
+        profileNotes: document.getElementById("profileNotes").value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+
+      saveJson(PROFILE_KEY, profile);
+      saveJson(SETTINGS_KEY, {
+        scoreRange: profile.scoreRange,
+        goal: profile.goal,
+        incomeRange: profile.incomeRange,
+        inquiries: profile.inquiries
+      });
+
+      const onboarding = getJson(ONBOARDING_KEY, {});
+      onboarding.profile = {
+        ...(onboarding.profile || {}),
+        mainGoal: profile.mainGoal,
+        scoreRange: profile.scoreRange,
+        incomeRange: profile.incomeRange,
+        inquiries: profile.inquiries,
+        goal: profile.goal
+      };
+      onboarding.savedAt = new Date().toISOString();
+      saveJson(ONBOARDING_KEY, onboarding);
+
+      updatePreview();
+      refreshStats();
+      showToast("Profile settings saved.");
+    }
+
+    function saveReminderSettings() {
+      const reminders = {
+        statementReminders: document.getElementById("statementReminders").checked,
+        dueReminders: document.getElementById("dueReminders").checked,
+        applicationWarnings: document.getElementById("applicationWarnings").checked,
+        weeklyCheckin: document.getElementById("weeklyCheckin").checked,
+        reminderDays: document.getElementById("reminderDays").value,
+        reminderMethod: document.getElementById("reminderMethod").value,
+        updatedAt: new Date().toISOString()
+      };
+      saveJson(REMINDER_KEY, reminders);
+      refreshStats();
+      showToast("Reminder settings saved.");
+    }
+
+    function savePrivacySettings() {
+      const privacy = {
+        personalization: document.getElementById("personalization").checked,
+        analytics: document.getElementById("analytics").checked,
+        affiliateDisclosures: document.getElementById("affiliateDisclosures").checked,
+        applyConfirmation: document.getElementById("applyConfirmation").checked,
+        updatedAt: new Date().toISOString()
+      };
+      saveJson(PRIVACY_KEY, privacy);
+      refreshStats();
+      showToast("Privacy settings saved.");
+    }
+
+    function saveAllSettings() {
+      saveProfileSettings();
+      saveReminderSettings();
+      savePrivacySettings();
+      showToast("All settings saved.");
+    }
+
+    function updatePreview() {
+      const name = document.getElementById("displayName").value.trim() || "User";
+      const premium = getJson(PREMIUM_KEY, null);
+      document.getElementById("profileNamePreview").textContent = name;
+      document.getElementById("avatarInitial").textContent = name.slice(0, 1).toUpperCase();
+      document.getElementById("profilePlanPreview").textContent = premium && premium.active
+        ? `${premium.planName} • Manual score mode`
+        : "Free plan • Manual score mode";
+    }
+
+    function refreshStats() {
+      const cards = getJson(CARDS_KEY, []);
+      const lessons = getJson(LESSON_KEY, {});
+      const premium = getJson(PREMIUM_KEY, null);
+      const watchlist = getJson(WATCHLIST_KEY, []);
+
+      document.getElementById("cardsSavedCount").textContent = cards.length;
+      document.getElementById("lessonsDoneCount").textContent = `${Object.values(lessons).filter(Boolean).length}/5`;
+      document.getElementById("dataCardsCount").textContent = cards.length;
+      document.getElementById("dataWatchlistCount").textContent = watchlist.length;
+
+      const settingsCount = [SETTINGS_KEY, ONBOARDING_KEY, PREMIUM_KEY, LESSON_KEY, TASK_KEY, QUIZ_KEY, PRIVACY_KEY, REMINDER_KEY, PROFILE_KEY]
+        .filter(key => localStorage.getItem(key)).length;
+      document.getElementById("dataSettingsCount").textContent = settingsCount;
+
+      if (premium && premium.active) {
+        document.getElementById("planStatus").textContent = premium.planName || "Premium";
+        document.getElementById("billingStatus").textContent = premium.billing || "demo";
+        document.getElementById("startedStatus").textContent = premium.startedAt ? new Date(premium.startedAt).toLocaleDateString() : "—";
+      } else {
+        document.getElementById("planStatus").textContent = "Free";
+        document.getElementById("billingStatus").textContent = "None";
+        document.getElementById("startedStatus").textContent = "—";
+      }
+
+      updatePreview();
+    }
+
+    function turnOnPremiumDemo() {
+      saveJson(PREMIUM_KEY, {
+        active: true,
+        planName: "Premium Demo",
+        billing: "demo",
+        startedAt: new Date().toISOString()
+      });
+      refreshStats();
+      showToast("Demo premium turned on.");
+    }
+
+    function turnOffPremiumDemo() {
+      localStorage.removeItem(PREMIUM_KEY);
+      refreshStats();
+      showToast("Demo premium turned off.");
+    }
+
+    function exportData() {
+      const exportObject = collectAppData();
+      const blob = new Blob([JSON.stringify(exportObject, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "credit-card-stacker-data.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Data export downloaded.");
+    }
+
+    async function copyDataSummary() {
+      const data = collectAppData();
+      const cards = data.cards || [];
+      const profile = data.profile || {};
+      const summary = [
+        "Credit Card Stacker Data Summary",
+        `Name: ${profile.displayName || "Not set"}`,
+        `Score range: ${scoreText(profile.scoreRange || data.settings?.scoreRange)}`,
+        `Saved cards: ${cards.length}`,
+        `Premium active: ${data.premium?.active ? "Yes" : "No"}`,
+        `Export date: ${new Date().toLocaleString()}`
+      ].join("\n");
+
+      try {
+        await navigator.clipboard.writeText(summary);
+        showToast("Data summary copied.");
+      } catch {
+        showToast("Could not copy automatically. Use Export Data instead.");
+      }
+    }
+
+    function collectAppData() {
+      return {
+        exportedAt: new Date().toISOString(),
+        profile: getJson(PROFILE_KEY, {}),
+        settings: getJson(SETTINGS_KEY, {}),
+        onboarding: getJson(ONBOARDING_KEY, {}),
+        cards: getJson(CARDS_KEY, []),
+        premium: getJson(PREMIUM_KEY, null),
+        watchlist: getJson(WATCHLIST_KEY, []),
+        lessonProgress: getJson(LESSON_KEY, {}),
+        learningTasks: getJson(TASK_KEY, {}),
+        quizProgress: getJson(QUIZ_KEY, {}),
+        privacySettings: getJson(PRIVACY_KEY, {}),
+        reminderSettings: getJson(REMINDER_KEY, {})
+      };
+    }
+
+    function resetOnboardingOnly() {
+      localStorage.removeItem(ONBOARDING_KEY);
+      showToast("Onboarding data reset. Profile and cards were kept.");
+      refreshStats();
+    }
+
+    function openDeleteModal(mode) {
+      deleteMode = mode;
+      const title = document.getElementById("modalTitle");
+      const text = document.getElementById("modalText");
+
+      if (mode === "cards") {
+        title.textContent = "Delete saved cards?";
+        text.textContent = "This will remove all cards saved in this browser. Profile settings and lessons will stay.";
+      } else {
+        title.textContent = "Delete all app data?";
+        text.textContent = "This will remove profile, cards, onboarding, premium demo status, watchlist, lessons, quiz, privacy, and reminder settings from this browser.";
+      }
+
+      document.getElementById("confirmModal").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("confirmModal").classList.remove("active");
+      deleteMode = null;
+    }
+
+    function confirmDelete() {
+      if (deleteMode === "cards") {
+        localStorage.removeItem(CARDS_KEY);
+        const onboarding = getJson(ONBOARDING_KEY, {});
+        if (onboarding.cards) {
+          onboarding.cards = [];
+          saveJson(ONBOARDING_KEY, onboarding);
+        }
+        showToast("Saved cards deleted.");
+      } else if (deleteMode === "all") {
+        [SETTINGS_KEY, CARDS_KEY, ONBOARDING_KEY, PREMIUM_KEY, WATCHLIST_KEY, LESSON_KEY, TASK_KEY, QUIZ_KEY, PRIVACY_KEY, REMINDER_KEY, PROFILE_KEY]
+          .forEach(key => localStorage.removeItem(key));
+        showToast("All local app data deleted.");
+        loadAllSettings();
+      }
+      closeModal();
+      refreshStats();
+    }
+
+    function scrollToSection(id, button) {
+      document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+      button.classList.add("active");
+      document.getElementById(id).scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    document.getElementById("confirmModal").addEventListener("click", function(event) {
+      if (event.target.id === "confirmModal") closeModal();
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") closeModal();
+    });
+
+    loadAllSettings();
+  </script>
+</body>
+</html>

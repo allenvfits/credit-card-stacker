@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Score Tracker | Credit Card Stacker</title>
+  <meta name="description" content="Manually track estimated credit score history, credit habits, utilization changes, and score notes." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font: inherit; }
+    .shell { width: min(1200px, calc(100% - 30px)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      min-height: 74px; display: flex; align-items: center; justify-content: space-between;
+      gap: 18px; padding: 14px 0;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 1000; letter-spacing: -.04em; font-size: 1.1rem; }
+    .logo-mark {
+      width: 38px; height: 38px; border-radius: 14px; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f; box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+    .top-links { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: .94rem; flex-wrap: wrap; }
+    .top-links a:hover { color: var(--text); }
+    .btn {
+      border: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 999px; padding: 12px 16px; font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease; white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #06111f; box-shadow: 0 18px 44px rgba(96,165,250,.25); }
+    .btn-ghost { background: rgba(255,255,255,.075); color: var(--text); border: 1px solid var(--line); }
+    .btn-danger { background: rgba(251,113,133,.12); color: #fecdd3; border: 1px solid rgba(251,113,133,.28); }
+    .btn-warning { background: rgba(251,191,36,.12); color: #fde68a; border: 1px solid rgba(251,191,36,.28); }
+    .btn-full { width: 100%; }
+    .hero { padding: 46px 0 24px; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 18px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px; color: #c9ffee; background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24); border-radius: 999px; padding: 8px 12px; font-size: .84rem; font-weight: 900; margin-bottom: 14px;
+    }
+    h1 { font-size: clamp(2.4rem, 5vw, 5.2rem); letter-spacing: -.075em; line-height: .96; max-width: 860px; }
+    .hero p { color: var(--muted); line-height: 1.7; max-width: 800px; margin-top: 16px; font-size: 1.05rem; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; }
+    .stat { border-radius: 22px; padding: 18px; background: rgba(255,255,255,.065); border: 1px solid var(--line); min-height: 118px; }
+    .stat span { display: block; color: var(--muted); font-size: .82rem; margin-bottom: 8px; }
+    .stat strong { font-size: 1.85rem; letter-spacing: -.065em; line-height: 1; }
+    .stat small { display: block; color: var(--muted); margin-top: 7px; line-height: 1.4; }
+    .stat.good strong { color: var(--success); }
+    .stat.warn strong { color: var(--warning); }
+    .stat.bad strong { color: var(--danger); }
+    .layout { display: grid; grid-template-columns: .9fr 1.35fr; gap: 18px; align-items: start; padding: 18px 0 70px; }
+    .panel { border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 60px rgba(0,0,0,.14); overflow: hidden; }
+    .panel-pad { padding: 24px; }
+    .sticky-panel {
+      position: sticky; top: 92px;
+      background: radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%), rgba(255,255,255,.085);
+    }
+    .panel-head { display: flex; align-items: start; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+    .panel-head h2, .panel h2 { font-size: 1.35rem; letter-spacing: -.045em; }
+    .panel-head p, .subtext { color: var(--muted); line-height: 1.6; margin-top: 6px; font-size: .94rem; }
+    .form-grid { display: grid; gap: 14px; }
+    .two-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .field label { display: block; color: var(--muted); font-weight: 850; margin-bottom: 7px; font-size: .9rem; }
+    .field input, .field select, .field textarea {
+      width: 100%; border: 1px solid var(--line); background: rgba(255,255,255,.07); color: var(--text);
+      border-radius: 16px; padding: 14px; outline: none; min-height: 48px; resize: vertical;
+    }
+    .field textarea { min-height: 110px; }
+    .field select option { color: #07101d; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(110,231,183,.72); box-shadow: 0 0 0 4px rgba(110,231,183,.09); }
+    .chart-card { margin-bottom: 18px; }
+    .chart-box {
+      min-height: 340px; border-radius: 24px; background: rgba(255,255,255,.052); border: 1px solid var(--line);
+      padding: 18px; display: flex; align-items: flex-end; gap: 10px; overflow-x: auto;
+    }
+    .bar-wrap { min-width: 64px; flex: 1; display: grid; gap: 8px; align-items: end; text-align: center; }
+    .bar-track { height: 250px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.08); display: flex; align-items: flex-end; overflow: hidden; }
+    .bar-fill { width: 100%; min-height: 4px; border-radius: inherit; background: linear-gradient(180deg, var(--brand), var(--brand-2)); }
+    .bar-label { color: var(--muted); font-size: .75rem; line-height: 1.3; }
+    .bar-score { font-weight: 1000; font-size: .9rem; }
+    .timeline { display: grid; gap: 12px; }
+    .score-item { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 16px; border-radius: 22px; background: rgba(255,255,255,.062); border: 1px solid var(--line); }
+    .score-pill { width: 58px; height: 58px; border-radius: 20px; display: grid; place-items: center; background: rgba(110,231,183,.13); border: 1px solid rgba(110,231,183,.25); font-weight: 1000; font-size: 1.1rem; color: #d8fff1; }
+    .score-item strong { display: block; letter-spacing: -.035em; margin-bottom: 5px; }
+    .score-item p { color: var(--muted); line-height: 1.55; font-size: .92rem; }
+    .tag { display: inline-flex; align-items: center; border-radius: 999px; padding: 7px 10px; font-size: .76rem; font-weight: 900; background: rgba(255,255,255,.08); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+    .tag.good { background: rgba(52,211,153,.12); color: #bbf7d0; border-color: rgba(52,211,153,.28); }
+    .tag.warn { background: rgba(251,191,36,.12); color: #fde68a; border-color: rgba(251,191,36,.28); }
+    .tag.bad { background: rgba(251,113,133,.12); color: #fecdd3; border-color: rgba(251,113,133,.28); }
+    .insight-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .insight { border-radius: 22px; padding: 18px; background: rgba(255,255,255,.06); border: 1px solid var(--line); }
+    .insight strong { display: block; letter-spacing: -.04em; margin-bottom: 8px; }
+    .insight p { color: var(--muted); line-height: 1.65; font-size: .94rem; }
+    .notice { border-radius: 20px; padding: 16px; color: #f9eac0; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.24); line-height: 1.65; font-size: .92rem; margin-top: 16px; }
+    .empty { border-radius: 22px; padding: 24px; color: var(--muted); background: rgba(255,255,255,.052); border: 1px dashed rgba(255,255,255,.2); text-align: center; line-height: 1.65; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .toast { position: fixed; right: 18px; bottom: 18px; z-index: 110; max-width: 390px; border-radius: 18px; padding: 14px 16px; background: #0f2138; color: var(--text); border: 1px solid var(--line); box-shadow: var(--shadow); line-height: 1.5; transform: translateY(130%); transition: transform .24s ease; }
+    .toast.active { transform: translateY(0); }
+    @media (max-width: 1080px) { .layout, .hero { grid-template-columns: 1fr; } .sticky-panel { position: static; } .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 760px) { .topbar-inner { display: block; } .top-links { margin-top: 12px; } .two-col, .summary-grid, .insight-grid { grid-template-columns: 1fr; } .panel-pad { padding: 18px; } .button-row { flex-direction: column; align-items: stretch; } .score-item { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="simulator.html">Simulator</a>
+        <a href="reports.html">Reports</a>
+        <a href="learn.html">Learn</a>
+        <a href="settings.html">Settings</a>
+        <a href="help.html">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Manual score tracker • No bureau connection • Educational trend log</div>
+        <h1>Track your score journey without pulling credit.</h1>
+        <p>
+          Add manual score entries from wherever you check your score. Track notes, utilization, habits, and progress over time without connecting to a real credit bureau yet.
+        </p>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" onclick="addEntry()">Add Entry</button>
+        <button class="btn btn-ghost" onclick="loadSampleScores()">Load Samples</button>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="stat" id="latestStat"><span>Latest score</span><strong id="latestScore">—</strong><small id="latestSub">No entries yet</small></div>
+      <div class="stat" id="changeStat"><span>Total change</span><strong id="totalChange">0</strong><small>Since first entry</small></div>
+      <div class="stat"><span>Entries</span><strong id="entryCount">0</strong><small>Manual logs saved</small></div>
+      <div class="stat"><span>Average utilization</span><strong id="avgUtil">0%</strong><small>Across score entries</small></div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Add Score Entry</h2>
+              <p>Use manual entries from Credit Karma, your bank app, Experian, or another score source.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="two-col">
+              <div class="field">
+                <label for="entryDate">Date</label>
+                <input id="entryDate" type="date" />
+              </div>
+              <div class="field">
+                <label for="entryScore">Estimated score</label>
+                <input id="entryScore" type="number" min="300" max="850" step="1" placeholder="620" />
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="entrySource">Score source</label>
+                <select id="entrySource">
+                  <option>Credit Karma</option>
+                  <option>Bank app</option>
+                  <option>Experian</option>
+                  <option>Credit card app</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="entryUtilization">Utilization that week</label>
+                <input id="entryUtilization" type="number" min="0" max="200" step="0.1" placeholder="28" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="entryEvent">Main event</label>
+              <select id="entryEvent">
+                <option>No major change</option>
+                <option>Paid balance down</option>
+                <option>Opened new card</option>
+                <option>Hard inquiry</option>
+                <option>Missed payment</option>
+                <option>Limit increase</option>
+                <option>Statement balance changed</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="entryNotes">Notes</label>
+              <textarea id="entryNotes" placeholder="Example: Paid Capital One down before statement date. Utilization dropped under 10%."></textarea>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="addEntry()">Save Score Entry</button>
+            <button class="btn btn-ghost btn-full" onclick="copySummary()">Copy Score Summary</button>
+            <button class="btn btn-warning btn-full" onclick="exportScores()">Export Score Data</button>
+          </div>
+
+          <div class="notice">
+            Score tracker disclaimer: Different apps may show different score models. This page is a manual trend log, not a credit bureau report.
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="panel panel-pad chart-card">
+          <div class="panel-head">
+            <div>
+              <h2>Score Trend</h2>
+              <p>Manual score history shown as a simple bar trend.</p>
+            </div>
+          </div>
+          <div class="chart-box" id="chartBox"></div>
+        </div>
+
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Score Insights</h2>
+              <p>Simple notes based on your saved entries.</p>
+            </div>
+          </div>
+          <div class="insight-grid" id="insightGrid"></div>
+        </div>
+
+        <div class="panel panel-pad">
+          <div class="panel-head">
+            <div>
+              <h2>Score Timeline</h2>
+              <p>Newest entries first.</p>
+            </div>
+            <button class="btn btn-danger" onclick="clearEntries()">Clear</button>
+          </div>
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const SCORE_KEY = "creditCardStackerScoreEntries";
+    let entries = [];
+
+    function getJson(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+      catch { return fallback; }
+    }
+
+    function saveJson(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+
+    function todayKey() { return new Date().toISOString().slice(0, 10); }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString + "T00:00:00");
+      return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function loadEntries() {
+      entries = getJson(SCORE_KEY, []);
+      entries.sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+
+    function addEntry() {
+      const date = document.getElementById("entryDate").value || todayKey();
+      const score = Number(document.getElementById("entryScore").value);
+      const source = document.getElementById("entrySource").value;
+      const utilization = Number(document.getElementById("entryUtilization").value);
+      const event = document.getElementById("entryEvent").value;
+      const notes = document.getElementById("entryNotes").value.trim();
+
+      if (!Number.isFinite(score) || score < 300 || score > 850) {
+        showToast("Enter a score between 300 and 850.");
+        return;
+      }
+
+      entries.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        date,
+        score,
+        source,
+        utilization: Number.isFinite(utilization) ? Math.max(0, utilization) : 0,
+        event,
+        notes,
+        createdAt: new Date().toISOString()
+      });
+
+      saveJson(SCORE_KEY, entries);
+      document.getElementById("entryScore").value = "";
+      document.getElementById("entryUtilization").value = "";
+      document.getElementById("entryNotes").value = "";
+      renderAll();
+      showToast("Score entry saved.");
+    }
+
+    function deleteEntry(id) {
+      entries = entries.filter(entry => entry.id !== id);
+      saveJson(SCORE_KEY, entries);
+      renderAll();
+      showToast("Score entry deleted.");
+    }
+
+    function clearEntries() {
+      if (!entries.length) return;
+      const confirmed = confirm("Delete all score tracker entries from this browser?");
+      if (!confirmed) return;
+      entries = [];
+      saveJson(SCORE_KEY, entries);
+      renderAll();
+      showToast("Score entries cleared.");
+    }
+
+    function renderSummary() {
+      const latestStat = document.getElementById("latestStat");
+      const changeStat = document.getElementById("changeStat");
+      latestStat.classList.remove("good", "warn", "bad");
+      changeStat.classList.remove("good", "warn", "bad");
+
+      if (!entries.length) {
+        document.getElementById("latestScore").textContent = "—";
+        document.getElementById("latestSub").textContent = "No entries yet";
+        document.getElementById("totalChange").textContent = "0";
+        document.getElementById("entryCount").textContent = "0";
+        document.getElementById("avgUtil").textContent = "0%";
+        return;
+      }
+
+      const first = entries[0];
+      const latest = entries[entries.length - 1];
+      const change = latest.score - first.score;
+      const avgUtil = entries.reduce((sum, e) => sum + Number(e.utilization || 0), 0) / entries.length;
+
+      document.getElementById("latestScore").textContent = latest.score;
+      document.getElementById("latestSub").textContent = `${latest.source} • ${formatDate(latest.date)}`;
+      document.getElementById("totalChange").textContent = `${change > 0 ? "+" : ""}${change}`;
+      document.getElementById("entryCount").textContent = entries.length;
+      document.getElementById("avgUtil").textContent = `${avgUtil.toFixed(1)}%`;
+
+      latestStat.classList.add(latest.score >= 670 ? "good" : latest.score >= 580 ? "warn" : "bad");
+      changeStat.classList.add(change > 0 ? "good" : change < 0 ? "bad" : "warn");
+    }
+
+    function renderChart() {
+      const box = document.getElementById("chartBox");
+      if (!entries.length) {
+        box.innerHTML = `<div class="empty" style="width:100%; align-self:center;">No score entries yet. Add your first manual score entry or load samples.</div>`;
+        return;
+      }
+
+      box.innerHTML = entries.map(entry => {
+        const height = Math.max(8, ((entry.score - 300) / 550) * 100);
+        return `
+          <div class="bar-wrap">
+            <div class="bar-track"><div class="bar-fill" style="height:${height}%"></div></div>
+            <div class="bar-score">${entry.score}</div>
+            <div class="bar-label">${formatDate(entry.date).replace(", 2026", "")}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderInsights() {
+      const grid = document.getElementById("insightGrid");
+      if (!entries.length) {
+        grid.innerHTML = `<div class="empty">No insights yet.</div>`;
+        return;
+      }
+
+      const first = entries[0];
+      const latest = entries[entries.length - 1];
+      const change = latest.score - first.score;
+      const avgUtil = entries.reduce((sum, e) => sum + Number(e.utilization || 0), 0) / entries.length;
+      const recent = entries.slice(-3);
+      const paidDownCount = entries.filter(e => e.event === "Paid balance down").length;
+
+      const insights = [
+        {
+          title: change >= 0 ? "Trend is moving up" : "Trend moved down",
+          text: change >= 0
+            ? `Your manual score log is up ${change} point(s) since the first entry.`
+            : `Your manual score log is down ${Math.abs(change)} point(s). Review notes around hard inquiries, utilization, or missed payments.`
+        },
+        {
+          title: "Utilization pattern",
+          text: `Your average logged utilization is ${avgUtil.toFixed(1)}%. Lower utilization can make a profile look cleaner, but results vary.`
+        },
+        {
+          title: "Recent activity",
+          text: `Your last ${recent.length} logged event(s): ${recent.map(e => e.event).join(", ")}.`
+        },
+        {
+          title: "Paydown habit",
+          text: paidDownCount ? `You logged ${paidDownCount} balance paydown event(s). Keep tracking statement dates too.` : "No balance paydown events logged yet. Add notes when you pay down cards."
+        }
+      ];
+
+      grid.innerHTML = insights.map(item => `
+        <div class="insight">
+          <strong>${escapeHtml(item.title)}</strong>
+          <p>${escapeHtml(item.text)}</p>
+        </div>
+      `).join("");
+    }
+
+    function renderTimeline() {
+      const timeline = document.getElementById("timeline");
+      if (!entries.length) {
+        timeline.innerHTML = `<div class="empty">No score entries yet. Add your first entry to start tracking.</div>`;
+        return;
+      }
+
+      const newest = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
+      timeline.innerHTML = newest.map((entry, index) => {
+        const previous = entries.find(e => new Date(e.date) < new Date(entry.date));
+        const diff = previous ? entry.score - previous.score : 0;
+        const tagClass = diff > 0 ? "good" : diff < 0 ? "bad" : "warn";
+        const tagText = previous ? `${diff > 0 ? "+" : ""}${diff}` : "First";
+        return `
+          <div class="score-item">
+            <div class="score-pill">${entry.score}</div>
+            <div>
+              <strong>${formatDate(entry.date)} • ${escapeHtml(entry.source)}</strong>
+              <p>${escapeHtml(entry.event)} • Utilization: ${Number(entry.utilization || 0).toFixed(1)}%</p>
+              <p>${entry.notes ? escapeHtml(entry.notes) : "No notes added."}</p>
+            </div>
+            <div style="display:grid; gap:8px; justify-items:end;">
+              <span class="tag ${tagClass}">${tagText}</span>
+              <button class="btn btn-danger" onclick="deleteEntry('${entry.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderAll() {
+      loadEntries();
+      renderSummary();
+      renderChart();
+      renderInsights();
+      renderTimeline();
+    }
+
+    async function copySummary() {
+      if (!entries.length) {
+        showToast("No score entries to copy yet.");
+        return;
+      }
+      const first = entries[0];
+      const latest = entries[entries.length - 1];
+      const change = latest.score - first.score;
+      const text = [
+        "Credit Card Stacker Score Tracker Summary",
+        `First entry: ${first.score} on ${formatDate(first.date)}`,
+        `Latest entry: ${latest.score} on ${formatDate(latest.date)}`,
+        `Total change: ${change > 0 ? "+" : ""}${change}`,
+        `Entries: ${entries.length}`,
+        "",
+        "Educational manual tracking only. Different apps may show different score models."
+      ].join("\n");
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Score summary copied.");
+      } catch {
+        showToast("Could not copy automatically.");
+      }
+    }
+
+    function exportScores() {
+      const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), entries }, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "credit-card-stacker-score-tracker.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Score data exported.");
+    }
+
+    function loadSampleScores() {
+      entries = [
+        { id: "score-sample-1", date: "2026-01-15", score: 586, source: "Credit Karma", utilization: 62, event: "No major change", notes: "Started tracking. Utilization was high." },
+        { id: "score-sample-2", date: "2026-02-15", score: 594, source: "Credit Karma", utilization: 48, event: "Paid balance down", notes: "Paid store card down a little." },
+        { id: "score-sample-3", date: "2026-03-15", score: 611, source: "Bank app", utilization: 29, event: "Paid balance down", notes: "Got total utilization under 30%." },
+        { id: "score-sample-4", date: "2026-04-15", score: 628, source: "Credit card app", utilization: 12, event: "Statement balance changed", notes: "Kept reported balance lower before statement close." }
+      ];
+      saveJson(SCORE_KEY, entries);
+      renderAll();
+      showToast("Sample score entries loaded.");
+    }
+
+    function escapeHtml(text) {
+      return String(text).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    document.getElementById("entryDate").value = todayKey();
+    renderAll();
+  </script>
+</body>
+</html>

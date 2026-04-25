@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service | Credit Card Stacker</title>
+  <meta name="description" content="Terms of Service for Credit Card Stacker, an educational credit card planning app." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    .shell { width: min(1180px, calc(100% - 30px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover { color: var(--text); }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96,165,250,.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .hero {
+      padding: 56px 0 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.7rem, 6vw, 5.8rem);
+      letter-spacing: -.085em;
+      line-height: .92;
+      max-width: 900px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 820px;
+      margin-top: 16px;
+      font-size: 1.05rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: .82fr 1.5fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 70px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+
+    .panel-pad { padding: 24px; }
+
+    .sticky-panel {
+      position: sticky;
+      top: 92px;
+      background:
+        radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%),
+        rgba(255,255,255,.085);
+    }
+
+    .panel-head { margin-bottom: 18px; }
+
+    .panel-head h2 {
+      font-size: 1.35rem;
+      letter-spacing: -.045em;
+      margin-bottom: 8px;
+    }
+
+    .panel-head p {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: .94rem;
+    }
+
+    .nav-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav-list a {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--muted);
+      font-weight: 850;
+    }
+
+    .nav-list a:hover {
+      color: var(--text);
+      border-color: rgba(110,231,183,.28);
+      background: rgba(110,231,183,.09);
+    }
+
+    .quick-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .quick-box {
+      border-radius: 18px;
+      padding: 15px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    .quick-box span {
+      display: block;
+      color: var(--muted);
+      font-size: .8rem;
+      margin-bottom: 6px;
+    }
+
+    .quick-box strong {
+      font-size: 1.1rem;
+      letter-spacing: -.04em;
+    }
+
+    .terms-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .terms-card {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 26px;
+    }
+
+    .terms-card h2 {
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      letter-spacing: -.065em;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .terms-card h3 {
+      font-size: 1.25rem;
+      letter-spacing: -.04em;
+      margin: 20px 0 8px;
+    }
+
+    .terms-card p, .terms-card li {
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: .98rem;
+    }
+
+    .terms-card ul {
+      padding-left: 20px;
+      display: grid;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .callout-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .callout {
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    .callout strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .callout span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: .93rem;
+    }
+
+    .notice {
+      border-radius: 20px;
+      padding: 16px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .danger-note {
+      border-radius: 20px;
+      padding: 16px;
+      color: #ffe4e6;
+      background: rgba(251,113,133,.09);
+      border: 1px solid rgba(251,113,133,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .success-note {
+      border-radius: 20px;
+      padding: 16px;
+      color: #d8fff1;
+      background: rgba(52,211,153,.09);
+      border: 1px solid rgba(52,211,153,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 110;
+      max-width: 390px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active { transform: translateY(0); }
+
+    @media (max-width: 1040px) {
+      .layout, .hero { grid-template-columns: 1fr; }
+      .sticky-panel { position: static; }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner { display: block; }
+      .top-links { margin-top: 12px; }
+      .panel-pad, .terms-card { padding: 18px; }
+      .button-row, .callout-grid { flex-direction: column; grid-template-columns: 1fr; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="auth.html">Sign In</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="card-finder.html">Card Finder</a>
+        <a href="learn.html">Learn</a>
+        <a href="premium.html">Premium</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Terms of Service • No-guarantee wording • Subscription rules</div>
+        <h1>Terms of Service</h1>
+        <p>
+          These starter Terms explain how users may use Credit Card Stacker, what the app does not promise, how subscriptions work, and what disclaimers should be visible before launch.
+        </p>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" onclick="copyTermsSummary()">Copy Summary</button>
+        <a class="btn btn-ghost" href="privacy.html">Privacy Policy</a>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel">
+          <div class="panel-head">
+            <h2>Terms Sections</h2>
+            <p>Use these links to jump around the terms.</p>
+          </div>
+
+          <nav class="nav-list" aria-label="Terms sections">
+            <a href="#acceptance">Acceptance <span>›</span></a>
+            <a href="#service">What the App Does <span>›</span></a>
+            <a href="#no-advice">No Financial Advice <span>›</span></a>
+            <a href="#user-responsibility">User Responsibility <span>›</span></a>
+            <a href="#subscriptions">Subscriptions <span>›</span></a>
+            <a href="#affiliate">Affiliate Disclosures <span>›</span></a>
+            <a href="#accounts">Accounts <span>›</span></a>
+            <a href="#liability">Limitations <span>›</span></a>
+            <a href="#contact">Contact <span>›</span></a>
+          </nav>
+
+          <div class="quick-grid">
+            <div class="quick-box"><span>Last updated</span><strong>April 25, 2026</strong></div>
+            <div class="quick-box"><span>Credit advice</span><strong>Educational only</strong></div>
+            <div class="quick-box"><span>Approval promise</span><strong>Never guaranteed</strong></div>
+            <div class="quick-box"><span>Subscriptions</span><strong>Cancel via billing portal</strong></div>
+          </div>
+
+          <div class="notice">
+            This is a starter template. Have a lawyer review it before launching the app, especially before adding real credit score access, affiliate offers, or paid subscriptions.
+          </div>
+        </div>
+      </aside>
+
+      <section class="terms-stack">
+        <article class="terms-card" id="acceptance">
+          <h2>1. Acceptance of Terms</h2>
+          <p>
+            By accessing or using Credit Card Stacker, you agree to these Terms of Service and the Privacy Policy. If you do not agree, do not use the app.
+          </p>
+          <p>
+            These Terms apply to the website, app pages, tools, calculators, reports, reminders, lessons, card category finder, premium features, and any future related services provided by Credit Card Stacker.
+          </p>
+        </article>
+
+        <article class="terms-card" id="service">
+          <h2>2. What Credit Card Stacker Does</h2>
+          <p>
+            Credit Card Stacker is an educational credit card planning tool. It helps users manually organize credit card information and understand general credit concepts.
+          </p>
+
+          <div class="callout-grid">
+            <div class="callout"><strong>Calculators</strong><span>Utilization, paydown targets, card-by-card balances, and reporting estimates based on user-entered data.</span></div>
+            <div class="callout"><strong>Reminders</strong><span>Statement date, due date, and weekly check-in reminders shown inside the app.</span></div>
+            <div class="callout"><strong>Education</strong><span>Lessons, glossary terms, quizzes, and beginner explanations about credit cards.</span></div>
+            <div class="callout"><strong>Card categories</strong><span>General categories like secured, starter, cashback, and travel cards. These are not approval decisions.</span></div>
+          </div>
+
+          <p>
+            The app relies on information entered by the user. If user-entered information is incomplete, outdated, or wrong, calculations and suggestions may also be inaccurate.
+          </p>
+        </article>
+
+        <article class="terms-card" id="no-advice">
+          <h2>3. No Financial, Credit, Legal, or Tax Advice</h2>
+          <p>
+            Credit Card Stacker is for educational and informational purposes only. The app does not provide financial advice, credit repair services, legal advice, tax advice, lending decisions, or credit bureau services.
+          </p>
+
+          <div class="danger-note">
+            <strong>No guarantees:</strong> Credit Card Stacker does not guarantee that your credit score will increase, that you will be approved for any card, that your credit report will change, or that any lender will offer you specific terms.
+          </div>
+
+          <p>
+            You should make your own financial decisions and consult qualified professionals when needed. You are responsible for reviewing card terms, fees, APR, lender requirements, and legal disclosures before applying for any credit product.
+          </p>
+        </article>
+
+        <article class="terms-card" id="user-responsibility">
+          <h2>4. User Responsibility</h2>
+          <p>You agree that you are responsible for:</p>
+          <ul>
+            <li>Entering accurate card balances, limits, due dates, and statement dates.</li>
+            <li>Verifying payment due dates directly with your card issuer.</li>
+            <li>Making payments on time through your actual bank or card issuer.</li>
+            <li>Reading all card terms before applying.</li>
+            <li>Understanding that app reminders may not always be delivered or seen.</li>
+            <li>Not using the app as the only source for important financial decisions.</li>
+          </ul>
+          <p>
+            Credit Card Stacker cannot make payments for you, cannot guarantee payment processing, and cannot confirm that a card issuer reported a balance to any credit bureau.
+          </p>
+        </article>
+
+        <article class="terms-card" id="subscriptions">
+          <h2>5. Subscriptions and Premium Features</h2>
+          <p>
+            Credit Card Stacker may offer free and paid features. Paid features may include advanced utilization planning, multi-card payoff targets, premium reminders, watchlists, reports, or other tools.
+          </p>
+          <p>
+            If subscriptions are enabled, the price, billing period, renewal terms, and cancellation instructions should be clearly shown before purchase. Subscriptions may renew automatically unless canceled according to the billing provider’s rules.
+          </p>
+          <ul>
+            <li>App Store subscriptions are managed through Apple.</li>
+            <li>Google Play subscriptions are managed through Google.</li>
+            <li>Stripe subscriptions should be managed through a billing portal or customer support process.</li>
+            <li>Canceling a subscription stops future billing but may not automatically refund past charges.</li>
+          </ul>
+          <div class="notice">
+            Demo note: the current HTML app uses local demo premium status only. It does not charge real money until connected to Stripe, Apple, Google, or another billing provider.
+          </div>
+        </article>
+
+        <article class="terms-card" id="affiliate">
+          <h2>6. Affiliate Links and Card Offers</h2>
+          <p>
+            Credit Card Stacker may display credit card categories, educational comparisons, or card offers. If real card offers or affiliate links are added, we may receive compensation when users click, apply, or are approved through certain links.
+          </p>
+          <p>
+            Compensation may affect which offers appear, where they appear, or how they are displayed. However, compensation does not guarantee approval, does not change lender requirements, and does not mean a card is the best option for every user.
+          </p>
+          <div class="success-note">
+            Recommended disclosure wording: “We may earn compensation if you apply through this link. Approval is not guaranteed. Review all card terms before applying.”
+          </div>
+        </article>
+
+        <article class="terms-card" id="accounts">
+          <h2>7. Accounts and Security</h2>
+          <p>
+            Users may be asked to create an account to save data across devices. You are responsible for keeping your login credentials secure and for all activity under your account.
+          </p>
+          <p>
+            Do not share your account with others. If you believe your account has been accessed without permission, contact support and change your password if that feature is available.
+          </p>
+          <p>
+            The current demo version stores information in browser localStorage. A production app should use secure authentication, database access rules, and server-side protections.
+          </p>
+        </article>
+
+        <article class="terms-card" id="prohibited">
+          <h2>8. Prohibited Uses</h2>
+          <p>You agree not to use the app to:</p>
+          <ul>
+            <li>Violate any law or regulation.</li>
+            <li>Misrepresent your identity or financial information.</li>
+            <li>Attempt to reverse engineer, attack, scrape, overload, or disrupt the app.</li>
+            <li>Use the app for fraudulent credit applications.</li>
+            <li>Copy the app’s design, branding, or content without permission.</li>
+            <li>Upload malicious code or attempt unauthorized access.</li>
+          </ul>
+        </article>
+
+        <article class="terms-card" id="availability">
+          <h2>9. Availability and Changes</h2>
+          <p>
+            The app may change, pause, or discontinue features at any time. We may update tools, add new features, remove demo features, change pricing, or update these Terms as the product grows.
+          </p>
+          <p>
+            We do not guarantee that the app will always be available, error-free, or compatible with every browser, device, or operating system.
+          </p>
+        </article>
+
+        <article class="terms-card" id="liability">
+          <h2>10. Limitation of Liability</h2>
+          <p>
+            To the fullest extent allowed by law, Credit Card Stacker and its owners are not liable for losses related to credit decisions, denied applications, score changes, late payments, missed reminders, inaccurate user-entered data, lender actions, card issuer decisions, or reliance on educational information inside the app.
+          </p>
+          <p>
+            The app is provided “as is” and “as available.” You use it at your own risk.
+          </p>
+          <div class="danger-note">
+            Important: Always confirm payment due dates, balances, and account terms directly with your card issuer. The app is a planning tool, not your bank or card issuer.
+          </div>
+        </article>
+
+        <article class="terms-card" id="privacy">
+          <h2>11. Privacy</h2>
+          <p>
+            Use of the app is also governed by the Privacy Policy. The Privacy Policy explains what data may be collected, how it is used, and what controls users have.
+          </p>
+          <div class="button-row">
+            <a class="btn btn-primary" href="privacy.html">Read Privacy Policy</a>
+            <a class="btn btn-ghost" href="settings.html#dataSettings">Manage Data</a>
+          </div>
+        </article>
+
+        <article class="terms-card" id="contact">
+          <h2>12. Contact</h2>
+          <p>
+            For questions about these Terms, contact:
+          </p>
+          <p>
+            <strong>Email:</strong> support@creditcardstacker.app<br>
+            <strong>Company:</strong> Credit Card Stacker LLC<br>
+            <strong>Location:</strong> Arizona, United States
+          </p>
+          <div class="notice">
+            Replace this placeholder contact information with your real support email and business name before launch.
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    function copyTermsSummary() {
+      const summary = `Credit Card Stacker Terms Summary\n\n- Credit Card Stacker is an educational credit card planning app.\n- It is not a bank, lender, credit bureau, credit repair company, financial advisor, legal advisor, or tax advisor.\n- It does not guarantee credit score increases, card approval, better rates, or lender decisions.\n- Users are responsible for verifying payment due dates, statement dates, balances, fees, APR, and card terms directly with issuers.\n- Premium subscriptions should clearly show pricing, renewal, and cancellation rules before purchase.\n- Affiliate card links must clearly disclose compensation and never guarantee approval.\n- The current HTML version is demo mode and does not charge real money.`;
+
+      navigator.clipboard.writeText(summary).then(() => {
+        showToast("Terms summary copied.");
+      }).catch(() => {
+        showToast("Copy failed. Select and copy the terms manually.");
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+  </script>
+</body>
+</html>

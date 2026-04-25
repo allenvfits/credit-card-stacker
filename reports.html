@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports | Credit Card Stacker</title>
+  <meta name="description" content="Generate educational credit card utilization reports, payoff targets, card summaries, and credit action plans." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --panel-2: rgba(255,255,255,.115);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1200px, calc(100% - 30px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover {
+      color: var(--text);
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96,165,250,.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-warning {
+      background: rgba(251,191,36,.12);
+      color: #fde68a;
+      border: 1px solid rgba(251,191,36,.28);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 46px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 5.2rem);
+      letter-spacing: -.075em;
+      line-height: .96;
+      max-width: 820px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 780px;
+      margin-top: 16px;
+      font-size: 1.05rem;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .stat {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+      min-height: 116px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .82rem;
+      margin-bottom: 8px;
+    }
+
+    .stat strong {
+      font-size: 1.85rem;
+      letter-spacing: -.065em;
+      line-height: 1;
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      margin-top: 7px;
+      line-height: 1.4;
+    }
+
+    .stat.good strong { color: var(--success); }
+    .stat.warn strong { color: var(--warning); }
+    .stat.bad strong { color: var(--danger); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: .9fr 1.35fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 70px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+
+    .panel-pad {
+      padding: 24px;
+    }
+
+    .sticky-panel {
+      position: sticky;
+      top: 92px;
+      background:
+        radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%),
+        rgba(255,255,255,.085);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2, .panel h2 {
+      font-size: 1.35rem;
+      letter-spacing: -.045em;
+    }
+
+    .panel-head p, .subtext {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 6px;
+      font-size: .94rem;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 7px;
+      font-size: .9rem;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px;
+      outline: none;
+    }
+
+    .field select option {
+      color: #07101d;
+    }
+
+    .field input:focus, .field select:focus {
+      border-color: rgba(110,231,183,.72);
+      box-shadow: 0 0 0 4px rgba(110,231,183,.09);
+    }
+
+    .chart-card {
+      margin-bottom: 18px;
+    }
+
+    .chart-wrap {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .donut {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: conic-gradient(var(--brand) 0deg, var(--warning) 120deg, rgba(255,255,255,.1) 120deg 360deg);
+      display: grid;
+      place-items: center;
+      position: relative;
+      margin: 0 auto;
+      box-shadow: 0 24px 70px rgba(96,165,250,.14);
+    }
+
+    .donut::after {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border-radius: 50%;
+      background: #0a1728;
+      border: 1px solid var(--line);
+    }
+
+    .donut-center {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .donut-center strong {
+      display: block;
+      font-size: 2.3rem;
+      letter-spacing: -.075em;
+    }
+
+    .donut-center span {
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 850;
+    }
+
+    .bar-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .bar-row {
+      display: grid;
+      gap: 8px;
+    }
+
+    .bar-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .bar-top strong {
+      color: var(--text);
+      letter-spacing: -.035em;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      width: 0%;
+      background: linear-gradient(90deg, var(--brand), var(--warning), var(--danger));
+    }
+
+    .report-card {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .report-title {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .report-title h2 {
+      font-size: 1.6rem;
+      letter-spacing: -.055em;
+    }
+
+    .report-title p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 6px;
+      font-size: .94rem;
+    }
+
+    .action-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .action-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.062);
+      border: 1px solid var(--line);
+    }
+
+    .action-number {
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(110,231,183,.14);
+      border: 1px solid rgba(110,231,183,.25);
+      color: #c9ffee;
+      font-weight: 1000;
+    }
+
+    .action-item strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 5px;
+    }
+
+    .action-item p {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .92rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: .76rem;
+      font-weight: 900;
+      background: rgba(255,255,255,.08);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    .tag.good {
+      background: rgba(52,211,153,.12);
+      color: #bbf7d0;
+      border-color: rgba(52,211,153,.28);
+    }
+
+    .tag.warn {
+      background: rgba(251,191,36,.12);
+      color: #fde68a;
+      border-color: rgba(251,191,36,.28);
+    }
+
+    .tag.bad {
+      background: rgba(251,113,133,.12);
+      color: #fecdd3;
+      border-color: rgba(251,113,133,.28);
+    }
+
+    .card-table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 15px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    td {
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .report-output {
+      white-space: pre-wrap;
+      line-height: 1.7;
+      color: var(--muted);
+      border-radius: 22px;
+      background: rgba(255,255,255,.058);
+      border: 1px solid var(--line);
+      padding: 18px;
+      min-height: 260px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: .9rem;
+    }
+
+    .notice {
+      border-radius: 20px;
+      padding: 16px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .empty {
+      border-radius: 22px;
+      padding: 24px;
+      color: var(--muted);
+      background: rgba(255,255,255,.052);
+      border: 1px dashed rgba(255,255,255,.2);
+      text-align: center;
+      line-height: 1.65;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 110;
+      max-width: 390px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active {
+      transform: translateY(0);
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: #111827;
+      }
+      .topbar, .hero, .sticky-panel, .toast, .button-row, .btn {
+        display: none !important;
+      }
+      .shell {
+        width: 100%;
+      }
+      .layout, .summary-grid, .chart-wrap {
+        display: block;
+      }
+      .panel, .report-card, .stat {
+        box-shadow: none;
+        border: 1px solid #d1d5db;
+        background: white;
+        color: #111827;
+        page-break-inside: avoid;
+      }
+      .report-output, p, td, th, span, small {
+        color: #111827 !important;
+      }
+    }
+
+    @media (max-width: 1080px) {
+      .layout, .hero, .chart-wrap {
+        grid-template-columns: 1fr;
+      }
+      .sticky-panel {
+        position: static;
+      }
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        display: block;
+      }
+      .top-links {
+        margin-top: 12px;
+      }
+      .two-col, .summary-grid {
+        grid-template-columns: 1fr;
+      }
+      .action-item {
+        grid-template-columns: 1fr;
+      }
+      .panel-pad, .report-card {
+        padding: 18px;
+      }
+      .button-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .donut {
+        width: 210px;
+        height: 210px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="onboarding.html">Onboarding</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="card-finder.html">Card Finder</a>
+        <a href="learn.html">Learn</a>
+        <a href="premium.html">Premium</a>
+        <a href="settings.html">Settings</a>
+        <a href="reminders.html">Reminders</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Reports • Utilization summary • Educational action plan</div>
+        <h1>Your credit card report, without the confusing finance talk.</h1>
+        <p>
+          Generate a clean report showing total utilization, payoff targets, card-by-card risk, and simple next steps. This is educational and based only on the data saved in this browser.
+        </p>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+        <button class="btn btn-ghost" onclick="window.print()">Print</button>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="stat" id="utilStat">
+        <span>Total utilization</span>
+        <strong id="totalUtilization">0%</strong>
+        <small id="utilHint">Add cards to calculate.</small>
+      </div>
+      <div class="stat">
+        <span>Total balance</span>
+        <strong id="totalBalance">$0</strong>
+        <small>Across saved cards</small>
+      </div>
+      <div class="stat">
+        <span>Total limit</span>
+        <strong id="totalLimit">$0</strong>
+        <small>Available credit limit</small>
+      </div>
+      <div class="stat" id="paydownStat">
+        <span>Pay to target</span>
+        <strong id="payToTarget">$0</strong>
+        <small id="targetHint">Based on selected report target</small>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Report Settings</h2>
+              <p>Adjust the target and report style.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="targetPercent">Utilization target</label>
+              <select id="targetPercent" onchange="renderAll()">
+                <option value="30">Under 30%</option>
+                <option value="10" selected>Under 10%</option>
+                <option value="1">Close to 1%</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="reportTone">Report style</label>
+              <select id="reportTone" onchange="generateReport()">
+                <option value="simple" selected>Simple beginner report</option>
+                <option value="detailed">Detailed action report</option>
+                <option value="strict">Strict rebuilding report</option>
+              </select>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="scoreRange">Score range</label>
+                <select id="scoreRange" onchange="renderAll()">
+                  <option value="under500">Under 500</option>
+                  <option value="500-579">500–579</option>
+                  <option value="580-619" selected>580–619</option>
+                  <option value="620-659">620–659</option>
+                  <option value="660-699">660–699</option>
+                  <option value="700plus">700+</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="inquiries">Inquiries</label>
+                <select id="inquiries" onchange="renderAll()">
+                  <option>0</option>
+                  <option selected>1–2</option>
+                  <option>3–4</option>
+                  <option>5+</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="generateReport()">Refresh report</button>
+            <button class="btn btn-ghost btn-full" onclick="copyReport()">Copy report</button>
+            <button class="btn btn-ghost btn-full" onclick="downloadReport()">Download .txt</button>
+            <button class="btn btn-warning btn-full" onclick="loadSampleCards()">Load sample data</button>
+          </div>
+
+          <div class="notice">
+            Report disclaimer: This report is educational only. It does not guarantee credit score increases, approvals, or lender decisions.
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="report-card chart-card">
+          <div class="report-title">
+            <div>
+              <h2>Utilization Overview</h2>
+              <p>A quick view of total utilization and card-by-card usage.</p>
+            </div>
+          </div>
+
+          <div class="chart-wrap">
+            <div class="donut" id="donutChart">
+              <div class="donut-center">
+                <strong id="donutPercent">0%</strong>
+                <span>Total utilization</span>
+              </div>
+            </div>
+            <div class="bar-list" id="barList"></div>
+          </div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-title">
+            <div>
+              <h2>Top Action Plan</h2>
+              <p>What the user should focus on first based on saved card data.</p>
+            </div>
+          </div>
+          <div class="action-list" id="actionList"></div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-title">
+            <div>
+              <h2>Card Breakdown</h2>
+              <p>Each card’s balance, limit, utilization, and target payoff.</p>
+            </div>
+          </div>
+          <div class="card-table-wrap" id="tableWrap"></div>
+        </div>
+
+        <div class="report-card">
+          <div class="report-title">
+            <div>
+              <h2>Generated Report</h2>
+              <p>Copy this into notes, email it to yourself, or save it as a text file.</p>
+            </div>
+          </div>
+          <div class="report-output" id="reportOutput">Click “Generate Report” to create your report.</div>
+          <div class="notice">
+            Important: Do not send this report to a lender as proof of eligibility. It is only a personal planning summary.
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const CARDS_KEY = "creditCardStackerCards";
+    const SETTINGS_KEY = "creditCardStackerSettings";
+    const PROFILE_KEY = "creditCardStackerUserProfile";
+
+    let cards = [];
+
+    function getJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(Math.max(0, Number(value) || 0));
+    }
+
+    function percent(value) {
+      return Number.isFinite(value) ? value.toFixed(1) + "%" : "0%";
+    }
+
+    function scoreText(value) {
+      const map = {
+        under500: "Under 500",
+        "500-579": "500–579",
+        "580-619": "580–619",
+        "620-659": "620–659",
+        "660-699": "660–699",
+        "700plus": "700+"
+      };
+      return map[value] || "580–619";
+    }
+
+    function loadSavedProfile() {
+      const settings = getJson(SETTINGS_KEY, {});
+      const profile = getJson(PROFILE_KEY, {});
+      const merged = { ...settings, ...profile };
+
+      if (merged.scoreRange) document.getElementById("scoreRange").value = merged.scoreRange;
+      if (merged.inquiries) document.getElementById("inquiries").value = merged.inquiries;
+      if (merged.goal) document.getElementById("targetPercent").value = merged.goal;
+    }
+
+    function loadCards() {
+      cards = getJson(CARDS_KEY, []);
+    }
+
+    function totals() {
+      const totalBalance = cards.reduce((sum, card) => sum + Number(card.balance || 0), 0);
+      const totalLimit = cards.reduce((sum, card) => sum + Number(card.limit || 0), 0);
+      const totalUtil = totalLimit > 0 ? (totalBalance / totalLimit) * 100 : 0;
+      const target = Number(document.getElementById("targetPercent").value || 10);
+      const targetBalance = totalLimit * (target / 100);
+      const payToTarget = Math.max(0, totalBalance - targetBalance);
+      return { totalBalance, totalLimit, totalUtil, target, targetBalance, payToTarget };
+    }
+
+    function cardUtil(card) {
+      return (Number(card.balance || 0) / Math.max(1, Number(card.limit || 1))) * 100;
+    }
+
+    function statusForUtil(util) {
+      if (util >= 50) return { label: "Very high", className: "bad" };
+      if (util >= 30) return { label: "High", className: "bad" };
+      if (util >= 10) return { label: "Medium", className: "warn" };
+      return { label: "Low", className: "good" };
+    }
+
+    function renderSummary() {
+      const t = totals();
+      const utilStat = document.getElementById("utilStat");
+      const paydownStat = document.getElementById("paydownStat");
+      utilStat.classList.remove("good", "warn", "bad");
+      paydownStat.classList.remove("good", "warn", "bad");
+
+      const status = statusForUtil(t.totalUtil);
+      utilStat.classList.add(status.className);
+      paydownStat.classList.add(t.payToTarget > 0 ? "warn" : "good");
+
+      document.getElementById("totalUtilization").textContent = percent(t.totalUtil);
+      document.getElementById("totalBalance").textContent = money(t.totalBalance);
+      document.getElementById("totalLimit").textContent = money(t.totalLimit);
+      document.getElementById("payToTarget").textContent = money(t.payToTarget);
+      document.getElementById("targetHint").textContent = `To reach under ${t.target}% utilization`;
+
+      let hint = "Add cards to calculate.";
+      if (t.totalLimit > 0) {
+        if (t.totalUtil >= 50) hint = "Very high. Paydown first.";
+        else if (t.totalUtil >= 30) hint = "Above 30%. Lower balances.";
+        else if (t.totalUtil >= 10) hint = "Decent, but under 10% is cleaner.";
+        else hint = "Low utilization. Keep it steady.";
+      }
+      document.getElementById("utilHint").textContent = hint;
+    }
+
+    function renderChart() {
+      const t = totals();
+      const degrees = Math.min(360, Math.max(0, (t.totalUtil / 100) * 360));
+      let color = "var(--brand)";
+      if (t.totalUtil >= 30) color = "var(--danger)";
+      else if (t.totalUtil >= 10) color = "var(--warning)";
+
+      document.getElementById("donutChart").style.background = `conic-gradient(${color} 0deg ${degrees}deg, rgba(255,255,255,.1) ${degrees}deg 360deg)`;
+      document.getElementById("donutPercent").textContent = percent(t.totalUtil);
+
+      const barList = document.getElementById("barList");
+      if (!cards.length) {
+        barList.innerHTML = `<div class="empty">No cards saved yet. Add cards in the dashboard or load sample data.</div>`;
+        return;
+      }
+
+      barList.innerHTML = cards.map(card => {
+        const util = cardUtil(card);
+        const width = Math.min(100, Math.max(0, util));
+        const status = statusForUtil(util);
+        return `
+          <div class="bar-row">
+            <div class="bar-top">
+              <strong>${escapeHtml(card.name || "Unnamed card")}</strong>
+              <span>${percent(util)} • ${money(card.balance)} / ${money(card.limit)}</span>
+            </div>
+            <div class="bar"><span style="width:${width}%"></span></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderActions() {
+      const list = document.getElementById("actionList");
+      const t = totals();
+      const score = document.getElementById("scoreRange").value;
+      const inquiries = document.getElementById("inquiries").value;
+      const actions = [];
+
+      if (!cards.length) {
+        list.innerHTML = `<div class="empty">No actions yet. Add cards in the dashboard or load sample data.</div>`;
+        return;
+      }
+
+      const highestCard = [...cards].sort((a, b) => cardUtil(b) - cardUtil(a))[0];
+      const highestUtil = highestCard ? cardUtil(highestCard) : 0;
+      const targetBalance = Number(highestCard?.limit || 0) * (t.target / 100);
+      const highestPaydown = Math.max(0, Number(highestCard?.balance || 0) - targetBalance);
+
+      if (highestCard && highestPaydown > 0) {
+        actions.push({
+          title: `Focus on ${highestCard.name}`,
+          text: `This card has the highest utilization at ${percent(highestUtil)}. Paying about ${money(highestPaydown)} would move it closer to your selected target.`,
+          tag: "Paydown first",
+          className: "warn"
+        });
+      }
+
+      if (t.totalUtil >= 30) {
+        actions.push({
+          title: "Lower utilization before applying",
+          text: `Your total utilization is ${percent(t.totalUtil)}. It may be smarter to lower balances before applying for another card.`,
+          tag: "High utilization",
+          className: "bad"
+        });
+      } else {
+        actions.push({
+          title: "Keep reported balances low",
+          text: `Your total utilization is ${percent(t.totalUtil)}. Keep balances low before statement dates so the report stays cleaner.`,
+          tag: "Good habit",
+          className: "good"
+        });
+      }
+
+      if (["under500", "500-579", "580-619"].includes(score)) {
+        actions.push({
+          title: "Stay in rebuilding categories",
+          text: `With a selected score range of ${scoreText(score)}, secured or beginner cards may be more realistic categories than premium rewards cards.`,
+          tag: "Rebuilding",
+          className: "warn"
+        });
+      }
+
+      if (inquiries === "3–4" || inquiries === "5+") {
+        actions.push({
+          title: "Slow down applications",
+          text: `You selected ${inquiries} recent inquiries. Consider waiting and improving utilization before submitting another application.`,
+          tag: "Application risk",
+          className: "bad"
+        });
+      }
+
+      list.innerHTML = actions.slice(0, 5).map((item, index) => `
+        <div class="action-item">
+          <div class="action-number">${index + 1}</div>
+          <div>
+            <strong>${escapeHtml(item.title)}</strong>
+            <p>${escapeHtml(item.text)}</p>
+          </div>
+          <span class="tag ${item.className}">${escapeHtml(item.tag)}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderTable() {
+      const wrap = document.getElementById("tableWrap");
+      const t = totals();
+
+      if (!cards.length) {
+        wrap.innerHTML = `<div class="empty">No card breakdown yet. Add cards in the dashboard or load sample data.</div>`;
+        return;
+      }
+
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Card</th>
+              <th>Balance</th>
+              <th>Limit</th>
+              <th>Utilization</th>
+              <th>Pay to target</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${cards.map(card => {
+              const util = cardUtil(card);
+              const status = statusForUtil(util);
+              const targetBalance = Number(card.limit || 0) * (t.target / 100);
+              const paydown = Math.max(0, Number(card.balance || 0) - targetBalance);
+              return `
+                <tr>
+                  <td><strong>${escapeHtml(card.name || "Unnamed card")}</strong></td>
+                  <td>${money(card.balance)}</td>
+                  <td>${money(card.limit)}</td>
+                  <td>${percent(util)}</td>
+                  <td>${money(paydown)}</td>
+                  <td><span class="tag ${status.className}">${status.label}</span></td>
+                </tr>
+              `;
+            }).join("")}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function generateReport() {
+      const t = totals();
+      const tone = document.getElementById("reportTone").value;
+      const score = document.getElementById("scoreRange").value;
+      const inquiries = document.getElementById("inquiries").value;
+      const date = new Date().toLocaleDateString();
+
+      if (!cards.length) {
+        document.getElementById("reportOutput").textContent = "No saved cards found. Add cards in dashboard.html or click Load Sample Data to test the report.";
+        return;
+      }
+
+      const lines = [];
+      lines.push("CREDIT CARD STACKER REPORT");
+      lines.push(`Generated: ${date}`);
+      lines.push("");
+      lines.push("PROFILE SNAPSHOT");
+      lines.push(`Estimated score range: ${scoreText(score)}`);
+      lines.push(`Recent inquiries: ${inquiries}`);
+      lines.push(`Report target: under ${t.target}% utilization`);
+      lines.push("");
+      lines.push("SUMMARY");
+      lines.push(`Total balance: ${money(t.totalBalance)}`);
+      lines.push(`Total credit limit: ${money(t.totalLimit)}`);
+      lines.push(`Total utilization: ${percent(t.totalUtil)}`);
+      lines.push(`Paydown needed for target: ${money(t.payToTarget)}`);
+      lines.push("");
+      lines.push("CARD BREAKDOWN");
+
+      cards.forEach(card => {
+        const util = cardUtil(card);
+        const targetBalance = Number(card.limit || 0) * (t.target / 100);
+        const paydown = Math.max(0, Number(card.balance || 0) - targetBalance);
+        lines.push(`- ${card.name}: ${money(card.balance)} balance / ${money(card.limit)} limit (${percent(util)} utilization). Pay to target: ${money(paydown)}.`);
+      });
+
+      lines.push("");
+      lines.push("ACTION PLAN");
+
+      const highestCard = [...cards].sort((a, b) => cardUtil(b) - cardUtil(a))[0];
+      if (highestCard) {
+        lines.push(`1. Focus first on ${highestCard.name}, because it has the highest utilization at ${percent(cardUtil(highestCard))}.`);
+      }
+      if (t.totalUtil >= 30) {
+        lines.push("2. Lower utilization before applying for another credit card.");
+      } else {
+        lines.push("2. Keep balances low before statement closing dates.");
+      }
+      if (["under500", "500-579", "580-619"].includes(score)) {
+        lines.push("3. Study secured or beginner card categories before premium rewards cards.");
+      } else {
+        lines.push("3. Compare fees, rewards, and approval requirements before applying.");
+      }
+      if (inquiries === "3–4" || inquiries === "5+") {
+        lines.push("4. Consider waiting before more applications because recent inquiries are elevated.");
+      }
+
+      if (tone === "detailed") {
+        lines.push("");
+        lines.push("DETAILED NOTES");
+        lines.push("- Statement closing dates matter because the balance around that date may be what reports.");
+        lines.push("- Due dates matter because late payments can be costly and harmful.");
+        lines.push("- Rewards are not useful if interest charges or fees are higher than the rewards earned.");
+      }
+
+      if (tone === "strict") {
+        lines.push("");
+        lines.push("STRICT REBUILDING RULES");
+        lines.push("- Do not apply randomly.");
+        lines.push("- Lower balances before applying.");
+        lines.push("- Avoid high-fee cards unless the value is clear.");
+        lines.push("- Keep reminders on for statement dates and due dates.");
+      }
+
+      lines.push("");
+      lines.push("DISCLAIMER");
+      lines.push("This report is for educational and informational purposes only. It is not financial advice, credit repair, a credit report, or a guarantee of approval or score changes. Lenders make their own decisions.");
+
+      document.getElementById("reportOutput").textContent = lines.join("\n");
+    }
+
+    async function copyReport() {
+      const text = document.getElementById("reportOutput").textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Report copied.");
+      } catch {
+        showToast("Could not copy automatically. Select the report text manually.");
+      }
+    }
+
+    function downloadReport() {
+      generateReport();
+      const text = document.getElementById("reportOutput").textContent;
+      const blob = new Blob([text], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "credit-card-stacker-report.txt";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Report downloaded.");
+    }
+
+    function renderAll() {
+      loadCards();
+      renderSummary();
+      renderChart();
+      renderActions();
+      renderTable();
+      generateReport();
+    }
+
+    function loadSampleCards() {
+      cards = [
+        {
+          id: "sample-report-1",
+          name: "Capital One Secured",
+          balance: 238,
+          limit: 500,
+          statementDate: "2026-05-04",
+          dueDate: "2026-05-18",
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: "sample-report-2",
+          name: "Starter Rewards Card",
+          balance: 84,
+          limit: 1000,
+          statementDate: "2026-05-11",
+          dueDate: "2026-05-25",
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: "sample-report-3",
+          name: "Store Card",
+          balance: 390,
+          limit: 700,
+          statementDate: "2026-05-16",
+          dueDate: "2026-05-29",
+          createdAt: new Date().toISOString()
+        }
+      ];
+      saveJson(CARDS_KEY, cards);
+      renderAll();
+      showToast("Sample report data loaded.");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    loadSavedProfile();
+    renderAll();
+  </script>
+</body>
+</html>

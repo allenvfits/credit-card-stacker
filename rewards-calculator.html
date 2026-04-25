@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rewards Calculator | Credit Card Stacker</title>
+  <meta name="description" content="Estimate credit card rewards, cashback, annual fees, interest cost, and net value before applying or spending." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --panel: rgba(255,255,255,.075);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    .shell { width: min(1200px, calc(100% - 30px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 1000; letter-spacing: -.04em; font-size: 1.1rem; }
+    .logo-mark {
+      width: 38px; height: 38px; border-radius: 14px; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f; box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+    .top-links { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: .94rem; flex-wrap: wrap; }
+    .top-links a:hover { color: var(--text); }
+
+    .btn {
+      border: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 999px; padding: 12px 16px; font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease; white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #06111f; box-shadow: 0 18px 44px rgba(96,165,250,.25); }
+    .btn-ghost { background: rgba(255,255,255,.075); color: var(--text); border: 1px solid var(--line); }
+    .btn-warning { background: rgba(251,191,36,.12); color: #fde68a; border: 1px solid rgba(251,191,36,.28); }
+    .btn-full { width: 100%; }
+
+    .hero {
+      padding: 46px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px; color: #c9ffee; background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24); border-radius: 999px; padding: 8px 12px; font-size: .84rem; font-weight: 900; margin-bottom: 14px;
+    }
+    h1 { font-size: clamp(2.4rem, 5vw, 5.2rem); letter-spacing: -.075em; line-height: .96; max-width: 900px; }
+    .hero p { color: var(--muted); line-height: 1.7; max-width: 820px; margin-top: 16px; font-size: 1.05rem; }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; }
+    .stat { border-radius: 22px; padding: 18px; background: rgba(255,255,255,.065); border: 1px solid var(--line); min-height: 118px; }
+    .stat span { display: block; color: var(--muted); font-size: .82rem; margin-bottom: 8px; }
+    .stat strong { font-size: 1.85rem; letter-spacing: -.065em; line-height: 1; }
+    .stat small { display: block; color: var(--muted); margin-top: 7px; line-height: 1.4; }
+    .stat.good strong { color: var(--success); }
+    .stat.warn strong { color: var(--warning); }
+    .stat.bad strong { color: var(--danger); }
+
+    .layout { display: grid; grid-template-columns: .9fr 1.35fr; gap: 18px; align-items: start; padding: 18px 0 70px; }
+    .panel { border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 60px rgba(0,0,0,.14); overflow: hidden; }
+    .panel-pad { padding: 24px; }
+    .sticky-panel {
+      position: sticky; top: 92px;
+      background: radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%), rgba(255,255,255,.085);
+    }
+    .panel-head { display: flex; align-items: start; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+    .panel-head h2, .panel h2 { font-size: 1.35rem; letter-spacing: -.045em; }
+    .panel-head p, .subtext { color: var(--muted); line-height: 1.6; margin-top: 6px; font-size: .94rem; }
+
+    .form-grid { display: grid; gap: 14px; }
+    .two-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .field label { display: block; color: var(--muted); font-weight: 850; margin-bottom: 7px; font-size: .9rem; }
+    .field input, .field select {
+      width: 100%; border: 1px solid var(--line); background: rgba(255,255,255,.07); color: var(--text);
+      border-radius: 16px; padding: 14px; outline: none; min-height: 48px;
+    }
+    .field select option { color: #07101d; }
+    .field input:focus, .field select:focus { border-color: rgba(110,231,183,.72); box-shadow: 0 0 0 4px rgba(110,231,183,.09); }
+
+    .rate-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .rate-card { border-radius: 18px; padding: 14px; background: rgba(255,255,255,.055); border: 1px solid var(--line); }
+    .rate-card label { display: block; color: var(--muted); font-weight: 850; margin-bottom: 7px; font-size: .86rem; }
+    .rate-card input { width: 100%; border: 1px solid var(--line); background: rgba(255,255,255,.07); color: var(--text); border-radius: 14px; padding: 12px; outline: none; }
+
+    .value-meter { border-radius: 24px; padding: 18px; background: rgba(255,255,255,.058); border: 1px solid var(--line); margin-bottom: 18px; }
+    .meter-top { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 12px; }
+    .meter-top strong { letter-spacing: -.04em; }
+    .meter-top span { color: var(--muted); font-size: .92rem; }
+    .meter-track { height: 14px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; }
+    .meter-fill { height: 100%; width: 0%; border-radius: inherit; background: linear-gradient(90deg, var(--brand), var(--brand-2)); transition: width .2s ease; }
+
+    .breakdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .breakdown-box { border-radius: 22px; padding: 18px; background: rgba(255,255,255,.06); border: 1px solid var(--line); }
+    .breakdown-box span { display: block; color: var(--muted); font-size: .82rem; margin-bottom: 8px; }
+    .breakdown-box strong { font-size: 1.55rem; letter-spacing: -.055em; }
+    .breakdown-box small { display: block; color: var(--muted); margin-top: 7px; line-height: 1.45; }
+
+    .spend-list { display: grid; gap: 12px; }
+    .spend-row { border-radius: 22px; padding: 16px; background: rgba(255,255,255,.062); border: 1px solid var(--line); }
+    .spend-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 10px; }
+    .spend-top strong { letter-spacing: -.035em; }
+    .spend-top span { color: var(--muted); font-size: .9rem; }
+    .bar { height: 12px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; margin-top: 10px; }
+    .bar span { display: block; height: 100%; border-radius: inherit; width: 0%; background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+
+    .warning-card { border-radius: 24px; padding: 18px; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.24); color: #f9eac0; line-height: 1.65; }
+    .danger-card { border-radius: 24px; padding: 18px; background: rgba(251,113,133,.08); border: 1px solid rgba(251,113,133,.24); color: #ffe4e6; line-height: 1.65; }
+    .good-card { border-radius: 24px; padding: 18px; background: rgba(52,211,153,.09); border: 1px solid rgba(52,211,153,.24); color: #d8fff1; line-height: 1.65; }
+
+    .tag { display: inline-flex; align-items: center; border-radius: 999px; padding: 7px 10px; font-size: .76rem; font-weight: 900; background: rgba(255,255,255,.08); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+    .tag.good { background: rgba(52,211,153,.12); color: #bbf7d0; border-color: rgba(52,211,153,.28); }
+    .tag.warn { background: rgba(251,191,36,.12); color: #fde68a; border-color: rgba(251,191,36,.28); }
+    .tag.bad { background: rgba(251,113,133,.12); color: #fecdd3; border-color: rgba(251,113,133,.28); }
+    .tag.blue { background: rgba(96,165,250,.12); color: #dbeafe; border-color: rgba(96,165,250,.28); }
+
+    .notice { border-radius: 20px; padding: 16px; color: #f9eac0; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.24); line-height: 1.65; font-size: .92rem; margin-top: 16px; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .toast { position: fixed; right: 18px; bottom: 18px; z-index: 110; max-width: 390px; border-radius: 18px; padding: 14px 16px; background: #0f2138; color: var(--text); border: 1px solid var(--line); box-shadow: var(--shadow); line-height: 1.5; transform: translateY(130%); transition: transform .24s ease; }
+    .toast.active { transform: translateY(0); }
+
+    @media (max-width: 1080px) {
+      .layout, .hero { grid-template-columns: 1fr; }
+      .sticky-panel { position: static; }
+      .summary-grid, .breakdown-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 760px) {
+      .topbar-inner { display: block; }
+      .top-links { margin-top: 12px; }
+      .two-col, .rate-grid, .summary-grid, .breakdown-grid { grid-template-columns: 1fr; }
+      .panel-pad { padding: 18px; }
+      .button-row { flex-direction: column; align-items: stretch; }
+      .spend-top, .meter-top { display: block; }
+      .spend-top .tag, .meter-top span { margin-top: 8px; display: inline-flex; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="card-finder.html">Card Finder</a>
+        <a href="budget-planner.html">Budget</a>
+        <a href="simulator.html">Simulator</a>
+        <a href="coach.html">Coach</a>
+        <a href="help.html">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Rewards calculator • Cashback vs fees • Interest warning</div>
+        <h1>Do the rewards actually beat the cost?</h1>
+        <p>
+          Cashback and points can look good, but interest and annual fees can wipe them out fast. This page helps users compare rewards value against fees and carried-balance interest.
+        </p>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" onclick="calculateRewards()">Calculate</button>
+        <button class="btn btn-ghost" onclick="loadSampleSpending()">Load Sample</button>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="stat good"><span>Annual rewards</span><strong id="annualRewards">$0</strong><small>Estimated cashback value</small></div>
+      <div class="stat bad"><span>Annual cost</span><strong id="annualCost">$0</strong><small>Fee + interest estimate</small></div>
+      <div class="stat" id="netStat"><span>Net value</span><strong id="netValue">$0</strong><small>Rewards minus costs</small></div>
+      <div class="stat"><span>Break-even spend</span><strong id="breakEvenSpend">$0</strong><small>To cover annual fee</small></div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Card Reward Setup</h2>
+              <p>Enter rates as cashback percentages. For points, estimate the cash value.</p>
+            </div>
+          </div>
+
+          <div class="value-meter">
+            <div class="meter-top">
+              <strong>Reward value score</strong>
+              <span id="valueScoreText">0/100</span>
+            </div>
+            <div class="meter-track"><div class="meter-fill" id="valueScoreFill"></div></div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="cardName">Card name</label>
+              <input id="cardName" placeholder="Example: 2% Cashback Card" value="Demo Rewards Card" />
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="annualFee">Annual fee</label>
+                <input id="annualFee" type="number" min="0" step="1" value="0" oninput="calculateRewards()" />
+              </div>
+              <div class="field">
+                <label for="apr">APR if carrying balance</label>
+                <input id="apr" type="number" min="0" step="0.1" value="28.99" oninput="calculateRewards()" />
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="carriedBalance">Average carried balance</label>
+                <input id="carriedBalance" type="number" min="0" step="1" value="0" oninput="calculateRewards()" />
+              </div>
+              <div class="field">
+                <label for="welcomeBonus">Welcome bonus value</label>
+                <input id="welcomeBonus" type="number" min="0" step="1" value="0" oninput="calculateRewards()" />
+              </div>
+            </div>
+
+            <div class="rate-grid">
+              <div class="rate-card"><label>Gas %</label><input id="gasRate" type="number" min="0" step="0.1" value="3" oninput="calculateRewards()" /></div>
+              <div class="rate-card"><label>Groceries %</label><input id="groceryRate" type="number" min="0" step="0.1" value="3" oninput="calculateRewards()" /></div>
+              <div class="rate-card"><label>Dining %</label><input id="diningRate" type="number" min="0" step="0.1" value="2" oninput="calculateRewards()" /></div>
+              <div class="rate-card"><label>Other %</label><input id="otherRate" type="number" min="0" step="0.1" value="1" oninput="calculateRewards()" /></div>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="calculateRewards()">Refresh Estimate</button>
+            <button class="btn btn-ghost btn-full" onclick="copyRewardsSummary()">Copy Summary</button>
+            <button class="btn btn-warning btn-full" onclick="saveRewardsScenario()">Save Scenario</button>
+          </div>
+
+          <div class="notice">
+            Rewards disclaimer: Estimates are educational only. Real rewards depend on issuer rules, merchant coding, caps, fees, APR, and redemption value.
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Monthly Spending</h2>
+              <p>Enter what you normally spend monthly. Do not spend more just to earn rewards.</p>
+            </div>
+          </div>
+
+          <div class="rate-grid">
+            <div class="rate-card"><label>Gas monthly spend</label><input id="gasSpend" type="number" min="0" step="1" value="150" oninput="calculateRewards()" /></div>
+            <div class="rate-card"><label>Groceries monthly spend</label><input id="grocerySpend" type="number" min="0" step="1" value="350" oninput="calculateRewards()" /></div>
+            <div class="rate-card"><label>Dining monthly spend</label><input id="diningSpend" type="number" min="0" step="1" value="180" oninput="calculateRewards()" /></div>
+            <div class="rate-card"><label>Other monthly spend</label><input id="otherSpend" type="number" min="0" step="1" value="400" oninput="calculateRewards()" /></div>
+          </div>
+        </div>
+
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Value Breakdown</h2>
+              <p>Rewards, costs, and realistic net value.</p>
+            </div>
+          </div>
+          <div class="breakdown-grid">
+            <div class="breakdown-box"><span>Monthly spend</span><strong id="monthlySpend">$0</strong><small>Total spending entered</small></div>
+            <div class="breakdown-box"><span>Annual spend</span><strong id="annualSpend">$0</strong><small>Monthly x 12</small></div>
+            <div class="breakdown-box"><span>Interest estimate</span><strong id="interestCost">$0</strong><small>APR x carried balance</small></div>
+            <div class="breakdown-box"><span>First-year value</span><strong id="firstYearValue">$0</strong><small>Includes welcome bonus</small></div>
+          </div>
+        </div>
+
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Category Rewards</h2>
+              <p>Estimated annual reward value by spending category.</p>
+            </div>
+          </div>
+          <div class="spend-list" id="spendList"></div>
+        </div>
+
+        <div class="panel panel-pad">
+          <div class="panel-head">
+            <div>
+              <h2>Decision Check</h2>
+              <p>Simple warning based on your inputs.</p>
+            </div>
+          </div>
+          <div id="decisionCard" class="warning-card">Enter card and spend details to calculate whether rewards beat the cost.</div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const REWARDS_SCENARIO_KEY = "creditCardStackerRewardsScenario";
+    let lastScenario = null;
+
+    function num(id) { return Math.max(0, Number(document.getElementById(id).value || 0)); }
+    function money(value) { return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(value) || 0); }
+
+    function categoryData() {
+      return [
+        { key: "gas", label: "Gas", spend: num("gasSpend"), rate: num("gasRate") },
+        { key: "grocery", label: "Groceries", spend: num("grocerySpend"), rate: num("groceryRate") },
+        { key: "dining", label: "Dining", spend: num("diningSpend"), rate: num("diningRate") },
+        { key: "other", label: "Other", spend: num("otherSpend"), rate: num("otherRate") }
+      ].map(item => ({
+        ...item,
+        annualSpend: item.spend * 12,
+        reward: item.spend * 12 * (item.rate / 100)
+      }));
+    }
+
+    function calculateRewards() {
+      const annualFee = num("annualFee");
+      const apr = num("apr");
+      const carriedBalance = num("carriedBalance");
+      const welcomeBonus = num("welcomeBonus");
+      const categories = categoryData();
+      const monthlySpend = categories.reduce((sum, item) => sum + item.spend, 0);
+      const annualSpend = monthlySpend * 12;
+      const annualRewards = categories.reduce((sum, item) => sum + item.reward, 0);
+      const interestCost = carriedBalance * (apr / 100);
+      const annualCost = annualFee + interestCost;
+      const netValue = annualRewards - annualCost;
+      const firstYearValue = netValue + welcomeBonus;
+      const averageRate = annualSpend > 0 ? (annualRewards / annualSpend) * 100 : 0;
+      const breakEvenSpend = averageRate > 0 ? annualFee / (averageRate / 100) : 0;
+      const valueScore = Math.max(0, Math.min(100, Math.round(50 + netValue / 5 - interestCost / 10 + welcomeBonus / 20)));
+
+      lastScenario = { annualFee, apr, carriedBalance, welcomeBonus, categories, monthlySpend, annualSpend, annualRewards, interestCost, annualCost, netValue, firstYearValue, averageRate, breakEvenSpend, valueScore, createdAt: new Date().toISOString() };
+
+      renderSummary(lastScenario);
+      renderBreakdown(lastScenario);
+      renderCategories(categories, annualRewards);
+      renderDecision(lastScenario);
+    }
+
+    function renderSummary(s) {
+      const netStat = document.getElementById("netStat");
+      netStat.classList.remove("good", "warn", "bad");
+      netStat.classList.add(s.netValue > 50 ? "good" : s.netValue >= 0 ? "warn" : "bad");
+      document.getElementById("annualRewards").textContent = money(s.annualRewards);
+      document.getElementById("annualCost").textContent = money(s.annualCost);
+      document.getElementById("netValue").textContent = money(s.netValue);
+      document.getElementById("breakEvenSpend").textContent = money(s.breakEvenSpend);
+      document.getElementById("valueScoreText").textContent = `${s.valueScore}/100`;
+      document.getElementById("valueScoreFill").style.width = `${s.valueScore}%`;
+    }
+
+    function renderBreakdown(s) {
+      document.getElementById("monthlySpend").textContent = money(s.monthlySpend);
+      document.getElementById("annualSpend").textContent = money(s.annualSpend);
+      document.getElementById("interestCost").textContent = money(s.interestCost);
+      document.getElementById("firstYearValue").textContent = money(s.firstYearValue);
+    }
+
+    function renderCategories(categories, annualRewards) {
+      const list = document.getElementById("spendList");
+      const maxReward = Math.max(1, ...categories.map(item => item.reward));
+      list.innerHTML = categories.map(item => {
+        const width = (item.reward / maxReward) * 100;
+        const share = annualRewards > 0 ? (item.reward / annualRewards) * 100 : 0;
+        return `
+          <div class="spend-row">
+            <div class="spend-top">
+              <div>
+                <strong>${item.label}</strong>
+                <span>${money(item.spend)} monthly • ${item.rate}% back</span>
+              </div>
+              <span class="tag blue">${money(item.reward)} yearly</span>
+            </div>
+            <div class="bar"><span style="width:${width}%"></span></div>
+            <span class="tag">${share.toFixed(1)}% of reward value</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderDecision(s) {
+      const card = document.getElementById("decisionCard");
+      card.className = "";
+      if (s.interestCost > s.annualRewards) {
+        card.classList.add("danger-card");
+        card.textContent = `Warning: the estimated interest cost (${money(s.interestCost)}) is higher than the estimated rewards (${money(s.annualRewards)}). Rewards are not worth it if you carry balances at high APR.`;
+      } else if (s.netValue < 0) {
+        card.classList.add("danger-card");
+        card.textContent = `This card looks negative after fees and interest. Estimated net value is ${money(s.netValue)}.`;
+      } else if (s.netValue < 50) {
+        card.classList.add("warning-card");
+        card.textContent = `This card has a small estimated net value of ${money(s.netValue)}. It may only be worth it if the benefits are useful and you avoid interest.`;
+      } else {
+        card.classList.add("good-card");
+        card.textContent = `This card shows positive estimated net value of ${money(s.netValue)} before any welcome bonus. Keep balances paid off to protect the rewards value.`;
+      }
+    }
+
+    async function copyRewardsSummary() {
+      calculateRewards();
+      const s = lastScenario;
+      const text = [
+        "Credit Card Stacker Rewards Summary",
+        `Card: ${document.getElementById("cardName").value || "Unnamed card"}`,
+        `Annual rewards: ${money(s.annualRewards)}`,
+        `Annual cost: ${money(s.annualCost)}`,
+        `Net value: ${money(s.netValue)}`,
+        `First-year value with bonus: ${money(s.firstYearValue)}`,
+        `Average reward rate: ${s.averageRate.toFixed(2)}%`,
+        "",
+        "Educational estimate only. Rewards can be erased by interest and fees."
+      ].join("\n");
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Rewards summary copied.");
+      } catch {
+        showToast("Could not copy automatically.");
+      }
+    }
+
+    function saveRewardsScenario() {
+      calculateRewards();
+      const data = { cardName: document.getElementById("cardName").value || "Unnamed card", scenario: lastScenario };
+      localStorage.setItem(REWARDS_SCENARIO_KEY, JSON.stringify(data));
+      showToast("Rewards scenario saved.");
+    }
+
+    function loadSampleSpending() {
+      document.getElementById("cardName").value = "No-Fee Cashback Card";
+      document.getElementById("annualFee").value = 0;
+      document.getElementById("apr").value = 28.99;
+      document.getElementById("carriedBalance").value = 0;
+      document.getElementById("welcomeBonus").value = 200;
+      document.getElementById("gasSpend").value = 180;
+      document.getElementById("grocerySpend").value = 420;
+      document.getElementById("diningSpend").value = 200;
+      document.getElementById("otherSpend").value = 500;
+      document.getElementById("gasRate").value = 3;
+      document.getElementById("groceryRate").value = 3;
+      document.getElementById("diningRate").value = 2;
+      document.getElementById("otherRate").value = 1.5;
+      calculateRewards();
+      showToast("Sample spending loaded.");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    calculateRewards();
+  </script>
+</body>
+</html>

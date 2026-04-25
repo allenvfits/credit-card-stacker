@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reminders | Credit Card Stacker</title>
+  <meta name="description" content="Track credit card statement dates, due dates, payoff reminders, and weekly credit check-ins." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --panel-2: rgba(255,255,255,.115);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1200px, calc(100% - 30px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover {
+      color: var(--text);
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96,165,250,.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-danger {
+      background: rgba(251,113,133,.12);
+      color: #fecdd3;
+      border: 1px solid rgba(251,113,133,.28);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 46px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 5.2rem);
+      letter-spacing: -.075em;
+      line-height: .96;
+      max-width: 820px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 760px;
+      margin-top: 16px;
+      font-size: 1.05rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: .92fr 1.35fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 70px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+
+    .panel-pad {
+      padding: 24px;
+    }
+
+    .sticky-panel {
+      position: sticky;
+      top: 92px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2, .panel h2 {
+      font-size: 1.35rem;
+      letter-spacing: -.045em;
+    }
+
+    .panel-head p, .subtext {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 6px;
+      font-size: .94rem;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+      min-height: 112px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .82rem;
+      margin-bottom: 8px;
+    }
+
+    .stat strong {
+      font-size: 1.8rem;
+      letter-spacing: -.065em;
+      line-height: 1;
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      margin-top: 7px;
+      line-height: 1.4;
+    }
+
+    .stat.warning strong { color: var(--warning); }
+    .stat.danger strong { color: var(--danger); }
+    .stat.good strong { color: var(--success); }
+
+    .settings-card {
+      background:
+        radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%),
+        rgba(255,255,255,.085);
+      margin-bottom: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 7px;
+      font-size: .9rem;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px;
+      outline: none;
+    }
+
+    .field select option {
+      color: #07101d;
+    }
+
+    .field input:focus, .field select:focus {
+      border-color: rgba(110,231,183,.72);
+      box-shadow: 0 0 0 4px rgba(110,231,183,.09);
+    }
+
+    .toggle-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 15px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.058);
+      border: 1px solid var(--line);
+    }
+
+    .toggle-row strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 5px;
+    }
+
+    .toggle-row span {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .92rem;
+    }
+
+    .switch {
+      position: relative;
+      width: 56px;
+      height: 32px;
+      flex: 0 0 auto;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      cursor: pointer;
+      background: rgba(255,255,255,.13);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      transition: .2s;
+    }
+
+    .slider::before {
+      content: "";
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      left: 3px;
+      top: 3px;
+      border-radius: 50%;
+      background: #fff;
+      transition: .2s;
+    }
+
+    .switch input:checked + .slider {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    }
+
+    .switch input:checked + .slider::before {
+      transform: translateX(24px);
+    }
+
+    .notice {
+      border-radius: 20px;
+      padding: 16px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .success-note {
+      border-radius: 20px;
+      padding: 16px;
+      color: #d8fff1;
+      background: rgba(52,211,153,.09);
+      border: 1px solid rgba(52,211,153,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .calendar-card {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .calendar-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .calendar-top h2 {
+      font-size: 1.6rem;
+      letter-spacing: -.055em;
+    }
+
+    .calendar-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .day-label {
+      color: var(--muted);
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-weight: 900;
+      text-align: center;
+      padding: 8px;
+    }
+
+    .day {
+      min-height: 116px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.052);
+      border: 1px solid rgba(255,255,255,.1);
+      padding: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .day.outside {
+      opacity: .34;
+    }
+
+    .day.today {
+      border-color: rgba(110,231,183,.5);
+      box-shadow: 0 0 0 3px rgba(110,231,183,.08);
+    }
+
+    .day-number {
+      font-weight: 1000;
+      font-size: .9rem;
+      margin-bottom: 8px;
+    }
+
+    .event-pill {
+      display: block;
+      width: 100%;
+      border: 0;
+      cursor: pointer;
+      text-align: left;
+      border-radius: 10px;
+      padding: 6px 7px;
+      margin-top: 5px;
+      font-size: .72rem;
+      font-weight: 850;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .event-statement {
+      color: #d8fff1;
+      background: rgba(52,211,153,.16);
+      border: 1px solid rgba(52,211,153,.3);
+    }
+
+    .event-due {
+      color: #fde68a;
+      background: rgba(251,191,36,.16);
+      border: 1px solid rgba(251,191,36,.3);
+    }
+
+    .event-checkin {
+      color: #dbeafe;
+      background: rgba(96,165,250,.16);
+      border: 1px solid rgba(96,165,250,.3);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.062);
+      border: 1px solid var(--line);
+    }
+
+    .timeline-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--line);
+      font-weight: 1000;
+    }
+
+    .timeline-item.statement .timeline-icon {
+      color: #06111f;
+      background: var(--brand);
+      border: 0;
+    }
+
+    .timeline-item.due .timeline-icon {
+      color: #06111f;
+      background: var(--warning);
+      border: 0;
+    }
+
+    .timeline-item.checkin .timeline-icon {
+      color: #06111f;
+      background: var(--brand-2);
+      border: 0;
+    }
+
+    .timeline-item strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 5px;
+    }
+
+    .timeline-item p {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .92rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: .76rem;
+      font-weight: 900;
+      background: rgba(255,255,255,.08);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    .tag.good {
+      background: rgba(52,211,153,.12);
+      color: #bbf7d0;
+      border-color: rgba(52,211,153,.28);
+    }
+
+    .tag.warn {
+      background: rgba(251,191,36,.12);
+      color: #fde68a;
+      border-color: rgba(251,191,36,.28);
+    }
+
+    .tag.bad {
+      background: rgba(251,113,133,.12);
+      color: #fecdd3;
+      border-color: rgba(251,113,133,.28);
+    }
+
+    .empty {
+      border-radius: 22px;
+      padding: 24px;
+      color: var(--muted);
+      background: rgba(255,255,255,.052);
+      border: 1px dashed rgba(255,255,255,.2);
+      text-align: center;
+      line-height: 1.65;
+    }
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: rgba(0,0,0,.68);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-bg.active {
+      display: flex;
+    }
+
+    .modal {
+      width: min(560px, 100%);
+      border-radius: 30px;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .modal h2 {
+      font-size: 1.8rem;
+      letter-spacing: -.055em;
+      margin-bottom: 8px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 110;
+      max-width: 390px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1080px) {
+      .layout, .hero {
+        grid-template-columns: 1fr;
+      }
+      .sticky-panel {
+        position: static;
+      }
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        display: block;
+      }
+      .top-links {
+        margin-top: 12px;
+      }
+      .two-col, .summary-grid {
+        grid-template-columns: 1fr;
+      }
+      .calendar-grid {
+        gap: 5px;
+      }
+      .day {
+        min-height: 82px;
+        border-radius: 13px;
+        padding: 7px;
+      }
+      .event-pill {
+        font-size: .62rem;
+        padding: 4px 5px;
+      }
+      .timeline-item {
+        grid-template-columns: 1fr;
+      }
+      .toggle-row {
+        grid-template-columns: 1fr;
+      }
+      .panel-pad, .calendar-card {
+        padding: 18px;
+      }
+      .modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="onboarding.html">Onboarding</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="card-finder.html">Card Finder</a>
+        <a href="learn.html">Learn</a>
+        <a href="premium.html">Premium</a>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Reminder center • Statement dates • Due dates</div>
+        <h1>Never miss the date that matters.</h1>
+        <p>
+          Track statement closing dates, payment due dates, and weekly credit check-ins. This page uses the cards saved from your dashboard and shows what is coming up next.
+        </p>
+      </div>
+      <div>
+        <button class="btn btn-primary" onclick="loadSampleCards()">Load sample reminders</button>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="stat" id="nextStatementStat">
+        <span>Next statement</span>
+        <strong id="nextStatementText">—</strong>
+        <small id="nextStatementSub">Add cards to calculate.</small>
+      </div>
+      <div class="stat" id="nextDueStat">
+        <span>Next due date</span>
+        <strong id="nextDueText">—</strong>
+        <small id="nextDueSub">Add cards to calculate.</small>
+      </div>
+      <div class="stat">
+        <span>Upcoming reminders</span>
+        <strong id="upcomingCount">0</strong>
+        <small>Next 45 days</small>
+      </div>
+      <div class="stat good">
+        <span>Saved cards</span>
+        <strong id="savedCardsCount">0</strong>
+        <small>From your dashboard</small>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel settings-card">
+          <div class="panel-head">
+            <div>
+              <h2>Reminder Settings</h2>
+              <p>Demo settings saved in this browser. Real push/email reminders can be connected later.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="toggle-row">
+              <div><strong>Statement reminders</strong><span>Show reminders before each card statement closes.</span></div>
+              <label class="switch"><input id="statementReminders" type="checkbox" checked onchange="saveSettingsAndRender()" /><span class="slider"></span></label>
+            </div>
+
+            <div class="toggle-row">
+              <div><strong>Due date reminders</strong><span>Show reminders before payment due dates.</span></div>
+              <label class="switch"><input id="dueReminders" type="checkbox" checked onchange="saveSettingsAndRender()" /><span class="slider"></span></label>
+            </div>
+
+            <div class="toggle-row">
+              <div><strong>Weekly credit check-in</strong><span>Add a weekly reminder to update balances.</span></div>
+              <label class="switch"><input id="weeklyCheckin" type="checkbox" checked onchange="saveSettingsAndRender()" /><span class="slider"></span></label>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="reminderDays">Remind before</label>
+                <select id="reminderDays" onchange="saveSettingsAndRender()">
+                  <option value="1">1 day</option>
+                  <option value="3">3 days</option>
+                  <option value="7" selected>7 days</option>
+                  <option value="14">14 days</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="calendarView">Calendar view</label>
+                <select id="calendarView" onchange="saveSettingsAndRender()">
+                  <option value="all" selected>All reminders</option>
+                  <option value="statement">Statement only</option>
+                  <option value="due">Due dates only</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="saveSettingsAndRender()">Save reminder settings</button>
+            <a class="btn btn-ghost btn-full" href="dashboard.html">Edit cards in dashboard</a>
+          </div>
+
+          <div class="notice">
+            Reminder note: This page only shows in-app reminders. Real phone notifications require app permissions, a backend, or mobile push notification setup.
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="calendar-card">
+          <div class="calendar-top">
+            <div>
+              <h2 id="monthTitle">Month</h2>
+              <p class="subtext">Statement dates are green. Due dates are yellow. Weekly check-ins are blue.</p>
+            </div>
+            <div class="calendar-controls">
+              <button class="btn btn-ghost" onclick="changeMonth(-1)">Previous</button>
+              <button class="btn btn-ghost" onclick="goToday()">Today</button>
+              <button class="btn btn-primary" onclick="changeMonth(1)">Next</button>
+            </div>
+          </div>
+
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </div>
+
+        <div class="panel panel-pad">
+          <div class="panel-head">
+            <div>
+              <h2>Upcoming Action Timeline</h2>
+              <p>Sorted by what is coming up soonest.</p>
+            </div>
+            <button class="btn btn-ghost" onclick="markAllSeen()">Mark seen</button>
+          </div>
+          <div class="timeline" id="timeline"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="modal-bg" id="eventModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h2 id="modalTitle">Reminder</h2>
+      <p id="modalText">Reminder details.</p>
+      <div class="success-note" id="modalAdvice">Advice will appear here.</div>
+      <div class="modal-actions" style="margin-top:16px;">
+        <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+        <a class="btn btn-primary" href="dashboard.html">Open dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const CARDS_KEY = "creditCardStackerCards";
+    const REMINDER_KEY = "creditCardStackerReminderSettings";
+    const SEEN_KEY = "creditCardStackerSeenReminders";
+
+    let cards = [];
+    let visibleMonth = new Date();
+    visibleMonth.setDate(1);
+
+    function getJson(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(Math.max(0, Number(value) || 0));
+    }
+
+    function dateKey(date) {
+      return date.toISOString().slice(0, 10);
+    }
+
+    function parseDate(dateString) {
+      if (!dateString) return null;
+      const date = new Date(dateString + "T00:00:00");
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    function formatDate(date) {
+      return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function daysUntil(date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const target = new Date(date);
+      target.setHours(0, 0, 0, 0);
+      return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+    }
+
+    function loadSettings() {
+      const settings = getJson(REMINDER_KEY, {});
+      document.getElementById("statementReminders").checked = settings.statementReminders ?? true;
+      document.getElementById("dueReminders").checked = settings.dueReminders ?? true;
+      document.getElementById("weeklyCheckin").checked = settings.weeklyCheckin ?? true;
+      if (settings.reminderDays) document.getElementById("reminderDays").value = settings.reminderDays;
+      if (settings.calendarView) document.getElementById("calendarView").value = settings.calendarView;
+    }
+
+    function saveSettingsAndRender() {
+      const settings = {
+        statementReminders: document.getElementById("statementReminders").checked,
+        dueReminders: document.getElementById("dueReminders").checked,
+        weeklyCheckin: document.getElementById("weeklyCheckin").checked,
+        reminderDays: document.getElementById("reminderDays").value,
+        calendarView: document.getElementById("calendarView").value,
+        updatedAt: new Date().toISOString()
+      };
+      saveJson(REMINDER_KEY, settings);
+      renderAll();
+      showToast("Reminder settings saved.");
+    }
+
+    function loadCards() {
+      cards = getJson(CARDS_KEY, []);
+    }
+
+    function buildEvents() {
+      const settings = getJson(REMINDER_KEY, {
+        statementReminders: true,
+        dueReminders: true,
+        weeklyCheckin: true,
+        reminderDays: "7",
+        calendarView: "all"
+      });
+      const reminderDays = Number(settings.reminderDays || 7);
+      const events = [];
+
+      cards.forEach(card => {
+        const statement = parseDate(card.statementDate);
+        const due = parseDate(card.dueDate);
+        const balance = Number(card.balance || 0);
+        const limit = Number(card.limit || 1);
+        const utilization = (balance / limit) * 100;
+        const payToTen = Math.max(0, balance - limit * 0.1);
+
+        if (statement && settings.statementReminders) {
+          const reminderDate = new Date(statement);
+          reminderDate.setDate(statement.getDate() - reminderDays);
+          events.push({
+            id: `${card.id}-statement-reminder`,
+            type: "statement",
+            date: reminderDate,
+            card,
+            title: `${card.name} statement reminder`,
+            shortTitle: `Statement: ${card.name}`,
+            description: `Statement closes ${formatDate(statement)}. Current utilization is ${utilization.toFixed(1)}%.`,
+            advice: payToTen > 0
+              ? `To report around 10% utilization, consider paying about ${money(payToTen)} before the statement closes.`
+              : `This card is already near or under 10% utilization based on saved numbers.`
+          });
+          events.push({
+            id: `${card.id}-statement-date`,
+            type: "statement",
+            date: statement,
+            card,
+            title: `${card.name} statement closes`,
+            shortTitle: `Closes: ${card.name}`,
+            description: `Statement closing date for ${card.name}. Balance around this date may be what reports.`,
+            advice: `Update this card balance in the dashboard so your reminders stay accurate.`
+          });
+        }
+
+        if (due && settings.dueReminders) {
+          const reminderDate = new Date(due);
+          reminderDate.setDate(due.getDate() - reminderDays);
+          events.push({
+            id: `${card.id}-due-reminder`,
+            type: "due",
+            date: reminderDate,
+            card,
+            title: `${card.name} payment reminder`,
+            shortTitle: `Due soon: ${card.name}`,
+            description: `Payment due date is ${formatDate(due)}. Saved balance is ${money(balance)}.`,
+            advice: `Pay at least the required minimum by the due date to avoid late fees. Paying more can lower utilization.`
+          });
+          events.push({
+            id: `${card.id}-due-date`,
+            type: "due",
+            date: due,
+            card,
+            title: `${card.name} payment due`,
+            shortTitle: `Due: ${card.name}`,
+            description: `Payment due date for ${card.name}.`,
+            advice: `Make sure the payment is submitted before the cutoff time. This app cannot confirm bank payments.`
+          });
+        }
+      });
+
+      if (settings.weeklyCheckin) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        for (let i = 0; i < 8; i++) {
+          const d = new Date(today);
+          d.setDate(today.getDate() + i * 7);
+          events.push({
+            id: `weekly-checkin-${dateKey(d)}`,
+            type: "checkin",
+            date: d,
+            title: "Weekly credit check-in",
+            shortTitle: "Weekly check-in",
+            description: "Update balances, review utilization, and check upcoming statement dates.",
+            advice: "A weekly check-in helps keep the app accurate before you apply for another card."
+          });
+        }
+      }
+
+      const view = settings.calendarView || "all";
+      return events
+        .filter(event => view === "all" || event.type === view || event.type === "checkin")
+        .sort((a, b) => a.date - b.date);
+    }
+
+    function renderSummary(events) {
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      const future = events.filter(event => event.date >= now);
+      const statements = future.filter(event => event.type === "statement");
+      const dues = future.filter(event => event.type === "due");
+      const nextStatement = statements[0];
+      const nextDue = dues[0];
+      const upcoming45 = future.filter(event => daysUntil(event.date) <= 45).length;
+
+      document.getElementById("savedCardsCount").textContent = cards.length;
+      document.getElementById("upcomingCount").textContent = upcoming45;
+
+      const statementStat = document.getElementById("nextStatementStat");
+      const dueStat = document.getElementById("nextDueStat");
+      statementStat.classList.remove("warning", "danger", "good");
+      dueStat.classList.remove("warning", "danger", "good");
+
+      if (nextStatement) {
+        const days = daysUntil(nextStatement.date);
+        document.getElementById("nextStatementText").textContent = days === 0 ? "Today" : `${days} days`;
+        document.getElementById("nextStatementSub").textContent = nextStatement.title;
+        statementStat.classList.add(days <= 3 ? "danger" : days <= 7 ? "warning" : "good");
+      } else {
+        document.getElementById("nextStatementText").textContent = "—";
+        document.getElementById("nextStatementSub").textContent = "Add statement dates to cards.";
+      }
+
+      if (nextDue) {
+        const days = daysUntil(nextDue.date);
+        document.getElementById("nextDueText").textContent = days === 0 ? "Today" : `${days} days`;
+        document.getElementById("nextDueSub").textContent = nextDue.title;
+        dueStat.classList.add(days <= 3 ? "danger" : days <= 7 ? "warning" : "good");
+      } else {
+        document.getElementById("nextDueText").textContent = "—";
+        document.getElementById("nextDueSub").textContent = "Add due dates to cards.";
+      }
+    }
+
+    function renderCalendar(events) {
+      const grid = document.getElementById("calendarGrid");
+      const year = visibleMonth.getFullYear();
+      const month = visibleMonth.getMonth();
+      const firstDay = new Date(year, month, 1);
+      const start = new Date(firstDay);
+      start.setDate(firstDay.getDate() - firstDay.getDay());
+      const todayKey = dateKey(new Date());
+
+      document.getElementById("monthTitle").textContent = visibleMonth.toLocaleDateString(undefined, {
+        month: "long",
+        year: "numeric"
+      });
+
+      const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      let html = labels.map(label => `<div class="day-label">${label}</div>`).join("");
+
+      for (let i = 0; i < 42; i++) {
+        const day = new Date(start);
+        day.setDate(start.getDate() + i);
+        const key = dateKey(day);
+        const dayEvents = events.filter(event => dateKey(event.date) === key).slice(0, 3);
+        const outside = day.getMonth() !== month ? "outside" : "";
+        const today = key === todayKey ? "today" : "";
+
+        html += `
+          <div class="day ${outside} ${today}">
+            <div class="day-number">${day.getDate()}</div>
+            ${dayEvents.map(event => `
+              <button class="event-pill event-${event.type}" onclick="openEvent('${event.id}')">${escapeHtml(event.shortTitle)}</button>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = html;
+    }
+
+    function renderTimeline(events) {
+      const timeline = document.getElementById("timeline");
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const future = events.filter(event => event.date >= today).slice(0, 12);
+
+      if (!cards.length) {
+        timeline.innerHTML = `
+          <div class="empty">
+            <strong>No cards found yet.</strong><br>
+            Add cards in the dashboard, or click “Load sample reminders” to test this page.
+          </div>
+        `;
+        return;
+      }
+
+      if (!future.length) {
+        timeline.innerHTML = `
+          <div class="empty">
+            <strong>No upcoming reminders.</strong><br>
+            Turn on reminder settings or add statement and due dates to your cards.
+          </div>
+        `;
+        return;
+      }
+
+      timeline.innerHTML = future.map(event => {
+        const days = daysUntil(event.date);
+        const tagClass = days <= 3 ? "bad" : days <= 7 ? "warn" : "good";
+        const tagText = days === 0 ? "Today" : `${days} days`;
+        const icon = event.type === "statement" ? "%" : event.type === "due" ? "$" : "✓";
+        return `
+          <div class="timeline-item ${event.type}">
+            <div class="timeline-icon">${icon}</div>
+            <div>
+              <strong>${escapeHtml(event.title)}</strong>
+              <p>${escapeHtml(event.description)}</p>
+            </div>
+            <div style="display:grid; gap:8px; justify-items:end;">
+              <span class="tag ${tagClass}">${tagText}</span>
+              <button class="btn btn-ghost" onclick="openEvent('${event.id}')">View</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderAll() {
+      loadCards();
+      const events = buildEvents();
+      window.currentEvents = events;
+      renderSummary(events);
+      renderCalendar(events);
+      renderTimeline(events);
+    }
+
+    function changeMonth(delta) {
+      visibleMonth.setMonth(visibleMonth.getMonth() + delta);
+      renderCalendar(window.currentEvents || buildEvents());
+    }
+
+    function goToday() {
+      visibleMonth = new Date();
+      visibleMonth.setDate(1);
+      renderCalendar(window.currentEvents || buildEvents());
+    }
+
+    function openEvent(id) {
+      const event = (window.currentEvents || buildEvents()).find(item => item.id === id);
+      if (!event) return;
+      document.getElementById("modalTitle").textContent = event.title;
+      document.getElementById("modalText").textContent = `${formatDate(event.date)} — ${event.description}`;
+      document.getElementById("modalAdvice").textContent = event.advice;
+      document.getElementById("eventModal").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("eventModal").classList.remove("active");
+    }
+
+    function markAllSeen() {
+      const ids = (window.currentEvents || buildEvents()).map(event => event.id);
+      saveJson(SEEN_KEY, ids);
+      showToast("Upcoming reminders marked as seen in demo mode.");
+    }
+
+    function loadSampleCards() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const statementOne = new Date(today);
+      statementOne.setDate(today.getDate() + 6);
+      const dueOne = new Date(today);
+      dueOne.setDate(today.getDate() + 18);
+      const statementTwo = new Date(today);
+      statementTwo.setDate(today.getDate() + 13);
+      const dueTwo = new Date(today);
+      dueTwo.setDate(today.getDate() + 25);
+
+      cards = [
+        {
+          id: "sample-reminder-1",
+          name: "Capital One Secured",
+          balance: 238,
+          limit: 500,
+          statementDate: dateKey(statementOne),
+          dueDate: dateKey(dueOne),
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: "sample-reminder-2",
+          name: "Starter Rewards Card",
+          balance: 84,
+          limit: 1000,
+          statementDate: dateKey(statementTwo),
+          dueDate: dateKey(dueTwo),
+          createdAt: new Date().toISOString()
+        }
+      ];
+      saveJson(CARDS_KEY, cards);
+      renderAll();
+      showToast("Sample reminder cards loaded.");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    document.getElementById("eventModal").addEventListener("click", function(event) {
+      if (event.target.id === "eventModal") closeModal();
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") closeModal();
+    });
+
+    loadSettings();
+    renderAll();
+  </script>
+</body>
+</html>

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goals | Credit Card Stacker</title>
+  <meta name="description" content="Create and track credit card goals, payoff milestones, utilization targets, and application readiness goals." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font: inherit; }
+    .shell { width: min(1200px, calc(100% - 30px)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 1000; letter-spacing: -.04em; font-size: 1.1rem; }
+    .logo-mark {
+      width: 38px; height: 38px; border-radius: 14px; display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f; box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+    .top-links { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: .94rem; flex-wrap: wrap; }
+    .top-links a:hover { color: var(--text); }
+    .btn {
+      border: 0; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: 999px; padding: 12px 16px; font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease; white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #06111f; box-shadow: 0 18px 44px rgba(96,165,250,.25); }
+    .btn-ghost { background: rgba(255,255,255,.075); color: var(--text); border: 1px solid var(--line); }
+    .btn-danger { background: rgba(251,113,133,.12); color: #fecdd3; border: 1px solid rgba(251,113,133,.28); }
+    .btn-warning { background: rgba(251,191,36,.12); color: #fde68a; border: 1px solid rgba(251,191,36,.28); }
+    .btn-full { width: 100%; }
+    .hero { padding: 46px 0 24px; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 18px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px; color: #c9ffee; background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24); border-radius: 999px; padding: 8px 12px; font-size: .84rem; font-weight: 900; margin-bottom: 14px;
+    }
+    h1 { font-size: clamp(2.4rem, 5vw, 5.2rem); letter-spacing: -.075em; line-height: .96; max-width: 880px; }
+    .hero p { color: var(--muted); line-height: 1.7; max-width: 800px; margin-top: 16px; font-size: 1.05rem; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; }
+    .stat { border-radius: 22px; padding: 18px; background: rgba(255,255,255,.065); border: 1px solid var(--line); min-height: 118px; }
+    .stat span { display: block; color: var(--muted); font-size: .82rem; margin-bottom: 8px; }
+    .stat strong { font-size: 1.85rem; letter-spacing: -.065em; line-height: 1; }
+    .stat small { display: block; color: var(--muted); margin-top: 7px; line-height: 1.4; }
+    .stat.good strong { color: var(--success); }
+    .stat.warn strong { color: var(--warning); }
+    .stat.bad strong { color: var(--danger); }
+    .layout { display: grid; grid-template-columns: .9fr 1.35fr; gap: 18px; align-items: start; padding: 18px 0 70px; }
+    .panel { border-radius: var(--radius); background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 60px rgba(0,0,0,.14); overflow: hidden; }
+    .panel-pad { padding: 24px; }
+    .sticky-panel {
+      position: sticky; top: 92px;
+      background: radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%), rgba(255,255,255,.085);
+    }
+    .panel-head { display: flex; align-items: start; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+    .panel-head h2, .panel h2 { font-size: 1.35rem; letter-spacing: -.045em; }
+    .panel-head p, .subtext { color: var(--muted); line-height: 1.6; margin-top: 6px; font-size: .94rem; }
+    .form-grid { display: grid; gap: 14px; }
+    .two-col { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .field label { display: block; color: var(--muted); font-weight: 850; margin-bottom: 7px; font-size: .9rem; }
+    .field input, .field select, .field textarea {
+      width: 100%; border: 1px solid var(--line); background: rgba(255,255,255,.07); color: var(--text);
+      border-radius: 16px; padding: 14px; outline: none; min-height: 48px; resize: vertical;
+    }
+    .field textarea { min-height: 100px; }
+    .field select option { color: #07101d; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(110,231,183,.72); box-shadow: 0 0 0 4px rgba(110,231,183,.09); }
+    .progress-hero {
+      border-radius: 26px;
+      padding: 20px;
+      background: rgba(255,255,255,.058);
+      border: 1px solid var(--line);
+      margin-bottom: 18px;
+    }
+    .progress-top { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 12px; align-items: center; }
+    .progress-top strong { letter-spacing: -.04em; }
+    .progress-top span { color: var(--muted); font-size: .92rem; }
+    .progress-track { height: 14px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: inherit; width: 0%; background: linear-gradient(90deg, var(--brand), var(--brand-2)); transition: width .2s ease; }
+    .goal-list { display: grid; gap: 12px; }
+    .goal-card { border-radius: 24px; padding: 18px; background: rgba(255,255,255,.062); border: 1px solid var(--line); }
+    .goal-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 12px; }
+    .goal-card h3 { letter-spacing: -.04em; margin-bottom: 5px; }
+    .goal-card p { color: var(--muted); line-height: 1.55; font-size: .94rem; }
+    .goal-bar { height: 12px; border-radius: 999px; background: rgba(255,255,255,.1); overflow: hidden; margin: 14px 0 10px; }
+    .goal-bar span { display: block; height: 100%; border-radius: inherit; width: 0%; background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+    .goal-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .tag { display: inline-flex; align-items: center; border-radius: 999px; padding: 7px 10px; font-size: .76rem; font-weight: 900; background: rgba(255,255,255,.08); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+    .tag.good { background: rgba(52,211,153,.12); color: #bbf7d0; border-color: rgba(52,211,153,.28); }
+    .tag.warn { background: rgba(251,191,36,.12); color: #fde68a; border-color: rgba(251,191,36,.28); }
+    .tag.bad { background: rgba(251,113,133,.12); color: #fecdd3; border-color: rgba(251,113,133,.28); }
+    .tag.blue { background: rgba(96,165,250,.12); color: #dbeafe; border-color: rgba(96,165,250,.28); }
+    .goal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .suggestion-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .suggestion { border-radius: 22px; padding: 18px; background: rgba(255,255,255,.06); border: 1px solid var(--line); }
+    .suggestion strong { display: block; letter-spacing: -.04em; margin-bottom: 8px; }
+    .suggestion p { color: var(--muted); line-height: 1.65; font-size: .94rem; margin-bottom: 14px; }
+    .milestone-list { display: grid; gap: 12px; }
+    .milestone { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 16px; border-radius: 22px; background: rgba(255,255,255,.062); border: 1px solid var(--line); }
+    .milestone-icon { width: 44px; height: 44px; border-radius: 16px; display: grid; place-items: center; background: rgba(110,231,183,.13); border: 1px solid rgba(110,231,183,.25); font-weight: 1000; }
+    .milestone.done .milestone-icon { background: var(--brand); color: #06111f; border-color: transparent; }
+    .milestone strong { display: block; letter-spacing: -.035em; margin-bottom: 5px; }
+    .milestone p { color: var(--muted); line-height: 1.55; font-size: .92rem; }
+    .notice { border-radius: 20px; padding: 16px; color: #f9eac0; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.24); line-height: 1.65; font-size: .92rem; margin-top: 16px; }
+    .empty { border-radius: 22px; padding: 24px; color: var(--muted); background: rgba(255,255,255,.052); border: 1px dashed rgba(255,255,255,.2); text-align: center; line-height: 1.65; }
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+    .toast { position: fixed; right: 18px; bottom: 18px; z-index: 110; max-width: 390px; border-radius: 18px; padding: 14px 16px; background: #0f2138; color: var(--text); border: 1px solid var(--line); box-shadow: var(--shadow); line-height: 1.5; transform: translateY(130%); transition: transform .24s ease; }
+    .toast.active { transform: translateY(0); }
+    @media (max-width: 1080px) { .layout, .hero { grid-template-columns: 1fr; } .sticky-panel { position: static; } .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 760px) { .topbar-inner { display: block; } .top-links { margin-top: 12px; } .two-col, .summary-grid, .suggestion-grid { grid-template-columns: 1fr; } .panel-pad { padding: 18px; } .button-row, .goal-actions { flex-direction: column; align-items: stretch; } .goal-top, .progress-top { display: block; } .goal-top .tag, .progress-top span { margin-top: 8px; display: inline-flex; } .milestone { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="simulator.html">Simulator</a>
+        <a href="score-tracker.html">Score Tracker</a>
+        <a href="application-tracker.html">Applications</a>
+        <a href="reports.html">Reports</a>
+        <a href="help.html">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Goals • Payoff milestones • Credit habits</div>
+        <h1>Turn credit improvement into clear goals.</h1>
+        <p>
+          Create goals like lowering utilization, paying down one card, waiting before applying, or building a steady payment habit. This page uses saved cards when possible but keeps everything educational.
+        </p>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" onclick="addGoal()">Add Goal</button>
+        <button class="btn btn-ghost" onclick="createRecommendedGoals()">Auto Goals</button>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="stat" id="overallStat"><span>Overall progress</span><strong id="overallProgress">0%</strong><small>Across active goals</small></div>
+      <div class="stat"><span>Active goals</span><strong id="activeCount">0</strong><small>Not completed yet</small></div>
+      <div class="stat good"><span>Completed</span><strong id="doneCount">0</strong><small>Goals finished</small></div>
+      <div class="stat" id="utilStat"><span>Current utilization</span><strong id="currentUtil">0%</strong><small>From saved cards</small></div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Create Goal</h2>
+              <p>Set a goal and track progress manually or from saved card data.</p>
+            </div>
+          </div>
+
+          <div class="progress-hero">
+            <div class="progress-top">
+              <strong>Goal system health</strong>
+              <span id="goalHealthText">Add your first goal</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" id="healthFill"></div></div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="goalTitle">Goal title</label>
+              <input id="goalTitle" placeholder="Example: Get utilization under 10%" />
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="goalType">Goal type</label>
+                <select id="goalType" onchange="prefillGoalType()">
+                  <option value="utilization">Lower utilization</option>
+                  <option value="payoff">Pay down balance</option>
+                  <option value="application">Wait before applying</option>
+                  <option value="habit">Build credit habit</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="goalDueDate">Target date</label>
+                <input id="goalDueDate" type="date" />
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="goalCurrent">Current value</label>
+                <input id="goalCurrent" type="number" step="0.01" placeholder="45" />
+              </div>
+              <div class="field">
+                <label for="goalTarget">Target value</label>
+                <input id="goalTarget" type="number" step="0.01" placeholder="10" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="goalUnit">Unit</label>
+              <select id="goalUnit">
+                <option value="percent">Percent</option>
+                <option value="dollars">Dollars</option>
+                <option value="days">Days</option>
+                <option value="count">Count</option>
+                <option value="text">Manual</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="goalNotes">Notes</label>
+              <textarea id="goalNotes" placeholder="Example: Pay this before the statement closes."></textarea>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="addGoal()">Save Goal</button>
+            <button class="btn btn-ghost btn-full" onclick="copyGoalSummary()">Copy Goal Summary</button>
+            <button class="btn btn-warning btn-full" onclick="exportGoals()">Export Goals</button>
+          </div>
+
+          <div class="notice">
+            Goal disclaimer: These goals are planning tools only. They do not guarantee score changes, approvals, or lender decisions.
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Recommended Goal Ideas</h2>
+              <p>Quick goals based on common credit card habits.</p>
+            </div>
+          </div>
+          <div class="suggestion-grid" id="suggestionGrid"></div>
+        </div>
+
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Milestones</h2>
+              <p>Progress markers pulled from your active goals and saved cards.</p>
+            </div>
+          </div>
+          <div class="milestone-list" id="milestoneList"></div>
+        </div>
+
+        <div class="panel panel-pad">
+          <div class="panel-head">
+            <div>
+              <h2>Your Goals</h2>
+              <p>Track, complete, update, or delete your goals.</p>
+            </div>
+            <button class="btn btn-danger" onclick="clearGoals()">Clear</button>
+          </div>
+          <div class="goal-list" id="goalList"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const GOALS_KEY = "creditCardStackerGoals";
+    const CARDS_KEY = "creditCardStackerCards";
+    const APPLICATIONS_KEY = "creditCardStackerApplications";
+    let goals = [];
+    let cards = [];
+
+    function getJson(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+      catch { return fallback; }
+    }
+
+    function saveJson(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+
+    function todayKey() { return new Date().toISOString().slice(0, 10); }
+
+    function futureDate(days) {
+      const date = new Date();
+      date.setDate(date.getDate() + days);
+      return date.toISOString().slice(0, 10);
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return "No date";
+      const date = new Date(dateString + "T00:00:00");
+      return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Math.max(0, Number(value) || 0));
+    }
+
+    function loadData() {
+      goals = getJson(GOALS_KEY, []);
+      cards = getJson(CARDS_KEY, []);
+    }
+
+    function totalUtilization() {
+      const balance = cards.reduce((sum, card) => sum + Number(card.balance || 0), 0);
+      const limit = cards.reduce((sum, card) => sum + Number(card.limit || 0), 0);
+      return limit > 0 ? (balance / limit) * 100 : 0;
+    }
+
+    function goalProgress(goal) {
+      const current = Number(goal.current || 0);
+      const target = Number(goal.target || 0);
+      if (goal.unit === "text") return goal.completed ? 100 : 0;
+
+      if (goal.type === "utilization" || goal.type === "payoff") {
+        if (current <= target) return 100;
+        const start = Number(goal.start || current || 1);
+        const totalNeeded = Math.max(1, start - target);
+        const moved = Math.max(0, start - current);
+        return Math.min(100, Math.max(0, (moved / totalNeeded) * 100));
+      }
+
+      if (goal.type === "application") {
+        const days = Number(goal.current || 0);
+        const targetDays = Number(goal.target || 30);
+        return Math.min(100, Math.max(0, (days / targetDays) * 100));
+      }
+
+      if (target > 0) return Math.min(100, Math.max(0, (current / target) * 100));
+      return goal.completed ? 100 : 0;
+    }
+
+    function addGoal() {
+      const title = document.getElementById("goalTitle").value.trim();
+      const type = document.getElementById("goalType").value;
+      const dueDate = document.getElementById("goalDueDate").value || futureDate(30);
+      const current = Number(document.getElementById("goalCurrent").value || 0);
+      const target = Number(document.getElementById("goalTarget").value || 0);
+      const unit = document.getElementById("goalUnit").value;
+      const notes = document.getElementById("goalNotes").value.trim();
+
+      if (!title) {
+        showToast("Enter a goal title first.");
+        return;
+      }
+
+      goals.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        title,
+        type,
+        dueDate,
+        current,
+        start: current,
+        target,
+        unit,
+        notes,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+
+      saveJson(GOALS_KEY, goals);
+      clearForm();
+      renderAll();
+      showToast("Goal saved.");
+    }
+
+    function clearForm() {
+      document.getElementById("goalTitle").value = "";
+      document.getElementById("goalType").value = "utilization";
+      document.getElementById("goalDueDate").value = futureDate(30);
+      document.getElementById("goalCurrent").value = "";
+      document.getElementById("goalTarget").value = "";
+      document.getElementById("goalUnit").value = "percent";
+      document.getElementById("goalNotes").value = "";
+    }
+
+    function prefillGoalType() {
+      const type = document.getElementById("goalType").value;
+      const util = totalUtilization();
+      if (type === "utilization") {
+        document.getElementById("goalTitle").value = "Get total utilization under 10%";
+        document.getElementById("goalCurrent").value = util.toFixed(1);
+        document.getElementById("goalTarget").value = 10;
+        document.getElementById("goalUnit").value = "percent";
+      } else if (type === "payoff") {
+        const highest = [...cards].sort((a, b) => Number(b.balance || 0) - Number(a.balance || 0))[0];
+        document.getElementById("goalTitle").value = highest ? `Pay down ${highest.name}` : "Pay down one card";
+        document.getElementById("goalCurrent").value = highest ? Number(highest.balance || 0) : 500;
+        document.getElementById("goalTarget").value = 0;
+        document.getElementById("goalUnit").value = "dollars";
+      } else if (type === "application") {
+        document.getElementById("goalTitle").value = "Wait before applying again";
+        document.getElementById("goalCurrent").value = 0;
+        document.getElementById("goalTarget").value = 60;
+        document.getElementById("goalUnit").value = "days";
+      } else if (type === "habit") {
+        document.getElementById("goalTitle").value = "Complete 4 weekly credit check-ins";
+        document.getElementById("goalCurrent").value = 0;
+        document.getElementById("goalTarget").value = 4;
+        document.getElementById("goalUnit").value = "count";
+      } else {
+        document.getElementById("goalTitle").value = "";
+        document.getElementById("goalCurrent").value = 0;
+        document.getElementById("goalTarget").value = 1;
+        document.getElementById("goalUnit").value = "text";
+      }
+    }
+
+    function completeGoal(id) {
+      goals = goals.map(goal => goal.id === id ? { ...goal, completed: true, current: goal.type === "application" || goal.type === "habit" ? goal.target : goal.target, updatedAt: new Date().toISOString() } : goal);
+      saveJson(GOALS_KEY, goals);
+      renderAll();
+      showToast("Goal marked complete.");
+    }
+
+    function updateGoalProgress(id, direction) {
+      goals = goals.map(goal => {
+        if (goal.id !== id) return goal;
+        let step = goal.unit === "dollars" ? 25 : 1;
+        let next = Number(goal.current || 0);
+        if (goal.type === "utilization" || goal.type === "payoff") next = Math.max(Number(goal.target || 0), next - step * direction);
+        else next = next + step * direction;
+        return { ...goal, current: Math.max(0, next), completed: goalProgress({ ...goal, current: next }) >= 100, updatedAt: new Date().toISOString() };
+      });
+      saveJson(GOALS_KEY, goals);
+      renderAll();
+    }
+
+    function deleteGoal(id) {
+      goals = goals.filter(goal => goal.id !== id);
+      saveJson(GOALS_KEY, goals);
+      renderAll();
+      showToast("Goal deleted.");
+    }
+
+    function clearGoals() {
+      if (!goals.length) return;
+      if (!confirm("Delete all saved goals from this browser?")) return;
+      goals = [];
+      saveJson(GOALS_KEY, goals);
+      renderAll();
+      showToast("Goals cleared.");
+    }
+
+    function createRecommendedGoals() {
+      const util = totalUtilization();
+      const totalBalance = cards.reduce((sum, card) => sum + Number(card.balance || 0), 0);
+      const recommended = [];
+
+      recommended.push({
+        id: "goal-auto-util-" + Date.now(),
+        title: util > 10 ? "Get total utilization under 10%" : "Keep utilization under 10% for 30 days",
+        type: "utilization",
+        dueDate: futureDate(30),
+        current: Number(util.toFixed(1)),
+        start: Number(util.toFixed(1)),
+        target: 10,
+        unit: "percent",
+        notes: "Auto-created from saved card data.",
+        completed: util <= 10,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+
+      if (totalBalance > 0) {
+        recommended.push({
+          id: "goal-auto-payoff-" + Date.now(),
+          title: "Lower total card balances by $250",
+          type: "payoff",
+          dueDate: futureDate(45),
+          current: totalBalance,
+          start: totalBalance,
+          target: Math.max(0, totalBalance - 250),
+          unit: "dollars",
+          notes: "Small paydown goal to build momentum.",
+          completed: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+      }
+
+      recommended.push({
+        id: "goal-auto-wait-" + Date.now(),
+        title: "Wait 60 days before applying again",
+        type: "application",
+        dueDate: futureDate(60),
+        current: 0,
+        start: 0,
+        target: 60,
+        unit: "days",
+        notes: "Cooldown goal to avoid stacking applications too fast.",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+
+      goals = [...goals, ...recommended];
+      saveJson(GOALS_KEY, goals);
+      renderAll();
+      showToast("Recommended goals created.");
+    }
+
+    function renderSummary() {
+      const active = goals.filter(goal => !goal.completed);
+      const done = goals.filter(goal => goal.completed);
+      const overall = goals.length ? goals.reduce((sum, goal) => sum + goalProgress(goal), 0) / goals.length : 0;
+      const util = totalUtilization();
+      const overallStat = document.getElementById("overallStat");
+      const utilStat = document.getElementById("utilStat");
+      overallStat.classList.remove("good", "warn", "bad");
+      utilStat.classList.remove("good", "warn", "bad");
+      overallStat.classList.add(overall >= 75 ? "good" : overall >= 35 ? "warn" : "bad");
+      utilStat.classList.add(util < 10 ? "good" : util < 30 ? "warn" : "bad");
+      document.getElementById("overallProgress").textContent = `${Math.round(overall)}%`;
+      document.getElementById("activeCount").textContent = active.length;
+      document.getElementById("doneCount").textContent = done.length;
+      document.getElementById("currentUtil").textContent = `${util.toFixed(1)}%`;
+      document.getElementById("goalHealthText").textContent = goals.length ? `${done.length}/${goals.length} goals completed` : "Add your first goal";
+      document.getElementById("healthFill").style.width = `${Math.round(overall)}%`;
+    }
+
+    function renderSuggestions() {
+      const util = totalUtilization();
+      const totalBalance = cards.reduce((sum, card) => sum + Number(card.balance || 0), 0);
+      const suggestions = [
+        {
+          title: util > 30 ? "Lower utilization under 30%" : "Keep utilization controlled",
+          text: util > 30 ? `Your saved cards show ${util.toFixed(1)}% utilization. A first goal could be getting below 30%.` : `Your saved utilization is ${util.toFixed(1)}%. A stronger target could be staying under 10%.`,
+          action: "utilization"
+        },
+        {
+          title: "Paydown momentum goal",
+          text: totalBalance > 0 ? `Saved balances total ${money(totalBalance)}. Try a small paydown goal first instead of making it feel impossible.` : "No saved balances found. Add cards in the dashboard to create payoff goals.",
+          action: "payoff"
+        },
+        {
+          title: "Application cooldown goal",
+          text: "Set a 60-day cooldown before applying again so you avoid stacking too many inquiries.",
+          action: "application"
+        },
+        {
+          title: "Weekly check-in habit",
+          text: "Create a goal to update balances once per week for 4 weeks. This keeps your dashboard accurate.",
+          action: "habit"
+        }
+      ];
+
+      document.getElementById("suggestionGrid").innerHTML = suggestions.map(item => `
+        <div class="suggestion">
+          <strong>${escapeHtml(item.title)}</strong>
+          <p>${escapeHtml(item.text)}</p>
+          <button class="btn btn-ghost" onclick="quickGoal('${item.action}')">Use this goal</button>
+        </div>
+      `).join("");
+    }
+
+    function quickGoal(type) {
+      document.getElementById("goalType").value = type;
+      prefillGoalType();
+      document.getElementById("goalDueDate").value = futureDate(type === "application" ? 60 : 30);
+      showToast("Goal form filled. Click Save Goal when ready.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderMilestones() {
+      const util = totalUtilization();
+      const totalBalance = cards.reduce((sum, card) => sum + Number(card.balance || 0), 0);
+      const apps = getJson(APPLICATIONS_KEY, []);
+      const recentApps = apps.filter(app => {
+        const date = new Date(app.date + "T00:00:00");
+        const days = Math.floor((new Date() - date) / (1000 * 60 * 60 * 24));
+        return days <= 60 && app.status !== "Planning";
+      });
+      const milestones = [
+        { done: util > 0 && util < 30, title: "Under 30% utilization", text: util > 0 ? `Current saved utilization: ${util.toFixed(1)}%.` : "Add cards to measure utilization." },
+        { done: util > 0 && util < 10, title: "Under 10% utilization", text: util > 0 ? `Current saved utilization: ${util.toFixed(1)}%.` : "A stricter clean-profile target." },
+        { done: totalBalance === 0 && cards.length > 0, title: "No saved card balance", text: cards.length ? `Saved balance total: ${money(totalBalance)}.` : "Add cards to track balances." },
+        { done: recentApps.length === 0, title: "No recent applications", text: recentApps.length ? `${recentApps.length} application(s) in the last 60 days.` : "No recent saved applications in the last 60 days." }
+      ];
+
+      document.getElementById("milestoneList").innerHTML = milestones.map(item => `
+        <div class="milestone ${item.done ? "done" : ""}">
+          <div class="milestone-icon">${item.done ? "✓" : "•"}</div>
+          <div>
+            <strong>${escapeHtml(item.title)}</strong>
+            <p>${escapeHtml(item.text)}</p>
+          </div>
+          <span class="tag ${item.done ? "good" : "warn"}">${item.done ? "Done" : "Open"}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderGoals() {
+      const list = document.getElementById("goalList");
+      if (!goals.length) {
+        list.innerHTML = `<div class="empty">No goals saved yet. Create one or click Auto Goals.</div>`;
+        return;
+      }
+
+      const sorted = [...goals].sort((a, b) => Number(a.completed) - Number(b.completed) || new Date(a.dueDate) - new Date(b.dueDate));
+      list.innerHTML = sorted.map(goal => {
+        const progress = Math.round(goalProgress(goal));
+        const statusClass = goal.completed ? "good" : progress >= 70 ? "good" : progress >= 35 ? "warn" : "bad";
+        const valueText = goal.unit === "dollars" ? `${money(goal.current)} → ${money(goal.target)}` : `${goal.current} → ${goal.target} ${unitLabel(goal.unit)}`;
+        return `
+          <article class="goal-card">
+            <div class="goal-top">
+              <div>
+                <h3>${escapeHtml(goal.title)}</h3>
+                <p>${escapeHtml(goal.notes || "No notes added.")}</p>
+              </div>
+              <span class="tag ${goal.completed ? "good" : "blue"}">${goal.completed ? "Completed" : goal.type}</span>
+            </div>
+            <div class="goal-bar"><span style="width:${progress}%"></span></div>
+            <div class="goal-meta">
+              <span class="tag ${statusClass}">${progress}% complete</span>
+              <span class="tag">${escapeHtml(valueText)}</span>
+              <span class="tag">Due ${formatDate(goal.dueDate)}</span>
+            </div>
+            <div class="goal-actions">
+              <button class="btn btn-ghost" onclick="updateGoalProgress('${goal.id}', 1)">Progress +</button>
+              <button class="btn btn-ghost" onclick="updateGoalProgress('${goal.id}', -1)">Progress -</button>
+              <button class="btn btn-primary" onclick="completeGoal('${goal.id}')">Complete</button>
+              <button class="btn btn-danger" onclick="deleteGoal('${goal.id}')">Delete</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function unitLabel(unit) {
+      if (unit === "percent") return "%";
+      if (unit === "days") return "days";
+      if (unit === "count") return "times";
+      return "";
+    }
+
+    async function copyGoalSummary() {
+      const active = goals.filter(goal => !goal.completed).length;
+      const done = goals.filter(goal => goal.completed).length;
+      const overall = goals.length ? Math.round(goals.reduce((sum, goal) => sum + goalProgress(goal), 0) / goals.length) : 0;
+      const text = [
+        "Credit Card Stacker Goal Summary",
+        `Total goals: ${goals.length}`,
+        `Active goals: ${active}`,
+        `Completed goals: ${done}`,
+        `Overall progress: ${overall}%`,
+        `Current saved utilization: ${totalUtilization().toFixed(1)}%`,
+        "",
+        "Educational planning only. No credit score or approval guarantee."
+      ].join("\n");
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Goal summary copied.");
+      } catch {
+        showToast("Could not copy automatically.");
+      }
+    }
+
+    function exportGoals() {
+      const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), goals }, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "credit-card-stacker-goals.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("Goals exported.");
+    }
+
+    function renderAll() {
+      loadData();
+      renderSummary();
+      renderSuggestions();
+      renderMilestones();
+      renderGoals();
+    }
+
+    function escapeHtml(text) {
+      return String(text).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    document.getElementById("goalDueDate").value = futureDate(30);
+    prefillGoalType();
+    renderAll();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payoff Simulator | Credit Card Stacker</title>
+  <meta name="description" content="Simulate credit card payoffs, utilization changes, credit limit increases, and new card scenarios." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+
+    .shell { width: min(1200px, calc(100% - 30px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover { color: var(--text); }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96,165,250,.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-warning {
+      background: rgba(251,191,36,.12);
+      color: #fde68a;
+      border: 1px solid rgba(251,191,36,.28);
+    }
+
+    .btn-full { width: 100%; }
+
+    .hero {
+      padding: 46px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 5.2rem);
+      letter-spacing: -.075em;
+      line-height: .96;
+      max-width: 860px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 800px;
+      margin-top: 16px;
+      font-size: 1.05rem;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .stat {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+      min-height: 118px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .82rem;
+      margin-bottom: 8px;
+    }
+
+    .stat strong {
+      font-size: 1.85rem;
+      letter-spacing: -.065em;
+      line-height: 1;
+    }
+
+    .stat small {
+      display: block;
+      color: var(--muted);
+      margin-top: 7px;
+      line-height: 1.4;
+    }
+
+    .stat.good strong { color: var(--success); }
+    .stat.warn strong { color: var(--warning); }
+    .stat.bad strong { color: var(--danger); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: .9fr 1.35fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 70px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+
+    .panel-pad { padding: 24px; }
+
+    .sticky-panel {
+      position: sticky;
+      top: 92px;
+      background:
+        radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%),
+        rgba(255,255,255,.085);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2, .panel h2 {
+      font-size: 1.35rem;
+      letter-spacing: -.045em;
+    }
+
+    .panel-head p, .subtext {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 6px;
+      font-size: .94rem;
+    }
+
+    .form-grid { display: grid; gap: 14px; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 7px;
+      font-size: .9rem;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px;
+      outline: none;
+    }
+
+    .field select option { color: #07101d; }
+
+    .field input:focus, .field select:focus {
+      border-color: rgba(110,231,183,.72);
+      box-shadow: 0 0 0 4px rgba(110,231,183,.09);
+    }
+
+    .scenario-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 6px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--line);
+      margin-bottom: 18px;
+    }
+
+    .tab {
+      border: 0;
+      border-radius: 18px;
+      padding: 11px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .tab.active {
+      color: #06111f;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    }
+
+    .scenario-panel { display: none; }
+    .scenario-panel.active { display: block; }
+
+    .chart-card {
+      margin-bottom: 18px;
+    }
+
+    .chart-wrap {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .donut {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: conic-gradient(var(--brand) 0deg, rgba(255,255,255,.1) 0deg 360deg);
+      display: grid;
+      place-items: center;
+      position: relative;
+      margin: 0 auto;
+      box-shadow: 0 24px 70px rgba(96,165,250,.14);
+    }
+
+    .donut::after {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border-radius: 50%;
+      background: #0a1728;
+      border: 1px solid var(--line);
+    }
+
+    .donut-center {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .donut-center strong {
+      display: block;
+      font-size: 2.25rem;
+      letter-spacing: -.075em;
+    }
+
+    .donut-center span {
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 850;
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .compare-box {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    .compare-box span {
+      display: block;
+      color: var(--muted);
+      font-size: .82rem;
+      margin-bottom: 8px;
+    }
+
+    .compare-box strong {
+      font-size: 1.75rem;
+      letter-spacing: -.06em;
+    }
+
+    .compare-box small {
+      display: block;
+      color: var(--muted);
+      margin-top: 7px;
+      line-height: 1.45;
+    }
+
+    .card-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .sim-card {
+      border-radius: 24px;
+      padding: 18px;
+      background: rgba(255,255,255,.062);
+      border: 1px solid var(--line);
+    }
+
+    .sim-card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .sim-card h3 {
+      letter-spacing: -.04em;
+      margin-bottom: 5px;
+    }
+
+    .sim-card p {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .94rem;
+    }
+
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      overflow: hidden;
+      margin: 12px 0 10px;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      width: 0%;
+      background: linear-gradient(90deg, var(--brand), var(--warning), var(--danger));
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: .76rem;
+      font-weight: 900;
+      background: rgba(255,255,255,.08);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    .tag.good {
+      background: rgba(52,211,153,.12);
+      color: #bbf7d0;
+      border-color: rgba(52,211,153,.28);
+    }
+
+    .tag.warn {
+      background: rgba(251,191,36,.12);
+      color: #fde68a;
+      border-color: rgba(251,191,36,.28);
+    }
+
+    .tag.bad {
+      background: rgba(251,113,133,.12);
+      color: #fecdd3;
+      border-color: rgba(251,113,133,.28);
+    }
+
+    .action-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .action-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.062);
+      border: 1px solid var(--line);
+    }
+
+    .action-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(110,231,183,.14);
+      border: 1px solid rgba(110,231,183,.25);
+      color: #c9ffee;
+      font-weight: 1000;
+    }
+
+    .action-item strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 5px;
+    }
+
+    .action-item p {
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .92rem;
+    }
+
+    .notice {
+      border-radius: 20px;
+      padding: 16px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .empty {
+      border-radius: 22px;
+      padding: 24px;
+      color: var(--muted);
+      background: rgba(255,255,255,.052);
+      border: 1px dashed rgba(255,255,255,.2);
+      text-align: center;
+      line-height: 1.65;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 110;
+      max-width: 390px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active { transform: translateY(0); }
+
+    @media (max-width: 1080px) {
+      .layout, .hero, .chart-wrap { grid-template-columns: 1fr; }
+      .sticky-panel { position: static; }
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner { display: block; }
+      .top-links { margin-top: 12px; }
+      .two-col, .summary-grid, .compare-grid, .scenario-tabs { grid-template-columns: 1fr; }
+      .panel-pad { padding: 18px; }
+      .button-row { flex-direction: column; align-items: stretch; }
+      .donut { width: 210px; height: 210px; }
+      .sim-card-top { display: block; }
+      .tag { margin-top: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="auth.html">Sign In</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="card-finder.html">Card Finder</a>
+        <a href="learn.html">Learn</a>
+        <a href="premium.html">Premium</a>
+        <a href="reports.html">Reports</a>
+        <a href="help.html">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">What-if simulator • No real credit pull • Educational only</div>
+        <h1>Test your payoff move before you make it.</h1>
+        <p>
+          Simulate payments, credit limit increases, or a new card to see how your total utilization could change. This helps users think before applying or paying randomly.
+        </p>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" onclick="runSimulation()">Run Simulation</button>
+        <button class="btn btn-ghost" onclick="loadSampleCards()">Load Sample Cards</button>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="stat" id="beforeStat">
+        <span>Before utilization</span>
+        <strong id="beforeUtil">0%</strong>
+        <small>Based on saved cards</small>
+      </div>
+      <div class="stat" id="afterStat">
+        <span>After utilization</span>
+        <strong id="afterUtil">0%</strong>
+        <small>Based on this simulation</small>
+      </div>
+      <div class="stat" id="changeStat">
+        <span>Change</span>
+        <strong id="utilChange">0%</strong>
+        <small>Lower is usually cleaner</small>
+      </div>
+      <div class="stat">
+        <span>Simulated balance</span>
+        <strong id="simBalance">$0</strong>
+        <small>Total after scenario</small>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Scenario Builder</h2>
+              <p>Choose the type of what-if move to test.</p>
+            </div>
+          </div>
+
+          <div class="scenario-tabs">
+            <button class="tab active" onclick="showScenario('payment', this)">Payment</button>
+            <button class="tab" onclick="showScenario('limit', this)">Limit</button>
+            <button class="tab" onclick="showScenario('newcard', this)">New Card</button>
+          </div>
+
+          <div class="scenario-panel active" id="scenario-payment">
+            <div class="form-grid">
+              <div class="field">
+                <label for="paymentCard">Card to pay down</label>
+                <select id="paymentCard" onchange="runSimulation()"></select>
+              </div>
+              <div class="field">
+                <label for="paymentAmount">Payment amount</label>
+                <input id="paymentAmount" type="number" min="0" step="1" value="100" oninput="runSimulation()" />
+              </div>
+              <div class="field">
+                <label for="targetPercent">Target utilization</label>
+                <select id="targetPercent" onchange="runSimulation()">
+                  <option value="30">Under 30%</option>
+                  <option value="10" selected>Under 10%</option>
+                  <option value="1">Close to 1%</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-panel" id="scenario-limit">
+            <div class="form-grid">
+              <div class="field">
+                <label for="limitCard">Card getting limit increase</label>
+                <select id="limitCard" onchange="runSimulation()"></select>
+              </div>
+              <div class="field">
+                <label for="newLimit">New credit limit</label>
+                <input id="newLimit" type="number" min="1" step="1" value="1000" oninput="runSimulation()" />
+              </div>
+              <div class="notice">
+                A higher limit can lower utilization only if balances stay the same. Do not spend more just because the limit is higher.
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-panel" id="scenario-newcard">
+            <div class="form-grid">
+              <div class="two-col">
+                <div class="field">
+                  <label for="newCardLimit">New card limit</label>
+                  <input id="newCardLimit" type="number" min="1" step="1" value="500" oninput="runSimulation()" />
+                </div>
+                <div class="field">
+                  <label for="newCardBalance">New card balance</label>
+                  <input id="newCardBalance" type="number" min="0" step="1" value="0" oninput="runSimulation()" />
+                </div>
+              </div>
+              <div class="field">
+                <label for="newCardType">New card type</label>
+                <select id="newCardType" onchange="runSimulation()">
+                  <option>Secured card</option>
+                  <option>Starter unsecured card</option>
+                  <option>Cashback card</option>
+                  <option>Store card</option>
+                </select>
+              </div>
+              <div class="notice">
+                A new card can lower utilization mathematically, but applying can add an inquiry and approval is never guaranteed.
+              </div>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button class="btn btn-primary btn-full" onclick="runSimulation()">Update Simulation</button>
+            <button class="btn btn-ghost btn-full" onclick="copySimulation()">Copy Result</button>
+            <button class="btn btn-warning btn-full" onclick="saveAsPlan()">Save As Plan</button>
+          </div>
+
+          <div class="notice">
+            Simulator disclaimer: These numbers are educational estimates based on user-entered data. They do not guarantee credit score changes or card approvals.
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="panel panel-pad chart-card">
+          <div class="panel-head">
+            <div>
+              <h2>Before vs. After</h2>
+              <p>See how this scenario changes your total utilization.</p>
+            </div>
+          </div>
+
+          <div class="chart-wrap">
+            <div class="donut" id="donutChart">
+              <div class="donut-center">
+                <strong id="donutPercent">0%</strong>
+                <span>After simulation</span>
+              </div>
+            </div>
+            <div class="compare-grid">
+              <div class="compare-box">
+                <span>Before balance</span>
+                <strong id="beforeBalance">$0</strong>
+                <small>Current saved total</small>
+              </div>
+              <div class="compare-box">
+                <span>After balance</span>
+                <strong id="afterBalance">$0</strong>
+                <small>After simulated move</small>
+              </div>
+              <div class="compare-box">
+                <span>Before limit</span>
+                <strong id="beforeLimit">$0</strong>
+                <small>Current saved limit</small>
+              </div>
+              <div class="compare-box">
+                <span>After limit</span>
+                <strong id="afterLimit">$0</strong>
+                <small>After simulated move</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Simulated Card Breakdown</h2>
+              <p>Each card after the selected scenario.</p>
+            </div>
+          </div>
+          <div class="card-list" id="cardList"></div>
+        </div>
+
+        <div class="panel panel-pad">
+          <div class="panel-head">
+            <div>
+              <h2>Recommended Next Steps</h2>
+              <p>Simple guidance based on the simulated result.</p>
+            </div>
+          </div>
+          <div class="action-list" id="actionList"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const CARDS_KEY = "creditCardStackerCards";
+    const SIM_PLAN_KEY = "creditCardStackerSavedSimulation";
+
+    let cards = [];
+    let activeScenario = "payment";
+    let lastSimulation = null;
+
+    function getJson(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+      catch { return fallback; }
+    }
+
+    function saveJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function money(value) {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Math.max(0, Number(value) || 0));
+    }
+
+    function percent(value) {
+      return Number.isFinite(value) ? value.toFixed(1) + "%" : "0%";
+    }
+
+    function loadCards() {
+      cards = getJson(CARDS_KEY, []);
+    }
+
+    function totals(list) {
+      const balance = list.reduce((sum, card) => sum + Number(card.balance || 0), 0);
+      const limit = list.reduce((sum, card) => sum + Number(card.limit || 0), 0);
+      const utilization = limit > 0 ? (balance / limit) * 100 : 0;
+      return { balance, limit, utilization };
+    }
+
+    function cardUtil(card) {
+      return (Number(card.balance || 0) / Math.max(1, Number(card.limit || 1))) * 100;
+    }
+
+    function statusForUtil(util) {
+      if (util >= 50) return { label: "Very high", className: "bad" };
+      if (util >= 30) return { label: "High", className: "bad" };
+      if (util >= 10) return { label: "Medium", className: "warn" };
+      return { label: "Low", className: "good" };
+    }
+
+    function showScenario(name, button) {
+      activeScenario = name;
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".scenario-panel").forEach(panel => panel.classList.remove("active"));
+      button.classList.add("active");
+      document.getElementById(`scenario-${name}`).classList.add("active");
+      runSimulation();
+    }
+
+    function populateCardSelects() {
+      const options = cards.length
+        ? cards.map(card => `<option value="${card.id}">${escapeHtml(card.name || "Unnamed card")}</option>`).join("")
+        : `<option value="">No cards saved</option>`;
+      document.getElementById("paymentCard").innerHTML = options;
+      document.getElementById("limitCard").innerHTML = options;
+
+      const first = cards[0];
+      if (first) {
+        document.getElementById("newLimit").value = Math.max(1000, Number(first.limit || 0) + 500);
+      }
+    }
+
+    function simulateCards() {
+      let simulated = cards.map(card => ({ ...card }));
+
+      if (activeScenario === "payment") {
+        const cardId = document.getElementById("paymentCard").value;
+        const payment = Math.max(0, Number(document.getElementById("paymentAmount").value || 0));
+        simulated = simulated.map(card => {
+          if (card.id !== cardId) return card;
+          return { ...card, balance: Math.max(0, Number(card.balance || 0) - payment), simulatedNote: `Paid ${money(payment)}` };
+        });
+      }
+
+      if (activeScenario === "limit") {
+        const cardId = document.getElementById("limitCard").value;
+        const newLimit = Math.max(1, Number(document.getElementById("newLimit").value || 1));
+        simulated = simulated.map(card => {
+          if (card.id !== cardId) return card;
+          return { ...card, limit: newLimit, simulatedNote: `Limit changed to ${money(newLimit)}` };
+        });
+      }
+
+      if (activeScenario === "newcard") {
+        const limit = Math.max(1, Number(document.getElementById("newCardLimit").value || 1));
+        const balance = Math.max(0, Number(document.getElementById("newCardBalance").value || 0));
+        const type = document.getElementById("newCardType").value;
+        simulated.push({
+          id: "simulated-new-card",
+          name: `Simulated ${type}`,
+          balance,
+          limit,
+          simulatedNote: "New card scenario"
+        });
+      }
+
+      return simulated;
+    }
+
+    function runSimulation() {
+      loadCards();
+      populateCardSelects();
+
+      if (!cards.length) {
+        renderEmpty();
+        return;
+      }
+
+      const before = totals(cards);
+      const simulated = simulateCards();
+      const after = totals(simulated);
+      const change = after.utilization - before.utilization;
+      lastSimulation = { before, after, simulated, activeScenario, createdAt: new Date().toISOString() };
+
+      renderSummary(before, after, change);
+      renderDonut(after.utilization);
+      renderCards(simulated);
+      renderActions(before, after, simulated);
+    }
+
+    function renderEmpty() {
+      document.getElementById("beforeUtil").textContent = "0%";
+      document.getElementById("afterUtil").textContent = "0%";
+      document.getElementById("utilChange").textContent = "0%";
+      document.getElementById("simBalance").textContent = "$0";
+      document.getElementById("beforeBalance").textContent = "$0";
+      document.getElementById("afterBalance").textContent = "$0";
+      document.getElementById("beforeLimit").textContent = "$0";
+      document.getElementById("afterLimit").textContent = "$0";
+      document.getElementById("donutPercent").textContent = "0%";
+      document.getElementById("cardList").innerHTML = `<div class="empty">No cards saved yet. Add cards in dashboard.html or click Load Sample Cards.</div>`;
+      document.getElementById("actionList").innerHTML = `<div class="empty">No simulation actions yet.</div>`;
+    }
+
+    function renderSummary(before, after, change) {
+      const beforeStat = document.getElementById("beforeStat");
+      const afterStat = document.getElementById("afterStat");
+      const changeStat = document.getElementById("changeStat");
+      [beforeStat, afterStat, changeStat].forEach(el => el.classList.remove("good", "warn", "bad"));
+
+      beforeStat.classList.add(statusForUtil(before.utilization).className);
+      afterStat.classList.add(statusForUtil(after.utilization).className);
+      changeStat.classList.add(change < 0 ? "good" : change > 0 ? "bad" : "warn");
+
+      document.getElementById("beforeUtil").textContent = percent(before.utilization);
+      document.getElementById("afterUtil").textContent = percent(after.utilization);
+      document.getElementById("utilChange").textContent = `${change > 0 ? "+" : ""}${percent(change)}`;
+      document.getElementById("simBalance").textContent = money(after.balance);
+      document.getElementById("beforeBalance").textContent = money(before.balance);
+      document.getElementById("afterBalance").textContent = money(after.balance);
+      document.getElementById("beforeLimit").textContent = money(before.limit);
+      document.getElementById("afterLimit").textContent = money(after.limit);
+    }
+
+    function renderDonut(utilization) {
+      const degrees = Math.min(360, Math.max(0, (utilization / 100) * 360));
+      let color = "var(--brand)";
+      if (utilization >= 30) color = "var(--danger)";
+      else if (utilization >= 10) color = "var(--warning)";
+      document.getElementById("donutChart").style.background = `conic-gradient(${color} 0deg ${degrees}deg, rgba(255,255,255,.1) ${degrees}deg 360deg)`;
+      document.getElementById("donutPercent").textContent = percent(utilization);
+    }
+
+    function renderCards(list) {
+      document.getElementById("cardList").innerHTML = list.map(card => {
+        const util = cardUtil(card);
+        const status = statusForUtil(util);
+        const width = Math.min(100, Math.max(0, util));
+        return `
+          <article class="sim-card">
+            <div class="sim-card-top">
+              <div>
+                <h3>${escapeHtml(card.name || "Unnamed card")}</h3>
+                <p>${money(card.balance)} balance / ${money(card.limit)} limit ${card.simulatedNote ? "• " + escapeHtml(card.simulatedNote) : ""}</p>
+              </div>
+              <span class="tag ${status.className}">${status.label}</span>
+            </div>
+            <div class="bar"><span style="width:${width}%"></span></div>
+            <p><strong>${percent(util)}</strong> simulated utilization.</p>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderActions(before, after, simulated) {
+      const target = Number(document.getElementById("targetPercent").value || 10);
+      const actions = [];
+      const change = after.utilization - before.utilization;
+      const highest = [...simulated].sort((a, b) => cardUtil(b) - cardUtil(a))[0];
+
+      if (change < 0) {
+        actions.push({ title: "This move lowers utilization", text: `Your total utilization drops by ${percent(Math.abs(change))}. That is cleaner than your current saved setup.` });
+      } else if (change > 0) {
+        actions.push({ title: "This move raises utilization", text: `Your total utilization increases by ${percent(change)}. Think carefully before making this move.` });
+      } else {
+        actions.push({ title: "No utilization change", text: "This scenario does not change total utilization much. Try a different payment or limit scenario." });
+      }
+
+      if (after.utilization > target) {
+        const needed = Math.max(0, after.balance - after.limit * (target / 100));
+        actions.push({ title: `Still above under ${target}% target`, text: `After this scenario, you would still need about ${money(needed)} more paydown to reach your selected target.` });
+      } else {
+        actions.push({ title: "Target reached", text: `This scenario gets total utilization near or under your selected ${target}% target.` });
+      }
+
+      if (highest) {
+        actions.push({ title: `Watch ${highest.name}`, text: `This card would still have the highest utilization at ${percent(cardUtil(highest))}.` });
+      }
+
+      if (activeScenario === "newcard") {
+        actions.push({ title: "New card warning", text: "A new card may lower utilization mathematically, but applying can add an inquiry and approval is not guaranteed." });
+      }
+
+      document.getElementById("actionList").innerHTML = actions.map((item, index) => `
+        <div class="action-item">
+          <div class="action-number">${index + 1}</div>
+          <div>
+            <strong>${escapeHtml(item.title)}</strong>
+            <p>${escapeHtml(item.text)}</p>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function copySimulation() {
+      if (!lastSimulation) runSimulation();
+      if (!lastSimulation) return;
+      const text = [
+        "Credit Card Stacker Simulation",
+        `Scenario: ${activeScenario}`,
+        `Before utilization: ${percent(lastSimulation.before.utilization)}`,
+        `After utilization: ${percent(lastSimulation.after.utilization)}`,
+        `Before balance: ${money(lastSimulation.before.balance)}`,
+        `After balance: ${money(lastSimulation.after.balance)}`,
+        `Before limit: ${money(lastSimulation.before.limit)}`,
+        `After limit: ${money(lastSimulation.after.limit)}`,
+        "",
+        "Educational estimate only. No credit score or approval guarantee."
+      ].join("\n");
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Simulation copied.");
+      } catch {
+        showToast("Could not copy automatically.");
+      }
+    }
+
+    function saveAsPlan() {
+      if (!lastSimulation) runSimulation();
+      if (!lastSimulation) return;
+      saveJson(SIM_PLAN_KEY, lastSimulation);
+      showToast("Simulation saved as a plan in this browser.");
+    }
+
+    function loadSampleCards() {
+      const sample = [
+        { id: "sim-sample-1", name: "Capital One Secured", balance: 238, limit: 500, statementDate: "2026-05-04", dueDate: "2026-05-18" },
+        { id: "sim-sample-2", name: "Starter Rewards Card", balance: 84, limit: 1000, statementDate: "2026-05-11", dueDate: "2026-05-25" },
+        { id: "sim-sample-3", name: "Store Card", balance: 390, limit: 700, statementDate: "2026-05-16", dueDate: "2026-05-29" }
+      ];
+      saveJson(CARDS_KEY, sample);
+      loadCards();
+      populateCardSelects();
+      runSimulation();
+      showToast("Sample cards loaded.");
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    loadCards();
+    populateCardSelects();
+    runSimulation();
+  </script>
+</body>
+</html>

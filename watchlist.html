@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Card Watchlist | Credit Card Stacker</title>
+  <meta name="description" content="Save credit cards to a watchlist, compare fees and rewards, and track readiness before applying." />
+  <style>
+    :root {
+      --bg:#07101d; --panel:rgba(255,255,255,.075); --line:rgba(255,255,255,.14);
+      --text:#f8fbff; --muted:#aebcd0; --brand:#6ee7b7; --brand-2:#60a5fa; --brand-3:#a78bfa;
+      --danger:#fb7185; --warning:#fbbf24; --success:#34d399; --radius:26px; --shadow:0 24px 80px rgba(0,0,0,.34);
+    }
+    *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
+    body{min-height:100vh;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top left,rgba(96,165,250,.22),transparent 33%),radial-gradient(circle at top right,rgba(110,231,183,.16),transparent 31%),linear-gradient(180deg,var(--bg) 0%,#091426 54%,#050b14 100%);overflow-x:hidden}
+    a{color:inherit;text-decoration:none} button,input,select,textarea{font:inherit}.shell{width:min(1200px,calc(100% - 30px));margin:0 auto}
+    .topbar{position:sticky;top:0;z-index:30;background:rgba(7,16,29,.78);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+    .topbar-inner{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 0}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:1000;letter-spacing:-.04em;font-size:1.1rem}.logo-mark{width:38px;height:38px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--brand),var(--brand-2),var(--brand-3));color:#06111f;box-shadow:0 12px 40px rgba(96,165,250,.28)}
+    .top-links{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:.94rem;flex-wrap:wrap}.top-links a:hover{color:var(--text)}
+    .btn{border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:12px 16px;font-weight:900;transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;white-space:nowrap}.btn:hover{transform:translateY(-2px)}
+    .btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#06111f;box-shadow:0 18px 44px rgba(96,165,250,.25)}.btn-ghost{background:rgba(255,255,255,.075);color:var(--text);border:1px solid var(--line)}.btn-danger{background:rgba(251,113,133,.12);color:#fecdd3;border:1px solid rgba(251,113,133,.28)}.btn-warning{background:rgba(251,191,36,.12);color:#fde68a;border:1px solid rgba(251,191,36,.28)}.btn-full{width:100%}
+    .hero{padding:46px 0 24px;display:grid;grid-template-columns:1fr auto;align-items:end;gap:18px}.badge{display:inline-flex;align-items:center;gap:8px;color:#c9ffee;background:rgba(110,231,183,.11);border:1px solid rgba(110,231,183,.24);border-radius:999px;padding:8px 12px;font-size:.84rem;font-weight:900;margin-bottom:14px}
+    h1{font-size:clamp(2.4rem,5vw,5.2rem);letter-spacing:-.075em;line-height:.96;max-width:920px}.hero p{color:var(--muted);line-height:1.7;max-width:830px;margin-top:16px;font-size:1.05rem}
+    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.stat{border-radius:22px;padding:18px;background:rgba(255,255,255,.065);border:1px solid var(--line);min-height:118px}.stat span{display:block;color:var(--muted);font-size:.82rem;margin-bottom:8px}.stat strong{font-size:1.85rem;letter-spacing:-.065em;line-height:1}.stat small{display:block;color:var(--muted);margin-top:7px;line-height:1.4}.stat.good strong{color:var(--success)}.stat.warn strong{color:var(--warning)}.stat.bad strong{color:var(--danger)}
+    .layout{display:grid;grid-template-columns:.9fr 1.35fr;gap:18px;align-items:start;padding:18px 0 70px}.panel{border-radius:var(--radius);background:var(--panel);border:1px solid var(--line);box-shadow:0 18px 60px rgba(0,0,0,.14);overflow:hidden}.panel-pad{padding:24px}.sticky-panel{position:sticky;top:92px;background:radial-gradient(circle at top right,rgba(110,231,183,.17),transparent 36%),rgba(255,255,255,.085)}
+    .panel-head{display:flex;align-items:start;justify-content:space-between;gap:14px;margin-bottom:18px}.panel-head h2,.panel h2{font-size:1.35rem;letter-spacing:-.045em}.panel-head p,.subtext{color:var(--muted);line-height:1.6;margin-top:6px;font-size:.94rem}
+    .form-grid{display:grid;gap:14px}.two-col{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field label{display:block;color:var(--muted);font-weight:850;margin-bottom:7px;font-size:.9rem}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:16px;padding:14px;outline:none;min-height:48px;resize:vertical}.field textarea{min-height:96px}.field select option{color:#07101d}.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(110,231,183,.72);box-shadow:0 0 0 4px rgba(110,231,183,.09)}
+    .readiness-meter{border-radius:24px;padding:18px;background:rgba(255,255,255,.058);border:1px solid var(--line);margin-bottom:18px}.meter-top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}.meter-top strong{letter-spacing:-.04em}.meter-top span{color:var(--muted);font-size:.92rem}.meter-track{height:14px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden}.meter-fill{height:100%;width:0%;border-radius:inherit;background:linear-gradient(90deg,var(--danger),var(--warning),var(--brand));transition:width .2s ease}
+    .tools-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;margin-bottom:18px}.tools-row input,.tools-row select{border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--text);border-radius:999px;padding:13px 16px;outline:none}.tools-row select option{color:#07101d}
+    .watch-list{display:grid;gap:12px}.watch-card{border-radius:24px;padding:18px;background:rgba(255,255,255,.062);border:1px solid var(--line)}.watch-top{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:12px}.watch-card h3{letter-spacing:-.04em;margin-bottom:5px}.watch-card p{color:var(--muted);line-height:1.55;font-size:.94rem}.score-line{height:12px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;margin:14px 0 10px}.score-line span{display:block;height:100%;border-radius:inherit;width:0%;background:linear-gradient(90deg,var(--danger),var(--warning),var(--brand))}
+    .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.tag{display:inline-flex;align-items:center;border-radius:999px;padding:7px 10px;font-size:.76rem;font-weight:900;background:rgba(255,255,255,.08);color:var(--muted);border:1px solid var(--line);white-space:nowrap}.tag.good{background:rgba(52,211,153,.12);color:#bbf7d0;border-color:rgba(52,211,153,.28)}.tag.warn{background:rgba(251,191,36,.12);color:#fde68a;border-color:rgba(251,191,36,.28)}.tag.bad{background:rgba(251,113,133,.12);color:#fecdd3;border-color:rgba(251,113,133,.28)}.tag.blue{background:rgba(96,165,250,.12);color:#dbeafe;border-color:rgba(96,165,250,.28)}
+    .watch-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.insight-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.insight{border-radius:22px;padding:18px;background:rgba(255,255,255,.06);border:1px solid var(--line)}.insight strong{display:block;letter-spacing:-.04em;margin-bottom:8px}.insight p{color:var(--muted);line-height:1.65;font-size:.94rem}.notice{border-radius:20px;padding:16px;color:#f9eac0;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.24);line-height:1.65;font-size:.92rem;margin-top:16px}.empty{border-radius:22px;padding:24px;color:var(--muted);background:rgba(255,255,255,.052);border:1px dashed rgba(255,255,255,.2);text-align:center;line-height:1.65}.button-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.toast{position:fixed;right:18px;bottom:18px;z-index:110;max-width:390px;border-radius:18px;padding:14px 16px;background:#0f2138;color:var(--text);border:1px solid var(--line);box-shadow:var(--shadow);line-height:1.5;transform:translateY(130%);transition:transform .24s ease}.toast.active{transform:translateY(0)}
+    @media(max-width:1080px){.layout,.hero{grid-template-columns:1fr}.sticky-panel{position:static}.summary-grid,.insight-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:760px){.topbar-inner{display:block}.top-links{margin-top:12px}.two-col,.summary-grid,.insight-grid,.tools-row{grid-template-columns:1fr}.panel-pad{padding:18px}.button-row,.watch-actions{flex-direction:column;align-items:stretch}.watch-top,.meter-top{display:block}.watch-top .tag,.meter-top span{margin-top:8px;display:inline-flex}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home"><span class="logo-mark">S</span><span>Credit Card Stacker</span></a>
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a><a href="dashboard.html">Dashboard</a><a href="card-finder.html">Card Finder</a><a href="application-tracker.html">Applications</a><a href="rewards-calculator.html">Rewards</a><a href="coach.html">Coach</a><a href="help.html">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Card watchlist • Compare before applying • No approval guarantee</div>
+        <h1>Save cards you want before you apply.</h1>
+        <p>Build a watchlist of possible credit cards, compare fees and rewards, track pre-approval status, and get a simple readiness score based on your saved profile and utilization.</p>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" onclick="addCard()">Add Card</button>
+        <button class="btn btn-ghost" onclick="loadSamples()">Load Samples</button>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="stat" id="avgStat"><span>Average readiness</span><strong id="avgReadiness">0</strong><small>Across watchlist</small></div>
+      <div class="stat"><span>Watchlist cards</span><strong id="watchCount">0</strong><small>Saved card ideas</small></div>
+      <div class="stat good"><span>No-fee cards</span><strong id="noFeeCount">0</strong><small>Annual fee is $0</small></div>
+      <div class="stat" id="bestStat"><span>Best fit</span><strong id="bestFit">—</strong><small id="bestFitSub">Add cards to compare</small></div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel">
+          <div class="panel-head"><div><h2>Add Watchlist Card</h2><p>Use this for cards you are researching. Do not apply until you are ready.</p></div></div>
+
+          <div class="readiness-meter">
+            <div class="meter-top"><strong>Current profile readiness</strong><span id="profileReadyText">0/100</span></div>
+            <div class="meter-track"><div class="meter-fill" id="profileReadyFill"></div></div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field"><label for="cardName">Card name</label><input id="cardName" placeholder="Example: Capital One Quicksilver" /></div>
+            <div class="two-col">
+              <div class="field"><label for="issuer">Issuer</label><input id="issuer" placeholder="Capital One" /></div>
+              <div class="field"><label for="category">Category</label><select id="category"><option>Secured</option><option>Starter</option><option>Cashback</option><option>Travel</option><option>Store</option><option>Balance transfer</option></select></div>
+            </div>
+            <div class="two-col">
+              <div class="field"><label for="annualFee">Annual fee</label><input id="annualFee" type="number" min="0" step="1" placeholder="0" /></div>
+              <div class="field"><label for="rewardRate">Reward rate %</label><input id="rewardRate" type="number" min="0" step="0.1" placeholder="1.5" /></div>
+            </div>
+            <div class="two-col">
+              <div class="field"><label for="minScore">Suggested score range</label><select id="minScore"><option value="none">Unknown</option><option value="rebuild">Rebuilding</option><option value="fair">Fair</option><option value="good">Good</option><option value="excellent">Excellent</option></select></div>
+              <div class="field"><label for="preapproval">Pre-approval status</label><select id="preapproval"><option>Not checked</option><option>Pre-approved</option><option>Not pre-approved</option><option>Invite only</option></select></div>
+            </div>
+            <div class="field"><label for="notes">Notes</label><textarea id="notes" placeholder="Example: Wait until utilization is under 10% before applying."></textarea></div>
+            <button class="btn btn-primary btn-full" onclick="addCard()">Save to Watchlist</button>
+            <button class="btn btn-ghost btn-full" onclick="copyWatchlist()">Copy Watchlist</button>
+            <button class="btn btn-warning btn-full" onclick="exportWatchlist()">Export Watchlist</button>
+          </div>
+
+          <div class="notice">Watchlist disclaimer: This page does not show real approval odds. It is a planning tool to help avoid random applications.</div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head"><div><h2>Filter Watchlist</h2><p>Search and sort saved card ideas.</p></div></div>
+          <div class="tools-row">
+            <input id="searchInput" placeholder="Search issuer, category, card name..." oninput="renderWatchlist()" />
+            <select id="sortBy" onchange="renderWatchlist()"><option value="readiness">Sort by readiness</option><option value="fee">Sort by annual fee</option><option value="reward">Sort by reward rate</option><option value="name">Sort by name</option></select>
+            <button class="btn btn-danger" onclick="clearWatchlist()">Clear</button>
+          </div>
+        </div>
+
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head"><div><h2>Watchlist Insights</h2><p>Simple notes based on saved cards and your profile.</p></div></div>
+          <div class="insight-grid" id="insightGrid"></div>
+        </div>
+
+        <div class="panel panel-pad">
+          <div class="panel-head"><div><h2>Saved Cards</h2><p>Compare ideas before you apply.</p></div></div>
+          <div class="watch-list" id="watchList"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const WATCH_KEY = "creditCardStackerWatchlist";
+    const CARDS_KEY = "creditCardStackerCards";
+    const PROFILE_KEY = "creditCardStackerUserProfile";
+    const SETTINGS_KEY = "creditCardStackerSettings";
+    let watchlist = [];
+
+    function getJson(key, fallback){try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback))}catch{return fallback}}
+    function saveJson(key,value){localStorage.setItem(key,JSON.stringify(value))}
+    function money(v){return new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(Math.max(0,Number(v)||0))}
+    function load(){watchlist=getJson(WATCH_KEY,[])}
+    function scoreRank(range){const map={under500:0,"500-579":1,"580-619":2,"620-659":3,"660-699":4,"700plus":5};return map[range]??2}
+    function categoryNeed(card){const map={Secured:0,Starter:1,Store:1,Cashback:3,"Balance transfer":3,Travel:4};if(card.minScore==="rebuild")return 1;if(card.minScore==="fair")return 2;if(card.minScore==="good")return 4;if(card.minScore==="excellent")return 5;return map[card.category]??2}
+    function utilization(){const cards=getJson(CARDS_KEY,[]);const bal=cards.reduce((s,c)=>s+Number(c.balance||0),0);const lim=cards.reduce((s,c)=>s+Number(c.limit||0),0);return lim>0?(bal/lim)*100:0}
+    function profileReadiness(){const profile={...getJson(SETTINGS_KEY,{}),...getJson(PROFILE_KEY,{})};let score=50;const rank=scoreRank(profile.scoreRange);score+=rank*8;const util=utilization();if(util>=50)score-=35;else if(util>=30)score-=25;else if(util>=10)score-=10;else if(util>0)score+=10;return Math.max(0,Math.min(100,Math.round(score)))}
+    function readiness(card){let score=profileReadiness();const profile={...getJson(SETTINGS_KEY,{}),...getJson(PROFILE_KEY,{})};const rank=scoreRank(profile.scoreRange);const need=categoryNeed(card);score+=(rank-need)*10;if(Number(card.annualFee)>0)score-=8;if(card.preapproval==="Pre-approved")score+=18;if(card.preapproval==="Not pre-approved")score-=25;if(card.category==="Secured"&&rank<=2)score+=10;if(card.category==="Travel"&&rank<4)score-=20;return Math.max(0,Math.min(100,Math.round(score)))}
+    function classFor(score){return score>=75?"good":score>=45?"warn":"bad"}
+
+    function addCard(){
+      const card={
+        id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),
+        name:document.getElementById("cardName").value.trim(), issuer:document.getElementById("issuer").value.trim(), category:document.getElementById("category").value,
+        annualFee:Number(document.getElementById("annualFee").value||0), rewardRate:Number(document.getElementById("rewardRate").value||0),
+        minScore:document.getElementById("minScore").value, preapproval:document.getElementById("preapproval").value, notes:document.getElementById("notes").value.trim(), createdAt:new Date().toISOString()
+      };
+      if(!card.name){showToast("Enter a card name first.");return}
+      watchlist.push(card);saveJson(WATCH_KEY,watchlist);clearForm();renderAll();showToast("Card saved to watchlist.")
+    }
+    function clearForm(){["cardName","issuer","annualFee","rewardRate","notes"].forEach(id=>document.getElementById(id).value="");document.getElementById("category").value="Secured";document.getElementById("minScore").value="none";document.getElementById("preapproval").value="Not checked"}
+    function deleteCard(id){watchlist=watchlist.filter(c=>c.id!==id);saveJson(WATCH_KEY,watchlist);renderAll();showToast("Card removed.")}
+    function moveToApplications(id){const card=watchlist.find(c=>c.id===id);if(!card)return;const apps=getJson("creditCardStackerApplications",[]);apps.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),cardName:card.name,issuer:card.issuer,date:new Date().toISOString().slice(0,10),status:"Planning",hardInquiry:"unknown",startingLimit:0,annualFee:card.annualFee,reason:`Moved from watchlist. ${card.notes||""}`});saveJson("creditCardStackerApplications",apps);showToast("Moved to application tracker as Planning.")}
+
+    function renderSummary(){
+      const scores=watchlist.map(readiness);const avg=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):0;const best=[...watchlist].sort((a,b)=>readiness(b)-readiness(a))[0];
+      const avgStat=document.getElementById("avgStat");const bestStat=document.getElementById("bestStat");avgStat.className="stat "+classFor(avg);bestStat.className="stat "+(best?classFor(readiness(best)):"");
+      document.getElementById("avgReadiness").textContent=avg;document.getElementById("watchCount").textContent=watchlist.length;document.getElementById("noFeeCount").textContent=watchlist.filter(c=>Number(c.annualFee)===0).length;
+      document.getElementById("bestFit").textContent=best?readiness(best):"—";document.getElementById("bestFitSub").textContent=best?best.name:"Add cards to compare";
+      const pr=profileReadiness();document.getElementById("profileReadyText").textContent=`${pr}/100`;document.getElementById("profileReadyFill").style.width=`${pr}%`;
+    }
+    function renderInsights(){
+      const util=utilization();const noFee=watchlist.filter(c=>Number(c.annualFee)===0).length;const pre=watchlist.filter(c=>c.preapproval==="Pre-approved").length;const highFee=watchlist.filter(c=>Number(c.annualFee)>95).length;
+      const insights=[
+        {title:"Profile check",text:util>=30?`Saved utilization is ${util.toFixed(1)}%. Paying down before applying may be cleaner.`:`Saved utilization is ${util.toFixed(1)}%. Keep it controlled before applying.`,cls:util>=30?"bad":"good"},
+        {title:"Fee check",text:highFee?`${highFee} card(s) have annual fees over $95. Make sure benefits beat the fee.`:`${noFee} no-fee card(s) are saved. No-fee cards are usually safer for rebuilding.`,cls:highFee?"warn":"good"},
+        {title:"Pre-approval check",text:pre?`${pre} card(s) are marked pre-approved. Still review terms because approval is not guaranteed.`:"No cards marked pre-approved yet. Consider checking soft-pull pre-approval before applying when available.",cls:pre?"blue":"warn"},
+        {title:"Best move",text:watchlist.length?"Compare readiness score, annual fee, and reward rate before moving a card to Applications.":"Add cards you are researching so this page can compare them.",cls:"blue"}
+      ];
+      document.getElementById("insightGrid").innerHTML=insights.map(i=>`<div class="insight"><strong>${escapeHtml(i.title)}</strong><p>${escapeHtml(i.text)}</p><div class="tag-row"><span class="tag ${i.cls}">${i.cls==="bad"?"Risk":i.cls==="warn"?"Watch":"Info"}</span></div></div>`).join("")
+    }
+    function renderWatchlist(){
+      const q=document.getElementById("searchInput")?.value.toLowerCase()||"";const sort=document.getElementById("sortBy")?.value||"readiness";let list=[...watchlist].filter(c=>(c.name+c.issuer+c.category+c.notes).toLowerCase().includes(q));
+      if(sort==="readiness")list.sort((a,b)=>readiness(b)-readiness(a));if(sort==="fee")list.sort((a,b)=>Number(a.annualFee)-Number(b.annualFee));if(sort==="reward")list.sort((a,b)=>Number(b.rewardRate)-Number(a.rewardRate));if(sort==="name")list.sort((a,b)=>a.name.localeCompare(b.name));
+      const el=document.getElementById("watchList");if(!list.length){el.innerHTML=`<div class="empty">No watchlist cards found. Add one or load samples.</div>`;return}
+      el.innerHTML=list.map(c=>{const r=readiness(c);const cls=classFor(r);return `<article class="watch-card"><div class="watch-top"><div><h3>${escapeHtml(c.name)}</h3><p>${escapeHtml(c.issuer||"Unknown issuer")} • ${escapeHtml(c.category)} • ${escapeHtml(c.preapproval)}</p></div><span class="tag ${cls}">${r}/100 ready</span></div><div class="score-line"><span style="width:${r}%"></span></div><p>${escapeHtml(c.notes||"No notes added.")}</p><div class="tag-row"><span class="tag ${Number(c.annualFee)===0?"good":"warn"}">Fee: ${money(c.annualFee)}</span><span class="tag blue">Rewards: ${Number(c.rewardRate||0).toFixed(1)}%</span><span class="tag">Score need: ${escapeHtml(c.minScore)}</span></div><div class="watch-actions"><button class="btn btn-ghost" onclick="moveToApplications('${c.id}')">Move to Applications</button><button class="btn btn-danger" onclick="deleteCard('${c.id}')">Delete</button></div></article>`}).join("")
+    }
+    function renderAll(){load();renderSummary();renderInsights();renderWatchlist()}
+    async function copyWatchlist(){renderAll();const text=["Credit Card Stacker Watchlist",...watchlist.map(c=>`- ${c.name} (${c.issuer||"Unknown"}) | ${c.category} | Ready: ${readiness(c)}/100 | Fee: ${money(c.annualFee)} | Rewards: ${Number(c.rewardRate||0).toFixed(1)}%`),"","Educational only. Approval is not guaranteed."].join("\n");try{await navigator.clipboard.writeText(text);showToast("Watchlist copied.")}catch{showToast("Could not copy automatically.")}}
+    function exportWatchlist(){const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),watchlist},null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="credit-card-stacker-watchlist.json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);showToast("Watchlist exported.")}
+    function clearWatchlist(){if(!watchlist.length)return;if(!confirm("Delete all watchlist cards?"))return;watchlist=[];saveJson(WATCH_KEY,watchlist);renderAll();showToast("Watchlist cleared.")}
+    function loadSamples(){watchlist=[{id:"watch-1",name:"Capital One Quicksilver",issuer:"Capital One",category:"Cashback",annualFee:0,rewardRate:1.5,minScore:"fair",preapproval:"Not checked",notes:"Good no-fee cashback idea, but wait until utilization is lower."},{id:"watch-2",name:"Discover it Secured",issuer:"Discover",category:"Secured",annualFee:0,rewardRate:2,minScore:"rebuild",preapproval:"Not checked",notes:"Rebuilding option. Check deposit requirement."},{id:"watch-3",name:"Premium Travel Card",issuer:"Example Bank",category:"Travel",annualFee:395,rewardRate:3,minScore:"excellent",preapproval:"Not pre-approved",notes:"High fee. Not a good fit unless spending and benefits justify it."}];saveJson(WATCH_KEY,watchlist);renderAll();showToast("Sample watchlist loaded.")}
+    function escapeHtml(text){return String(text).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+    function showToast(message){const toast=document.getElementById("toast");toast.textContent=message;toast.classList.add("active");clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>toast.classList.remove("active"),2800)}
+    renderAll();
+  </script>
+</body>
+</html>

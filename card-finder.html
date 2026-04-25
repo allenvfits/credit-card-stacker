@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Card Finder | Credit Card Stacker</title>
+  <meta name="description" content="Compare beginner, secured, cashback, and rebuilding credit card categories with clear educational guidance and no guaranteed approvals." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255, 255, 255, 0.075);
+      --panel-2: rgba(255, 255, 255, 0.115);
+      --line: rgba(255, 255, 255, 0.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110, 231, 183, 0.15), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1200px, calc(100% - 30px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7, 16, 29, 0.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -0.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96, 165, 250, 0.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover {
+      color: var(--text);
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96, 165, 250, 0.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-danger {
+      background: rgba(251, 113, 133, 0.12);
+      color: #fecdd3;
+      border: 1px solid rgba(251, 113, 133, 0.28);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 46px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110, 231, 183, 0.11);
+      border: 1px solid rgba(110, 231, 183, 0.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 5.3rem);
+      letter-spacing: -0.075em;
+      line-height: 0.96;
+      max-width: 820px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 760px;
+      margin-top: 16px;
+      font-size: 1.05rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 0.9fr 1.35fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 70px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.14);
+      overflow: hidden;
+    }
+
+    .panel-pad {
+      padding: 24px;
+    }
+
+    .sticky-panel {
+      position: sticky;
+      top: 92px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2, .panel h2 {
+      font-size: 1.35rem;
+      letter-spacing: -0.045em;
+    }
+
+    .panel-head p, .subtext {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 6px;
+      font-size: 0.94rem;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 7px;
+      font-size: 0.9rem;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px;
+      outline: none;
+    }
+
+    .field select option {
+      color: #07101d;
+    }
+
+    .field input:focus, .field select:focus {
+      border-color: rgba(110, 231, 183, 0.72);
+      box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.09);
+    }
+
+    .score-card {
+      margin-bottom: 18px;
+      background:
+        radial-gradient(circle at top right, rgba(110, 231, 183, 0.17), transparent 36%),
+        rgba(255, 255, 255, 0.085);
+    }
+
+    .profile-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .mini-stat {
+      border-radius: 18px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.065);
+      border: 1px solid var(--line);
+    }
+
+    .mini-stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 5px;
+    }
+
+    .mini-stat strong {
+      font-size: 1.35rem;
+      letter-spacing: -0.055em;
+    }
+
+    .notice {
+      border-radius: 20px;
+      padding: 16px;
+      color: #f9eac0;
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.24);
+      line-height: 1.65;
+      font-size: 0.92rem;
+    }
+
+    .results-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.065);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 10px 13px;
+      cursor: pointer;
+      font-weight: 850;
+    }
+
+    .tab.active {
+      color: #06111f;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      border-color: transparent;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .offer-card {
+      border-radius: 26px;
+      padding: 20px;
+      background:
+        radial-gradient(circle at top right, rgba(96, 165, 250, 0.13), transparent 34%),
+        rgba(255, 255, 255, 0.068);
+      border: 1px solid var(--line);
+      display: grid;
+      gap: 14px;
+      min-height: 330px;
+    }
+
+    .offer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+    }
+
+    .card-icon {
+      width: 58px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      box-shadow: 0 14px 38px rgba(96, 165, 250, 0.24);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-icon::after {
+      content: "";
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      right: -8px;
+      bottom: -8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .offer-card h3 {
+      font-size: 1.25rem;
+      letter-spacing: -0.045em;
+      margin-bottom: 6px;
+    }
+
+    .offer-card p {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.94rem;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 0.76rem;
+      font-weight: 900;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    .tag.good {
+      background: rgba(52, 211, 153, 0.12);
+      color: #bbf7d0;
+      border-color: rgba(52, 211, 153, 0.28);
+    }
+
+    .tag.warn {
+      background: rgba(251, 191, 36, 0.12);
+      color: #fde68a;
+      border-color: rgba(251, 191, 36, 0.28);
+    }
+
+    .tag.bad {
+      background: rgba(251, 113, 133, 0.12);
+      color: #fecdd3;
+      border-color: rgba(251, 113, 133, 0.28);
+    }
+
+    .tag.sponsored {
+      background: rgba(167, 139, 250, 0.13);
+      color: #ddd6fe;
+      border-color: rgba(167, 139, 250, 0.3);
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .detail-box {
+      border-radius: 16px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.058);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .detail-box span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.76rem;
+      margin-bottom: 4px;
+    }
+
+    .detail-box strong {
+      font-size: 0.96rem;
+      letter-spacing: -0.03em;
+    }
+
+    .offer-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .match-box {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(110, 231, 183, 0.09);
+      border: 1px solid rgba(110, 231, 183, 0.22);
+      color: #d8fff1;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .match-box strong {
+      color: #ffffff;
+    }
+
+    .watchlist {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .watch-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      border-radius: 18px;
+      padding: 13px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--line);
+    }
+
+    .watch-item strong {
+      display: block;
+      letter-spacing: -0.035em;
+      margin-bottom: 3px;
+    }
+
+    .watch-item span {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .empty {
+      border-radius: 20px;
+      padding: 18px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.052);
+      border: 1px dashed rgba(255, 255, 255, 0.18);
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .compare-panel {
+      margin-top: 18px;
+    }
+
+    .compare-table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 720px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    td {
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: rgba(0, 0, 0, 0.68);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-bg.active {
+      display: flex;
+    }
+
+    .modal {
+      width: min(560px, 100%);
+      border-radius: 28px;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .modal h2 {
+      font-size: 1.7rem;
+      letter-spacing: -0.05em;
+      margin-bottom: 8px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 18px;
+    }
+
+    .modal-list {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .modal-list div {
+      border-radius: 16px;
+      padding: 13px;
+      background: rgba(255, 255, 255, 0.065);
+      border: 1px solid var(--line);
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .modal-list strong {
+      color: var(--text);
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 100;
+      max-width: 370px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform 0.24s ease;
+    }
+
+    .toast.active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1040px) {
+      .layout, .hero {
+        grid-template-columns: 1fr;
+      }
+      .sticky-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        display: block;
+      }
+      .top-links {
+        margin-top: 12px;
+      }
+      .card-grid, .two-col, .profile-row, .details-grid, .offer-actions {
+        grid-template-columns: 1fr;
+      }
+      .panel-pad {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="onboarding.html">Onboarding</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="#compare">Compare</a>
+        <button class="btn btn-primary" onclick="runFinder()">Find Cards</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Card finder • Educational matching • No guaranteed approvals</div>
+        <h1>Find the card category that fits your credit stage.</h1>
+        <p>
+          This page helps users compare secured cards, starter cards, cashback cards, and premium cards without pretending they are approved. Later, this is where real affiliate offers can go.
+        </p>
+      </div>
+      <div>
+        <button class="btn btn-ghost" onclick="loadProfileFromSetup()">Load my saved profile</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel score-card">
+          <div class="panel-head">
+            <div>
+              <h2>Finder Filters</h2>
+              <p>Change these to see different card category matches.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="scoreRange">Estimated score range</label>
+              <select id="scoreRange" onchange="runFinder()">
+                <option value="under500">Under 500</option>
+                <option value="500-579">500–579</option>
+                <option value="580-619" selected>580–619</option>
+                <option value="620-659">620–659</option>
+                <option value="660-699">660–699</option>
+                <option value="700plus">700+</option>
+              </select>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="incomeRange">Income range</label>
+                <select id="incomeRange" onchange="runFinder()">
+                  <option>$0–$24k</option>
+                  <option selected>$25k–$49k</option>
+                  <option>$50k–$74k</option>
+                  <option>$75k+</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="inquiries">Recent inquiries</label>
+                <select id="inquiries" onchange="runFinder()">
+                  <option>0</option>
+                  <option selected>1–2</option>
+                  <option>3–4</option>
+                  <option>5+</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="utilization">Current utilization</label>
+                <select id="utilization" onchange="runFinder()">
+                  <option value="low">Under 10%</option>
+                  <option value="medium">10%–29%</option>
+                  <option value="high" selected>30%–49%</option>
+                  <option value="very-high">50%+</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="goalType">Main goal</label>
+                <select id="goalType" onchange="runFinder()">
+                  <option value="rebuild" selected>Rebuild credit</option>
+                  <option value="first-card">Get first card</option>
+                  <option value="cashback">Earn cashback</option>
+                  <option value="travel">Travel rewards</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="runFinder()">Update matches</button>
+          </div>
+
+          <div class="profile-row">
+            <div class="mini-stat">
+              <span>Best category</span>
+              <strong id="bestCategory">Secured</strong>
+            </div>
+            <div class="mini-stat">
+              <span>Risk level</span>
+              <strong id="riskLevel">Lower</strong>
+            </div>
+          </div>
+
+          <div class="match-box" id="matchBox">
+            <strong>Finder note:</strong> Based on your profile, secured cards and beginner credit-builder cards are safer categories to study first.
+          </div>
+
+          <div class="notice">
+            Affiliate disclosure placeholder: If real card links are added later, clearly show when compensation may be earned near the Apply button. Never guarantee approval.
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="panel panel-pad">
+          <div class="results-toolbar">
+            <div>
+              <h2>Recommended Card Categories</h2>
+              <p class="subtext">These are mock categories for your MVP. Replace them with real offers after approval from affiliate programs.</p>
+            </div>
+            <div class="tabs" role="tablist" aria-label="Offer filters">
+              <button class="tab active" onclick="setFilter('all', this)">All</button>
+              <button class="tab" onclick="setFilter('rebuild', this)">Rebuild</button>
+              <button class="tab" onclick="setFilter('starter', this)">Starter</button>
+              <button class="tab" onclick="setFilter('rewards', this)">Rewards</button>
+            </div>
+          </div>
+
+          <div class="card-grid" id="offerGrid"></div>
+        </div>
+
+        <div class="panel panel-pad compare-panel" id="watchlistPanel">
+          <div class="panel-head">
+            <div>
+              <h2>Saved Watchlist</h2>
+              <p>Users can save card categories they want to compare later.</p>
+            </div>
+            <button class="btn btn-ghost" onclick="clearWatchlist()">Clear</button>
+          </div>
+          <div class="watchlist" id="watchlist"></div>
+        </div>
+
+        <div class="panel panel-pad compare-panel" id="compare">
+          <div class="panel-head">
+            <div>
+              <h2>Compare Categories</h2>
+              <p>This table keeps the app educational and transparent.</p>
+            </div>
+          </div>
+
+          <div class="compare-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Best for</th>
+                  <th>Watch out for</th>
+                  <th>Good app wording</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Secured cards</strong></td>
+                  <td>Users rebuilding or starting credit.</td>
+                  <td>Deposit requirements, fees, and low limits.</td>
+                  <td>“May be a good starting category.”</td>
+                </tr>
+                <tr>
+                  <td><strong>Starter unsecured cards</strong></td>
+                  <td>Fair-credit users with lower utilization.</td>
+                  <td>High APR, annual fees, and low limits.</td>
+                  <td>“Compare terms before applying.”</td>
+                </tr>
+                <tr>
+                  <td><strong>Cashback cards</strong></td>
+                  <td>Users who pay in full and want simple rewards.</td>
+                  <td>Rewards are not worth it if carrying balances.</td>
+                  <td>“Useful if you avoid interest.”</td>
+                </tr>
+                <tr>
+                  <td><strong>Travel cards</strong></td>
+                  <td>Stronger-credit users who travel often.</td>
+                  <td>High annual fees and higher approval standards.</td>
+                  <td>“Advanced category, not beginner-first.”</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="modal-bg" id="detailsModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h2 id="modalTitle">Card details</h2>
+      <p id="modalDescription">Details will appear here.</p>
+      <div class="modal-list" id="modalList"></div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="closeModal()">Close</button>
+        <button class="btn btn-primary" onclick="showToast('This is where a real affiliate Apply button can go later.')">Apply placeholder</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const SETTINGS_KEY = "creditCardStackerSettings";
+    const CARDS_KEY = "creditCardStackerCards";
+    const WATCHLIST_KEY = "creditCardStackerWatchlist";
+
+    let activeFilter = "all";
+    let watchlist = [];
+
+    const offers = [
+      {
+        id: "secured-builder",
+        name: "Secured Builder Card",
+        category: "rebuild",
+        type: "Secured",
+        scoreFit: "Rebuilding / New credit",
+        annualFee: "$0–$39",
+        deposit: "Usually required",
+        rewards: "Usually low",
+        risk: "Lower risk",
+        tags: ["Rebuild", "Deposit", "Beginner"],
+        tagClass: "good",
+        description: "A secured-card category for users who are rebuilding or starting credit. Usually requires a refundable deposit and may offer a lower approval barrier.",
+        details: [
+          "Good for users who need payment history and controlled utilization.",
+          "The deposit usually becomes the credit limit.",
+          "This is not a guaranteed approval and terms vary by issuer."
+        ]
+      },
+      {
+        id: "credit-builder-no-rewards",
+        name: "Credit Builder Card",
+        category: "rebuild",
+        type: "Builder",
+        scoreFit: "Poor to fair credit",
+        annualFee: "$0–$59",
+        deposit: "Sometimes",
+        rewards: "Not the focus",
+        risk: "Moderate",
+        tags: ["Rebuild", "Simple", "Low limit"],
+        tagClass: "warn",
+        description: "A simple credit-building category focused on payment history and responsible card use instead of fancy rewards.",
+        details: [
+          "Best when the user keeps balances low and pays on time.",
+          "Low limits can cause utilization to spike quickly.",
+          "Users should compare fees carefully."
+        ]
+      },
+      {
+        id: "starter-unsecured",
+        name: "Starter Unsecured Card",
+        category: "starter",
+        type: "Unsecured",
+        scoreFit: "Fair credit",
+        annualFee: "$0–$75",
+        deposit: "No deposit",
+        rewards: "Basic",
+        risk: "Moderate",
+        tags: ["Starter", "No deposit", "Fair credit"],
+        tagClass: "warn",
+        description: "A starter unsecured-card category for users who may be past the secured-card stage but are not ready for premium rewards cards.",
+        details: [
+          "Useful after utilization is under control.",
+          "Annual fees and APR can be high in this category.",
+          "Avoid applying if recent inquiries are already high."
+        ]
+      },
+      {
+        id: "no-annual-fee-starter",
+        name: "No-Fee Starter Card",
+        category: "starter",
+        type: "Starter",
+        scoreFit: "Fair to good credit",
+        annualFee: "$0",
+        deposit: "No deposit",
+        rewards: "Basic cashback possible",
+        risk: "Lower if qualified",
+        tags: ["No fee", "Starter", "Clean terms"],
+        tagClass: "good",
+        description: "A no-annual-fee starter category that can make sense for users who want to build credit without extra yearly cost.",
+        details: [
+          "A good category to compare once utilization is lower.",
+          "No annual fee does not mean approval is easy.",
+          "Best when the user pays balances in full."
+        ]
+      },
+      {
+        id: "cashback-basic",
+        name: "Basic Cashback Card",
+        category: "rewards",
+        type: "Cashback",
+        scoreFit: "Good credit preferred",
+        annualFee: "$0–$95",
+        deposit: "No deposit",
+        rewards: "Cashback",
+        risk: "Higher for rebuilders",
+        tags: ["Rewards", "Cashback", "Good credit"],
+        tagClass: "warn",
+        description: "A cashback category for users who already have controlled utilization and pay in full. Rewards are not useful if interest charges wipe them out.",
+        details: [
+          "Better for users who do not carry balances.",
+          "May require stronger credit than rebuilding cards.",
+          "Compare annual fees and cashback categories."
+        ]
+      },
+      {
+        id: "travel-premium",
+        name: "Travel Rewards Card",
+        category: "rewards",
+        type: "Travel",
+        scoreFit: "Good to excellent credit",
+        annualFee: "$95+",
+        deposit: "No deposit",
+        rewards: "Travel points",
+        risk: "High for beginners",
+        tags: ["Travel", "Advanced", "Higher fee"],
+        tagClass: "bad",
+        description: "An advanced travel-card category. This should usually not be the first recommendation for someone rebuilding credit.",
+        details: [
+          "Better for users with stronger credit profiles.",
+          "High annual fees can be a bad deal if benefits are not used.",
+          "Do not push premium cards just because affiliate payouts are higher."
+        ]
+      }
+    ];
+
+    function loadProfileFromSetup() {
+      const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
+      const cards = JSON.parse(localStorage.getItem(CARDS_KEY) || "[]");
+
+      if (settings) {
+        if (settings.scoreRange) document.getElementById("scoreRange").value = settings.scoreRange;
+        if (settings.incomeRange) document.getElementById("incomeRange").value = settings.incomeRange;
+        if (settings.inquiries) document.getElementById("inquiries").value = settings.inquiries;
+      }
+
+      if (cards.length) {
+        const totalBalance = cards.reduce((sum, card) => sum + Number(card.balance || 0), 0);
+        const totalLimit = cards.reduce((sum, card) => sum + Number(card.limit || 0), 0);
+        const util = totalLimit > 0 ? (totalBalance / totalLimit) * 100 : 0;
+        const utilSelect = document.getElementById("utilization");
+        if (util >= 50) utilSelect.value = "very-high";
+        else if (util >= 30) utilSelect.value = "high";
+        else if (util >= 10) utilSelect.value = "medium";
+        else utilSelect.value = "low";
+      }
+
+      runFinder();
+      showToast(settings || cards.length ? "Saved profile loaded." : "No saved profile found yet. Use onboarding first or enter filters here.");
+    }
+
+    function scoreLabel(value) {
+      const map = {
+        under500: "Under 500",
+        "500-579": "500–579",
+        "580-619": "580–619",
+        "620-659": "620–659",
+        "660-699": "660–699",
+        "700plus": "700+"
+      };
+      return map[value] || "580–619";
+    }
+
+    function runFinder() {
+      const score = document.getElementById("scoreRange").value;
+      const util = document.getElementById("utilization").value;
+      const goal = document.getElementById("goalType").value;
+      const inquiries = document.getElementById("inquiries").value;
+
+      let best = "Secured";
+      let risk = "Lower";
+      let note = "Based on your profile, secured cards and beginner credit-builder cards are safer categories to study first.";
+
+      if (["under500", "500-579", "580-619"].includes(score)) {
+        best = goal === "first-card" ? "Secured" : "Credit Builder";
+        risk = util === "very-high" || inquiries === "5+" ? "High" : "Lower";
+        note = "Your selected score range is in rebuilding territory. Focus on utilization, payment history, and secured or builder-style categories before premium cards.";
+      } else if (["620-659", "660-699"].includes(score)) {
+        best = goal === "cashback" ? "No-Fee Starter" : "Starter";
+        risk = util === "high" || util === "very-high" || inquiries === "5+" ? "Moderate" : "Medium";
+        note = "Your selected profile may fit starter unsecured categories, but high utilization or too many inquiries can still hurt approval chances.";
+      } else {
+        best = goal === "travel" ? "Travel Rewards" : "Cashback";
+        risk = util === "low" && (inquiries === "0" || inquiries === "1–2") ? "Lower" : "Medium";
+        note = "Your selected score range is stronger, but the app should still compare fees, utilization, and recent inquiries before showing advanced rewards categories.";
+      }
+
+      if (util === "very-high") {
+        note += " Since utilization is very high, paying balances down should come before applying for another card.";
+      } else if (util === "high") {
+        note += " Utilization is above 30%, so the safer move is to lower balances before applying.";
+      }
+
+      document.getElementById("bestCategory").textContent = best;
+      document.getElementById("riskLevel").textContent = risk;
+      document.getElementById("matchBox").innerHTML = `<strong>Finder note:</strong> ${note}`;
+
+      renderOffers();
+    }
+
+    function offerScore(offer) {
+      const score = document.getElementById("scoreRange").value;
+      const util = document.getElementById("utilization").value;
+      const goal = document.getElementById("goalType").value;
+      let points = 0;
+
+      if (["under500", "500-579", "580-619"].includes(score)) {
+        if (offer.category === "rebuild") points += 4;
+        if (offer.category === "starter") points += 1;
+        if (offer.category === "rewards") points -= 2;
+      } else if (["620-659", "660-699"].includes(score)) {
+        if (offer.category === "starter") points += 4;
+        if (offer.category === "rebuild") points += 2;
+        if (offer.category === "rewards") points += 1;
+      } else {
+        if (offer.category === "rewards") points += 4;
+        if (offer.category === "starter") points += 2;
+      }
+
+      if (util === "high" || util === "very-high") {
+        if (offer.category === "rebuild") points += 2;
+        if (offer.category === "rewards") points -= 2;
+      }
+
+      if (goal === "first-card" && offer.category === "rebuild") points += 2;
+      if (goal === "rebuild" && offer.category === "rebuild") points += 2;
+      if (goal === "cashback" && offer.id.includes("cashback")) points += 3;
+      if (goal === "travel" && offer.id.includes("travel")) points += 3;
+
+      return points;
+    }
+
+    function renderOffers() {
+      const grid = document.getElementById("offerGrid");
+      const sorted = [...offers]
+        .filter(offer => activeFilter === "all" || offer.category === activeFilter)
+        .sort((a, b) => offerScore(b) - offerScore(a));
+
+      grid.innerHTML = sorted.map(offer => {
+        const points = offerScore(offer);
+        const matchText = points >= 6 ? "Strong category match" : points >= 3 ? "Possible category match" : "Study before applying";
+        const matchClass = points >= 6 ? "good" : points >= 3 ? "warn" : "bad";
+
+        return `
+          <article class="offer-card">
+            <div class="offer-top">
+              <div>
+                <div class="card-icon" aria-hidden="true"></div>
+              </div>
+              <span class="tag ${matchClass}">${matchText}</span>
+            </div>
+
+            <div>
+              <h3>${escapeHtml(offer.name)}</h3>
+              <p>${escapeHtml(offer.description)}</p>
+            </div>
+
+            <div class="tag-row">
+              ${offer.tags.map(tag => `<span class="tag ${offer.tagClass}">${escapeHtml(tag)}</span>`).join("")}
+              <span class="tag sponsored">Affiliate-ready</span>
+            </div>
+
+            <div class="details-grid">
+              <div class="detail-box"><span>Score fit</span><strong>${escapeHtml(offer.scoreFit)}</strong></div>
+              <div class="detail-box"><span>Annual fee</span><strong>${escapeHtml(offer.annualFee)}</strong></div>
+              <div class="detail-box"><span>Deposit</span><strong>${escapeHtml(offer.deposit)}</strong></div>
+              <div class="detail-box"><span>Rewards</span><strong>${escapeHtml(offer.rewards)}</strong></div>
+            </div>
+
+            <div class="offer-actions">
+              <button class="btn btn-ghost" onclick="openDetails('${offer.id}')">Details</button>
+              <button class="btn btn-primary" onclick="saveOffer('${offer.id}')">Save</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function setFilter(filter, button) {
+      activeFilter = filter;
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+      button.classList.add("active");
+      renderOffers();
+    }
+
+    function openDetails(id) {
+      const offer = offers.find(item => item.id === id);
+      if (!offer) return;
+
+      document.getElementById("modalTitle").textContent = offer.name;
+      document.getElementById("modalDescription").textContent = offer.description;
+      document.getElementById("modalList").innerHTML = offer.details.map(item => `
+        <div><strong>Note:</strong> ${escapeHtml(item)}</div>
+      `).join("") + `
+        <div><strong>Disclosure:</strong> This is a placeholder. If this becomes a real card offer, add a clear affiliate disclosure near the apply button.</div>
+        <div><strong>Approval:</strong> Approval is never guaranteed. The lender decides based on the full application and credit profile.</div>
+      `;
+
+      document.getElementById("detailsModal").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("detailsModal").classList.remove("active");
+    }
+
+    function loadWatchlist() {
+      watchlist = JSON.parse(localStorage.getItem(WATCHLIST_KEY) || "[]");
+      renderWatchlist();
+    }
+
+    function saveWatchlist() {
+      localStorage.setItem(WATCHLIST_KEY, JSON.stringify(watchlist));
+    }
+
+    function saveOffer(id) {
+      const offer = offers.find(item => item.id === id);
+      if (!offer) return;
+
+      if (!watchlist.includes(id)) {
+        watchlist.push(id);
+        saveWatchlist();
+        renderWatchlist();
+        showToast(`${offer.name} saved to watchlist.`);
+      } else {
+        showToast(`${offer.name} is already saved.`);
+      }
+    }
+
+    function removeOffer(id) {
+      watchlist = watchlist.filter(item => item !== id);
+      saveWatchlist();
+      renderWatchlist();
+      showToast("Removed from watchlist.");
+    }
+
+    function clearWatchlist() {
+      watchlist = [];
+      saveWatchlist();
+      renderWatchlist();
+      showToast("Watchlist cleared.");
+    }
+
+    function renderWatchlist() {
+      const list = document.getElementById("watchlist");
+      if (!watchlist.length) {
+        list.innerHTML = `<div class="empty">No saved categories yet. Click Save on a card category to add it here.</div>`;
+        return;
+      }
+
+      list.innerHTML = watchlist.map(id => {
+        const offer = offers.find(item => item.id === id);
+        if (!offer) return "";
+        return `
+          <div class="watch-item">
+            <div>
+              <strong>${escapeHtml(offer.name)}</strong>
+              <span>${escapeHtml(offer.type)} • ${escapeHtml(offer.scoreFit)} • ${escapeHtml(offer.annualFee)}</span>
+            </div>
+            <button class="btn btn-danger" onclick="removeOffer('${offer.id}')">Remove</button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    document.getElementById("detailsModal").addEventListener("click", function(event) {
+      if (event.target.id === "detailsModal") closeModal();
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") closeModal();
+    });
+
+    loadWatchlist();
+    loadProfileFromSetup();
+    runFinder();
+  </script>
+</body>
+</html>

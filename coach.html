@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Credit Coach | Credit Card Stacker</title>
+  <meta name="description" content="A rule-based credit card coach that gives educational next steps using saved cards, goals, score entries, and application data." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font: inherit; }
+    .shell { width: min(1200px, calc(100% - 30px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover { color: var(--text); }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #06111f; box-shadow: 0 18px 44px rgba(96,165,250,.25); }
+    .btn-ghost { background: rgba(255,255,255,.075); color: var(--text); border: 1px solid var(--line); }
+    .btn-warning { background: rgba(251,191,36,.12); color: #fde68a; border: 1px solid rgba(251,191,36,.28); }
+    .btn-full { width: 100%; }
+
+    .hero {
+      padding: 46px 0 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 5.2rem);
+      letter-spacing: -.075em;
+      line-height: .96;
+      max-width: 900px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 840px;
+      margin-top: 16px;
+      font-size: 1.05rem;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .stat {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+      min-height: 118px;
+    }
+
+    .stat span { display: block; color: var(--muted); font-size: .82rem; margin-bottom: 8px; }
+    .stat strong { font-size: 1.85rem; letter-spacing: -.065em; line-height: 1; }
+    .stat small { display: block; color: var(--muted); margin-top: 7px; line-height: 1.4; }
+    .stat.good strong { color: var(--success); }
+    .stat.warn strong { color: var(--warning); }
+    .stat.bad strong { color: var(--danger); }
+
+    .layout {
+      display: grid;
+      grid-template-columns: .9fr 1.35fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 70px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+
+    .panel-pad { padding: 24px; }
+
+    .sticky-panel {
+      position: sticky;
+      top: 92px;
+      background:
+        radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%),
+        rgba(255,255,255,.085);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .panel-head h2, .panel h2 { font-size: 1.35rem; letter-spacing: -.045em; }
+    .panel-head p, .subtext { color: var(--muted); line-height: 1.6; margin-top: 6px; font-size: .94rem; }
+
+    .coach-score {
+      border-radius: 26px;
+      padding: 22px;
+      background: rgba(255,255,255,.058);
+      border: 1px solid var(--line);
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .coach-ring {
+      width: 170px;
+      height: 170px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background: conic-gradient(var(--brand) 0deg, rgba(255,255,255,.1) 0deg 360deg);
+    }
+
+    .coach-ring::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 50%;
+      background: #0a1728;
+      border: 1px solid var(--line);
+    }
+
+    .coach-ring strong {
+      position: relative;
+      z-index: 1;
+      font-size: 2rem;
+      letter-spacing: -.06em;
+    }
+
+    .form-grid { display: grid; gap: 14px; }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 7px;
+      font-size: .9rem;
+    }
+
+    .field select, .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px;
+      outline: none;
+      min-height: 48px;
+      resize: vertical;
+    }
+
+    .field textarea { min-height: 120px; }
+    .field select option { color: #07101d; }
+    .field select:focus, .field textarea:focus { border-color: rgba(110,231,183,.72); box-shadow: 0 0 0 4px rgba(110,231,183,.09); }
+
+    .coach-card {
+      border-radius: 24px;
+      padding: 18px;
+      background: rgba(255,255,255,.062);
+      border: 1px solid var(--line);
+    }
+
+    .coach-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .coach-card h3 { letter-spacing: -.04em; margin-bottom: 5px; font-size: 1.25rem; }
+    .coach-card p { color: var(--muted); line-height: 1.65; font-size: .95rem; }
+
+    .coach-list { display: grid; gap: 12px; }
+
+    .priority-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .priority-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.062);
+      border: 1px solid var(--line);
+    }
+
+    .priority-number {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(110,231,183,.14);
+      border: 1px solid rgba(110,231,183,.25);
+      color: #c9ffee;
+      font-weight: 1000;
+    }
+
+    .priority-item strong { display: block; letter-spacing: -.035em; margin-bottom: 5px; }
+    .priority-item p { color: var(--muted); line-height: 1.55; font-size: .92rem; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: .76rem;
+      font-weight: 900;
+      background: rgba(255,255,255,.08);
+      color: var(--muted);
+      border: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    .tag.good { background: rgba(52,211,153,.12); color: #bbf7d0; border-color: rgba(52,211,153,.28); }
+    .tag.warn { background: rgba(251,191,36,.12); color: #fde68a; border-color: rgba(251,191,36,.28); }
+    .tag.bad { background: rgba(251,113,133,.12); color: #fecdd3; border-color: rgba(251,113,133,.28); }
+    .tag.blue { background: rgba(96,165,250,.12); color: #dbeafe; border-color: rgba(96,165,250,.28); }
+
+    .chat-box {
+      border-radius: 24px;
+      background: rgba(255,255,255,.052);
+      border: 1px solid var(--line);
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .message {
+      border-radius: 18px;
+      padding: 14px;
+      line-height: 1.6;
+      color: var(--muted);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .message.user {
+      color: #dbeafe;
+      background: rgba(96,165,250,.1);
+      border-color: rgba(96,165,250,.22);
+    }
+
+    .message.coach {
+      color: #d8fff1;
+      background: rgba(52,211,153,.09);
+      border-color: rgba(52,211,153,.22);
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .data-box {
+      border-radius: 20px;
+      padding: 16px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    .data-box span { display: block; color: var(--muted); font-size: .8rem; margin-bottom: 6px; }
+    .data-box strong { font-size: 1.25rem; letter-spacing: -.04em; }
+
+    .notice {
+      border-radius: 20px;
+      padding: 16px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+      margin-top: 16px;
+    }
+
+    .empty {
+      border-radius: 22px;
+      padding: 24px;
+      color: var(--muted);
+      background: rgba(255,255,255,.052);
+      border: 1px dashed rgba(255,255,255,.2);
+      text-align: center;
+      line-height: 1.65;
+    }
+
+    .button-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 110;
+      max-width: 390px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active { transform: translateY(0); }
+
+    @media (max-width: 1080px) {
+      .layout, .hero { grid-template-columns: 1fr; }
+      .sticky-panel { position: static; }
+      .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner { display: block; }
+      .top-links { margin-top: 12px; }
+      .summary-grid, .data-grid { grid-template-columns: 1fr; }
+      .panel-pad { padding: 18px; }
+      .button-row { flex-direction: column; align-items: stretch; }
+      .priority-item { grid-template-columns: 1fr; }
+      .coach-card-top { display: block; }
+      .coach-card-top .tag { margin-top: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="goals.html">Goals</a>
+        <a href="score-tracker.html">Score Tracker</a>
+        <a href="application-tracker.html">Applications</a>
+        <a href="simulator.html">Simulator</a>
+        <a href="help.html">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Credit coach • Rule-based guidance • Educational only</div>
+        <h1>Your next best credit move, explained simply.</h1>
+        <p>
+          This coach reads saved cards, goals, score entries, and applications from your browser. It gives rule-based next steps without pretending to be a lender, credit bureau, or financial advisor.
+        </p>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-primary" onclick="refreshCoach()">Refresh Coach</button>
+        <button class="btn btn-ghost" onclick="loadCoachSamples()">Load Samples</button>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <div class="stat" id="healthStat"><span>Coach health</span><strong id="healthText">—</strong><small id="healthSub">Based on saved data</small></div>
+      <div class="stat"><span>Total utilization</span><strong id="utilText">0%</strong><small>Saved card data</small></div>
+      <div class="stat"><span>Recent applications</span><strong id="appText">0</strong><small>Last 6 months</small></div>
+      <div class="stat"><span>Open goals</span><strong id="goalText">0</strong><small>Not completed yet</small></div>
+    </section>
+
+    <section class="layout">
+      <aside>
+        <div class="panel panel-pad sticky-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Coach Control</h2>
+              <p>Choose what kind of coaching you want right now.</p>
+            </div>
+          </div>
+
+          <div class="coach-score">
+            <div class="coach-ring" id="coachRing">
+              <strong id="coachScore">0</strong>
+            </div>
+            <strong id="coachLabel">No data yet</strong>
+            <p class="subtext" id="coachDescription">Add cards or load samples to get a coach score.</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="coachMode">Coaching mode</label>
+              <select id="coachMode" onchange="refreshCoach()">
+                <option value="balanced" selected>Balanced</option>
+                <option value="rebuild">Strict rebuild mode</option>
+                <option value="application">Application readiness</option>
+                <option value="payoff">Payoff focus</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="coachQuestion">Ask the coach</label>
+              <textarea id="coachQuestion" placeholder="Example: Should I apply for another card or pay down first?"></textarea>
+            </div>
+
+            <button class="btn btn-primary btn-full" onclick="answerQuestion()">Ask Coach</button>
+            <button class="btn btn-ghost btn-full" onclick="copyCoachPlan()">Copy Coach Plan</button>
+            <button class="btn btn-warning btn-full" onclick="saveCoachPlan()">Save Coach Plan</button>
+          </div>
+
+          <div class="notice">
+            Coach disclaimer: This is rule-based education, not financial advice. It does not guarantee credit score changes, approvals, or lender decisions.
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Top Priorities</h2>
+              <p>The safest next moves based on your saved data.</p>
+            </div>
+          </div>
+          <div class="priority-list" id="priorityList"></div>
+        </div>
+
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Coach Insights</h2>
+              <p>Quick explanations of what the coach is seeing.</p>
+            </div>
+          </div>
+          <div class="coach-list" id="insightList"></div>
+        </div>
+
+        <div class="panel panel-pad" style="margin-bottom:18px;">
+          <div class="panel-head">
+            <div>
+              <h2>Coach Chat</h2>
+              <p>Demo answers based on keyword matching and saved app data.</p>
+            </div>
+          </div>
+          <div class="chat-box" id="chatBox">
+            <div class="message coach">Ask a question like: “Should I apply now?” or “Which card should I pay first?”</div>
+          </div>
+        </div>
+
+        <div class="panel panel-pad">
+          <div class="panel-head">
+            <div>
+              <h2>Data Used by Coach</h2>
+              <p>This shows what local data the coach used.</p>
+            </div>
+          </div>
+          <div class="data-grid">
+            <div class="data-box"><span>Saved cards</span><strong id="cardsUsed">0</strong></div>
+            <div class="data-box"><span>Saved goals</span><strong id="goalsUsed">0</strong></div>
+            <div class="data-box"><span>Score entries</span><strong id="scoresUsed">0</strong></div>
+            <div class="data-box"><span>Applications</span><strong id="appsUsed">0</strong></div>
+          </div>
+          <div class="notice">
+            No data is sent anywhere from this page. It reads localStorage in this browser only.
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const CARDS_KEY = "creditCardStackerCards";
+    const GOALS_KEY = "creditCardStackerGoals";
+    const SCORE_KEY = "creditCardStackerScoreEntries";
+    const APPLICATIONS_KEY = "creditCardStackerApplications";
+    const COACH_PLAN_KEY = "creditCardStackerCoachPlan";
+
+    let state = {};
+    let currentPlan = [];
+
+    function getJson(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+      catch { return fallback; }
+    }
+
+    function saveJson(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+
+    function money(value) {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Math.max(0, Number(value) || 0));
+    }
+
+    function percent(value) { return Number.isFinite(value) ? value.toFixed(1) + "%" : "0%"; }
+
+    function daysAgo(dateString) {
+      if (!dateString) return 9999;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const date = new Date(dateString + "T00:00:00");
+      return Math.floor((today - date) / (1000 * 60 * 60 * 24));
+    }
+
+    function loadState() {
+      const cards = getJson(CARDS_KEY, []);
+      const goals = getJson(GOALS_KEY, []);
+      const scores = getJson(SCORE_KEY, []);
+      const apps = getJson(APPLICATIONS_KEY, []);
+      const totalBalance = cards.reduce((sum, card) => sum + Number(card.balance || 0), 0);
+      const totalLimit = cards.reduce((sum, card) => sum + Number(card.limit || 0), 0);
+      const utilization = totalLimit > 0 ? (totalBalance / totalLimit) * 100 : 0;
+      const recentApps = apps.filter(app => daysAgo(app.date) <= 180 && app.status !== "Planning");
+      const hardPulls = apps.filter(app => daysAgo(app.date) <= 180 && app.hardInquiry === "yes");
+      const openGoals = goals.filter(goal => !goal.completed);
+      const highestCard = [...cards].sort((a, b) => cardUtil(b) - cardUtil(a))[0] || null;
+      const latestScore = [...scores].sort((a, b) => new Date(b.date) - new Date(a.date))[0] || null;
+
+      state = { cards, goals, scores, apps, totalBalance, totalLimit, utilization, recentApps, hardPulls, openGoals, highestCard, latestScore };
+    }
+
+    function cardUtil(card) {
+      return (Number(card.balance || 0) / Math.max(1, Number(card.limit || 1))) * 100;
+    }
+
+    function coachHealthScore() {
+      let score = 100;
+      if (state.utilization >= 50) score -= 35;
+      else if (state.utilization >= 30) score -= 25;
+      else if (state.utilization >= 10) score -= 10;
+      score -= Math.min(30, state.hardPulls.length * 12);
+      score -= Math.min(20, state.recentApps.length * 8);
+      if (!state.cards.length) score = 0;
+      if (state.openGoals.length) score += 5;
+      if (state.scores.length) score += 5;
+      return Math.max(0, Math.min(100, Math.round(score)));
+    }
+
+    function buildPriorities() {
+      const mode = document.getElementById("coachMode").value;
+      const priorities = [];
+
+      if (!state.cards.length) {
+        return [
+          { title: "Add your first card", text: "The coach needs a balance, limit, statement date, and due date to create a useful plan.", tag: "Setup", className: "warn" },
+          { title: "Use the dashboard sample cards", text: "You can load sample cards to test the app before entering your real card names.", tag: "Demo", className: "blue" }
+        ];
+      }
+
+      if (state.utilization >= 30 || mode === "payoff" || mode === "rebuild") {
+        const targetBalance = state.totalLimit * 0.1;
+        const paydown = Math.max(0, state.totalBalance - targetBalance);
+        priorities.push({
+          title: "Lower total utilization first",
+          text: `Your saved utilization is ${percent(state.utilization)}. To get near 10%, the rough paydown target is ${money(paydown)}.`,
+          tag: "Paydown",
+          className: state.utilization >= 30 ? "bad" : "warn"
+        });
+      }
+
+      if (state.highestCard) {
+        const util = cardUtil(state.highestCard);
+        const payToTen = Math.max(0, Number(state.highestCard.balance || 0) - Number(state.highestCard.limit || 0) * 0.1);
+        priorities.push({
+          title: `Focus on ${state.highestCard.name || "highest card"}`,
+          text: `This card is at ${percent(util)} utilization. Paying about ${money(payToTen)} would move it closer to 10%.`,
+          tag: "Highest card",
+          className: util >= 30 ? "bad" : util >= 10 ? "warn" : "good"
+        });
+      }
+
+      if (state.hardPulls.length >= 2 || mode === "application") {
+        priorities.push({
+          title: "Slow down new applications",
+          text: `You have ${state.hardPulls.length} likely hard pull(s) saved in the last 6 months. Consider waiting before applying again.`,
+          tag: "Application risk",
+          className: state.hardPulls.length >= 2 ? "bad" : "warn"
+        });
+      }
+
+      if (!state.openGoals.length) {
+        priorities.push({
+          title: "Create one clear goal",
+          text: "Set a simple goal like getting utilization under 30%, then under 10%. Goals make the app easier to follow.",
+          tag: "Goal",
+          className: "blue"
+        });
+      }
+
+      if (state.latestScore && state.latestScore.utilization >= 30) {
+        priorities.push({
+          title: "Compare score notes with utilization",
+          text: `Your latest score entry shows ${state.latestScore.utilization}% utilization. Add notes when balances report so trends make more sense.`,
+          tag: "Score tracking",
+          className: "warn"
+        });
+      }
+
+      if (state.utilization < 10 && state.hardPulls.length === 0) {
+        priorities.push({
+          title: "Maintain the clean setup",
+          text: "Your saved utilization and application activity look controlled. Keep reminders on before statement dates.",
+          tag: "Maintain",
+          className: "good"
+        });
+      }
+
+      return priorities.slice(0, 5);
+    }
+
+    function buildInsights() {
+      const insights = [];
+      insights.push({
+        title: "Utilization read",
+        text: state.totalLimit > 0
+          ? `Saved balance is ${money(state.totalBalance)} across ${money(state.totalLimit)} in limits, which is ${percent(state.utilization)} utilization.`
+          : "No saved card limit found yet, so utilization cannot be calculated.",
+        className: state.utilization >= 30 ? "bad" : state.utilization >= 10 ? "warn" : "good"
+      });
+
+      insights.push({
+        title: "Application read",
+        text: `${state.recentApps.length} non-planning application(s) and ${state.hardPulls.length} likely hard pull(s) are saved from the last 6 months.`,
+        className: state.hardPulls.length >= 2 ? "bad" : state.hardPulls.length ? "warn" : "good"
+      });
+
+      insights.push({
+        title: "Goal read",
+        text: state.openGoals.length ? `You have ${state.openGoals.length} open goal(s). Finish one before creating too many new ones.` : "No open goals are saved. Add one goal to make the plan easier to follow.",
+        className: state.openGoals.length ? "good" : "warn"
+      });
+
+      insights.push({
+        title: "Score tracker read",
+        text: state.latestScore ? `Latest manual score entry is ${state.latestScore.score} from ${state.latestScore.source}. Different score apps may use different models.` : "No manual score entries saved yet. Add entries to watch trends over time.",
+        className: state.latestScore ? "blue" : "warn"
+      });
+
+      return insights;
+    }
+
+    function refreshCoach() {
+      loadState();
+      const score = coachHealthScore();
+      const priorities = buildPriorities();
+      const insights = buildInsights();
+      currentPlan = priorities;
+
+      renderSummary(score);
+      renderCoachScore(score);
+      renderPriorities(priorities);
+      renderInsights(insights);
+      renderDataUsed();
+    }
+
+    function renderSummary(score) {
+      const healthStat = document.getElementById("healthStat");
+      healthStat.classList.remove("good", "warn", "bad");
+      const healthClass = score >= 75 ? "good" : score >= 45 ? "warn" : "bad";
+      healthStat.classList.add(healthClass);
+      document.getElementById("healthText").textContent = score >= 75 ? "Strong" : score >= 45 ? "Needs work" : "Weak";
+      document.getElementById("healthSub").textContent = `${score}/100 coach score`;
+      document.getElementById("utilText").textContent = percent(state.utilization);
+      document.getElementById("appText").textContent = state.recentApps.length;
+      document.getElementById("goalText").textContent = state.openGoals.length;
+    }
+
+    function renderCoachScore(score) {
+      const degrees = Math.round((score / 100) * 360);
+      const color = score >= 75 ? "var(--brand)" : score >= 45 ? "var(--warning)" : "var(--danger)";
+      document.getElementById("coachRing").style.background = `conic-gradient(${color} 0deg ${degrees}deg, rgba(255,255,255,.1) ${degrees}deg 360deg)`;
+      document.getElementById("coachScore").textContent = score;
+      document.getElementById("coachLabel").textContent = score >= 75 ? "Clean direction" : score >= 45 ? "Needs attention" : "Build foundation first";
+      document.getElementById("coachDescription").textContent = score >= 75
+        ? "Keep reminders on and avoid unnecessary applications."
+        : score >= 45
+          ? "Lower balances or slow applications before making bigger moves."
+          : "Add card data and focus on utilization before applying again.";
+    }
+
+    function renderPriorities(items) {
+      const list = document.getElementById("priorityList");
+      if (!items.length) {
+        list.innerHTML = `<div class="empty">No coach priorities yet. Add cards or load sample data.</div>`;
+        return;
+      }
+      list.innerHTML = items.map((item, index) => `
+        <div class="priority-item">
+          <div class="priority-number">${index + 1}</div>
+          <div>
+            <strong>${escapeHtml(item.title)}</strong>
+            <p>${escapeHtml(item.text)}</p>
+          </div>
+          <span class="tag ${item.className}">${escapeHtml(item.tag)}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderInsights(items) {
+      document.getElementById("insightList").innerHTML = items.map(item => `
+        <article class="coach-card">
+          <div class="coach-card-top">
+            <div>
+              <h3>${escapeHtml(item.title)}</h3>
+              <p>${escapeHtml(item.text)}</p>
+            </div>
+            <span class="tag ${item.className}">${item.className === "good" ? "Good" : item.className === "bad" ? "Risk" : item.className === "blue" ? "Info" : "Watch"}</span>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    function renderDataUsed() {
+      document.getElementById("cardsUsed").textContent = state.cards.length;
+      document.getElementById("goalsUsed").textContent = state.goals.length;
+      document.getElementById("scoresUsed").textContent = state.scores.length;
+      document.getElementById("appsUsed").textContent = state.apps.length;
+    }
+
+    function answerQuestion() {
+      refreshCoach();
+      const question = document.getElementById("coachQuestion").value.trim();
+      if (!question) {
+        showToast("Type a question first.");
+        return;
+      }
+
+      const q = question.toLowerCase();
+      let answer = "Based on your saved data, the safest move is to follow the top priority list first. Keep the plan simple and avoid applying randomly.";
+
+      if (q.includes("apply") || q.includes("card")) {
+        if (state.utilization >= 30) answer = `I would not focus on applying yet. Your saved utilization is ${percent(state.utilization)}, so paying balances down first is the cleaner move. Approval is never guaranteed.`;
+        else if (state.hardPulls.length >= 2) answer = `I would slow down. You have ${state.hardPulls.length} likely hard pulls saved in the last 6 months. Consider waiting before another application.`;
+        else answer = "Your saved utilization and inquiry activity look more controlled, but still compare fees and card terms before applying. Approval is not guaranteed.";
+      }
+
+      if (q.includes("pay") || q.includes("balance") || q.includes("utilization")) {
+        if (state.highestCard) {
+          const payToTen = Math.max(0, Number(state.highestCard.balance || 0) - Number(state.highestCard.limit || 0) * 0.1);
+          answer = `Paying down ${state.highestCard.name || "the highest-utilization card"} looks like the first move. It is at ${percent(cardUtil(state.highestCard))}. Around ${money(payToTen)} would move it closer to 10%.`;
+        }
+      }
+
+      if (q.includes("score")) {
+        answer = state.latestScore
+          ? `Your latest manual score entry is ${state.latestScore.score}. Compare score changes with utilization and application notes, but remember different apps may show different score models.`
+          : "Add manual score entries first. The coach can then compare score notes with utilization and application activity.";
+      }
+
+      const chat = document.getElementById("chatBox");
+      chat.innerHTML += `<div class="message user">${escapeHtml(question)}</div>`;
+      chat.innerHTML += `<div class="message coach">${escapeHtml(answer)}</div>`;
+      document.getElementById("coachQuestion").value = "";
+    }
+
+    async function copyCoachPlan() {
+      refreshCoach();
+      const score = coachHealthScore();
+      const text = [
+        "Credit Card Stacker Coach Plan",
+        `Coach score: ${score}/100`,
+        `Total utilization: ${percent(state.utilization)}`,
+        `Recent applications: ${state.recentApps.length}`,
+        `Open goals: ${state.openGoals.length}`,
+        "",
+        "Top priorities:",
+        ...currentPlan.map((item, index) => `${index + 1}. ${item.title} - ${item.text}`),
+        "",
+        "Educational only. No score or approval guarantee."
+      ].join("\n");
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Coach plan copied.");
+      } catch {
+        showToast("Could not copy automatically.");
+      }
+    }
+
+    function saveCoachPlan() {
+      refreshCoach();
+      saveJson(COACH_PLAN_KEY, {
+        savedAt: new Date().toISOString(),
+        score: coachHealthScore(),
+        utilization: state.utilization,
+        priorities: currentPlan
+      });
+      showToast("Coach plan saved in this browser.");
+    }
+
+    function loadCoachSamples() {
+      saveJson(CARDS_KEY, [
+        { id: "coach-card-1", name: "Capital One Secured", balance: 238, limit: 500, statementDate: "2026-05-04", dueDate: "2026-05-18" },
+        { id: "coach-card-2", name: "Starter Rewards Card", balance: 84, limit: 1000, statementDate: "2026-05-11", dueDate: "2026-05-25" },
+        { id: "coach-card-3", name: "Store Card", balance: 390, limit: 700, statementDate: "2026-05-16", dueDate: "2026-05-29" }
+      ]);
+      saveJson(SCORE_KEY, [
+        { id: "coach-score-1", date: "2026-03-15", score: 611, source: "Bank app", utilization: 29, event: "Paid balance down", notes: "Got total utilization under 30%." },
+        { id: "coach-score-2", date: "2026-04-15", score: 628, source: "Credit card app", utilization: 12, event: "Statement balance changed", notes: "Kept reported balance lower." }
+      ]);
+      saveJson(APPLICATIONS_KEY, [
+        { id: "coach-app-1", cardName: "Capital One Secured", issuer: "Capital One", date: "2026-01-10", status: "Approved", hardInquiry: "yes", startingLimit: 300, annualFee: 0, reason: "Started rebuilding." }
+      ]);
+      saveJson(GOALS_KEY, [
+        { id: "coach-goal-1", title: "Get utilization under 10%", type: "utilization", dueDate: "2026-05-25", current: 32, start: 32, target: 10, unit: "percent", notes: "Focus on high utilization cards.", completed: false }
+      ]);
+      refreshCoach();
+      showToast("Coach sample data loaded.");
+    }
+
+    function escapeHtml(text) {
+      return String(text).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    refreshCoach();
+  </script>
+</body>
+</html>

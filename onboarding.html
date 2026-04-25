@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup Your Plan | Credit Card Stacker</title>
+  <meta name="description" content="Set up your Credit Card Stacker profile by entering your estimated score range, card goals, income range, and credit card details." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.078);
+      --panel-2: rgba(255,255,255,.12);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 26px;
+      --shadow: 0 24px 80px rgba(0,0,0,.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(167,139,250,.2), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1120px, calc(100% - 30px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+    }
+
+    .top-links a:hover {
+      color: var(--text);
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 13px 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      cursor: not-allowed;
+      opacity: .48;
+      transform: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96,165,250,.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-danger {
+      background: rgba(251,113,133,.12);
+      color: #fecdd3;
+      border: 1px solid rgba(251,113,133,.28);
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 46px 0 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 5.2rem);
+      line-height: .96;
+      letter-spacing: -.075em;
+      max-width: 780px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 710px;
+      margin-top: 16px;
+      font-size: 1.05rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: .9fr 1.15fr;
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0 70px;
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0,0,0,.14);
+      overflow: hidden;
+    }
+
+    .panel-pad {
+      padding: 24px;
+    }
+
+    .progress-card {
+      position: sticky;
+      top: 92px;
+      background:
+        radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 36%),
+        rgba(255,255,255,.085);
+    }
+
+    .progress-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .progress-head h2 {
+      font-size: 1.25rem;
+      letter-spacing: -.04em;
+    }
+
+    .step-count {
+      color: #06111f;
+      background: var(--brand);
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: .78rem;
+      font-weight: 1000;
+    }
+
+    .progress-bar {
+      height: 12px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255,255,255,.11);
+      margin-bottom: 22px;
+    }
+
+    .progress-bar span {
+      display: block;
+      height: 100%;
+      width: 25%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2), var(--brand-3));
+      transition: width .24s ease;
+    }
+
+    .step-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .step-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 13px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.055);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--muted);
+    }
+
+    .step-item.active {
+      background: rgba(110,231,183,.1);
+      border-color: rgba(110,231,183,.24);
+      color: var(--text);
+    }
+
+    .step-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--line);
+      font-weight: 1000;
+      font-size: .84rem;
+    }
+
+    .step-item.active .step-dot {
+      color: #06111f;
+      background: var(--brand);
+      border-color: transparent;
+    }
+
+    .step-item strong {
+      display: block;
+      letter-spacing: -.03em;
+      margin-bottom: 3px;
+    }
+
+    .step-item span {
+      line-height: 1.45;
+      font-size: .9rem;
+    }
+
+    .setup-card {
+      min-height: 620px;
+    }
+
+    .setup-step {
+      display: none;
+      animation: fadeUp .22s ease both;
+    }
+
+    .setup-step.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-title {
+      margin-bottom: 24px;
+    }
+
+    .step-title h2 {
+      font-size: clamp(1.8rem, 3vw, 3.1rem);
+      letter-spacing: -.065em;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .step-title p {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 720px;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .choice {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.065);
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      border-radius: 22px;
+      padding: 18px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      min-height: 135px;
+    }
+
+    .choice:hover {
+      transform: translateY(-2px);
+      border-color: rgba(110,231,183,.34);
+    }
+
+    .choice.selected {
+      background: rgba(110,231,183,.12);
+      border-color: rgba(110,231,183,.42);
+      box-shadow: 0 18px 48px rgba(110,231,183,.1);
+    }
+
+    .choice strong {
+      display: block;
+      font-size: 1.1rem;
+      letter-spacing: -.04em;
+      margin-bottom: 8px;
+    }
+
+    .choice span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .92rem;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 7px;
+      font-size: .9rem;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px;
+      outline: none;
+    }
+
+    .field select option {
+      color: #07101d;
+    }
+
+    .field input:focus, .field select:focus {
+      border-color: rgba(110,231,183,.72);
+      box-shadow: 0 0 0 4px rgba(110,231,183,.09);
+    }
+
+    .card-form {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .card-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .saved-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+    }
+
+    .saved-card strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 4px;
+    }
+
+    .saved-card span {
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      border-radius: 20px;
+      padding: 17px;
+      background: rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .82rem;
+      margin-bottom: 7px;
+    }
+
+    .stat strong {
+      font-size: 1.6rem;
+      letter-spacing: -.06em;
+    }
+
+    .plan-box {
+      padding: 18px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top right, rgba(96,165,250,.14), transparent 34%),
+        rgba(255,255,255,.065);
+      border: 1px solid var(--line);
+      line-height: 1.7;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .plan-box strong {
+      color: var(--text);
+    }
+
+    .notice {
+      border-radius: 20px;
+      padding: 16px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.65;
+      font-size: .92rem;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 26px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 100;
+      max-width: 360px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 920px) {
+      .layout, .hero {
+        grid-template-columns: 1fr;
+      }
+      .progress-card {
+        position: static;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar-inner {
+        display: block;
+      }
+      .top-links {
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .choice-grid, .two-col, .summary-grid {
+        grid-template-columns: 1fr;
+      }
+      .setup-card {
+        min-height: auto;
+      }
+      .footer-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <button class="btn btn-primary" onclick="saveAndGoDashboard()">Go Dashboard</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <div class="badge">Setup page • Saves to browser • No real credit pull</div>
+        <h1>Set up your credit card plan.</h1>
+        <p>
+          This onboarding page collects the basic info your app needs before showing a user their dashboard. It uses manual inputs for now, which is safer for an MVP.
+        </p>
+      </div>
+    </section>
+
+    <section class="layout">
+      <aside class="panel panel-pad progress-card">
+        <div class="progress-head">
+          <h2>Setup progress</h2>
+          <span class="step-count" id="stepCount">Step 1 of 4</span>
+        </div>
+        <div class="progress-bar"><span id="progressFill"></span></div>
+
+        <div class="step-list">
+          <div class="step-item active" data-step-nav="1">
+            <div class="step-dot">1</div>
+            <div><strong>Credit goal</strong><span>Pick what the user is trying to improve first.</span></div>
+          </div>
+          <div class="step-item" data-step-nav="2">
+            <div class="step-dot">2</div>
+            <div><strong>Profile</strong><span>Estimated score, income range, and inquiries.</span></div>
+          </div>
+          <div class="step-item" data-step-nav="3">
+            <div class="step-dot">3</div>
+            <div><strong>Cards</strong><span>Add balances, limits, and statement dates.</span></div>
+          </div>
+          <div class="step-item" data-step-nav="4">
+            <div class="step-dot">4</div>
+            <div><strong>Plan preview</strong><span>Show the first action plan before dashboard.</span></div>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top:18px;">
+          This is not financial advice and does not guarantee credit score changes or card approvals.
+        </div>
+      </aside>
+
+      <section class="panel panel-pad setup-card">
+        <div class="setup-step active" data-step="1">
+          <div class="step-title">
+            <h2>What are you trying to do first?</h2>
+            <p>Pick the main goal. This helps the app decide what type of guidance to show first.</p>
+          </div>
+
+          <div class="choice-grid" id="goalChoices">
+            <button class="choice selected" data-value="lower-utilization" onclick="selectChoice('goalChoices', this)">
+              <strong>Lower utilization</strong>
+              <span>I want to know how much to pay before my statement closes.</span>
+            </button>
+            <button class="choice" data-value="build-credit" onclick="selectChoice('goalChoices', this)">
+              <strong>Build credit history</strong>
+              <span>I am starting or rebuilding and need a simple credit card path.</span>
+            </button>
+            <button class="choice" data-value="choose-card" onclick="selectChoice('goalChoices', this)">
+              <strong>Choose my next card</strong>
+              <span>I want to know what card category makes sense next.</span>
+            </button>
+            <button class="choice" data-value="avoid-mistakes" onclick="selectChoice('goalChoices', this)">
+              <strong>Avoid credit mistakes</strong>
+              <span>I want reminders before I apply too fast or let balances report high.</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="setup-step" data-step="2">
+          <div class="step-title">
+            <h2>Add your basic credit profile.</h2>
+            <p>Keep this simple for the MVP. Users can manually enter their estimated score range instead of connecting a real credit bureau.</p>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label for="scoreRange">Estimated credit score range</label>
+              <select id="scoreRange">
+                <option value="under500">Under 500</option>
+                <option value="500-579">500–579</option>
+                <option value="580-619" selected>580–619</option>
+                <option value="620-659">620–659</option>
+                <option value="660-699">660–699</option>
+                <option value="700plus">700+</option>
+              </select>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="incomeRange">Income range</label>
+                <select id="incomeRange">
+                  <option>$0–$24k</option>
+                  <option selected>$25k–$49k</option>
+                  <option>$50k–$74k</option>
+                  <option>$75k+</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="inquiries">Recent credit inquiries</label>
+                <select id="inquiries">
+                  <option>0</option>
+                  <option selected>1–2</option>
+                  <option>3–4</option>
+                  <option>5+</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="goalPercent">Utilization goal</label>
+              <select id="goalPercent">
+                <option value="30">Under 30%</option>
+                <option value="10" selected>Under 10%</option>
+                <option value="1">Close to 1%</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="setup-step" data-step="3">
+          <div class="step-title">
+            <h2>Add your first cards.</h2>
+            <p>You can add one card or multiple cards. This demo saves the cards to the browser and sends them to your dashboard page.</p>
+          </div>
+
+          <div class="card-form">
+            <div class="form-grid">
+              <div class="field">
+                <label for="cardName">Card name</label>
+                <input id="cardName" placeholder="Example: Capital One Secured" />
+              </div>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="cardBalance">Current balance</label>
+                  <input id="cardBalance" type="number" min="0" step="1" placeholder="238" />
+                </div>
+                <div class="field">
+                  <label for="cardLimit">Credit limit</label>
+                  <input id="cardLimit" type="number" min="1" step="1" placeholder="500" />
+                </div>
+              </div>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="statementDate">Statement closing date</label>
+                  <input id="statementDate" type="date" />
+                </div>
+                <div class="field">
+                  <label for="dueDate">Payment due date</label>
+                  <input id="dueDate" type="date" />
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-full" onclick="addSetupCard()">Add card to setup</button>
+            </div>
+          </div>
+
+          <div class="card-list" id="setupCardList"></div>
+        </div>
+
+        <div class="setup-step" data-step="4">
+          <div class="step-title">
+            <h2>Your first plan preview.</h2>
+            <p>This is what the app can show before sending the user to the full dashboard.</p>
+          </div>
+
+          <div class="summary-grid">
+            <div class="stat">
+              <span>Total balance</span>
+              <strong id="previewBalance">$0</strong>
+            </div>
+            <div class="stat">
+              <span>Total limit</span>
+              <strong id="previewLimit">$0</strong>
+            </div>
+            <div class="stat">
+              <span>Utilization</span>
+              <strong id="previewUtilization">0%</strong>
+            </div>
+          </div>
+
+          <div class="plan-box" id="previewPlan">
+            <strong>Your move:</strong> Add at least one card to generate a setup plan.
+          </div>
+
+          <div class="notice">
+            When the user clicks “Finish setup,” this page saves the profile and cards to localStorage. Your `dashboard.html` page can already read those saved values.
+          </div>
+        </div>
+
+        <div class="footer-actions">
+          <button class="btn btn-ghost" id="backBtn" onclick="prevStep()" disabled>Back</button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-ghost" onclick="saveProgress()">Save progress</button>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const SETTINGS_KEY = "creditCardStackerSettings";
+    const CARDS_KEY = "creditCardStackerCards";
+    const ONBOARDING_KEY = "creditCardStackerOnboarding";
+
+    let currentStep = 1;
+    let setupCards = [];
+
+    function money(value) {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(Math.max(0, Number(value) || 0));
+    }
+
+    function percent(value) {
+      return Number.isFinite(value) ? value.toFixed(1) + "%" : "0%";
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function scoreText(value) {
+      const map = {
+        under500: "Under 500",
+        "500-579": "500–579",
+        "580-619": "580–619",
+        "620-659": "620–659",
+        "660-699": "660–699",
+        "700plus": "700+"
+      };
+      return map[value] || "580–619";
+    }
+
+    function selectChoice(groupId, button) {
+      document.querySelectorAll(`#${groupId} .choice`).forEach(item => item.classList.remove("selected"));
+      button.classList.add("selected");
+    }
+
+    function selectedGoal() {
+      const selected = document.querySelector("#goalChoices .choice.selected");
+      return selected ? selected.dataset.value : "lower-utilization";
+    }
+
+    function setStep(step) {
+      currentStep = Math.min(4, Math.max(1, step));
+
+      document.querySelectorAll(".setup-step").forEach(item => {
+        item.classList.toggle("active", Number(item.dataset.step) === currentStep);
+      });
+
+      document.querySelectorAll(".step-item").forEach(item => {
+        item.classList.toggle("active", Number(item.dataset.stepNav) === currentStep);
+      });
+
+      document.getElementById("stepCount").textContent = `Step ${currentStep} of 4`;
+      document.getElementById("progressFill").style.width = `${currentStep * 25}%`;
+      document.getElementById("backBtn").disabled = currentStep === 1;
+      document.getElementById("nextBtn").textContent = currentStep === 4 ? "Finish setup" : "Next";
+
+      if (currentStep === 4) renderPreview();
+    }
+
+    function nextStep() {
+      if (currentStep === 4) {
+        saveAndGoDashboard();
+        return;
+      }
+      saveProgress();
+      setStep(currentStep + 1);
+    }
+
+    function prevStep() {
+      setStep(currentStep - 1);
+    }
+
+    function addSetupCard() {
+      const name = document.getElementById("cardName").value.trim();
+      const balance = Number(document.getElementById("cardBalance").value);
+      const limit = Number(document.getElementById("cardLimit").value);
+      const statementDate = document.getElementById("statementDate").value;
+      const dueDate = document.getElementById("dueDate").value;
+
+      if (!name) {
+        showToast("Add a card name first.");
+        return;
+      }
+
+      if (!Number.isFinite(limit) || limit <= 0) {
+        showToast("Credit limit must be higher than $0.");
+        return;
+      }
+
+      setupCards.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        name,
+        balance: Number.isFinite(balance) ? Math.max(0, balance) : 0,
+        limit: Math.max(1, limit),
+        statementDate,
+        dueDate,
+        createdAt: new Date().toISOString()
+      });
+
+      document.getElementById("cardName").value = "";
+      document.getElementById("cardBalance").value = "";
+      document.getElementById("cardLimit").value = "";
+      document.getElementById("statementDate").value = "";
+      document.getElementById("dueDate").value = "";
+
+      renderSetupCards();
+      saveProgress();
+      showToast("Card added to setup.");
+    }
+
+    function removeSetupCard(id) {
+      setupCards = setupCards.filter(card => card.id !== id);
+      renderSetupCards();
+      saveProgress();
+      showToast("Card removed.");
+    }
+
+    function renderSetupCards() {
+      const list = document.getElementById("setupCardList");
+
+      if (!setupCards.length) {
+        list.innerHTML = `
+          <div class="notice">
+            No cards added yet. You can still continue, but the dashboard plan works better with at least one card.
+          </div>
+        `;
+        return;
+      }
+
+      list.innerHTML = setupCards.map(card => {
+        const util = (card.balance / card.limit) * 100;
+        return `
+          <div class="saved-card">
+            <div>
+              <strong>${escapeHtml(card.name)}</strong>
+              <span>${money(card.balance)} balance / ${money(card.limit)} limit • ${percent(util)} utilization</span>
+            </div>
+            <button class="btn btn-danger" onclick="removeSetupCard('${card.id}')">Remove</button>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function getProfileData() {
+      return {
+        mainGoal: selectedGoal(),
+        scoreRange: document.getElementById("scoreRange").value,
+        incomeRange: document.getElementById("incomeRange").value,
+        inquiries: document.getElementById("inquiries").value,
+        goal: document.getElementById("goalPercent").value
+      };
+    }
+
+    function saveProgress() {
+      const profile = getProfileData();
+
+      localStorage.setItem(ONBOARDING_KEY, JSON.stringify({
+        profile,
+        cards: setupCards,
+        savedAt: new Date().toISOString()
+      }));
+
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+        scoreRange: profile.scoreRange,
+        goal: profile.goal,
+        incomeRange: profile.incomeRange,
+        inquiries: profile.inquiries
+      }));
+
+      localStorage.setItem(CARDS_KEY, JSON.stringify(setupCards));
+      showToast("Progress saved in this browser.");
+    }
+
+    function saveAndGoDashboard() {
+      saveProgress();
+      window.location.href = "dashboard.html";
+    }
+
+    function renderPreview() {
+      const profile = getProfileData();
+      const totalBalance = setupCards.reduce((sum, card) => sum + Number(card.balance || 0), 0);
+      const totalLimit = setupCards.reduce((sum, card) => sum + Number(card.limit || 0), 0);
+      const totalUtil = totalLimit > 0 ? (totalBalance / totalLimit) * 100 : 0;
+      const goal = Number(profile.goal);
+      const targetBalance = totalLimit * (goal / 100);
+      const paydown = Math.max(0, totalBalance - targetBalance);
+
+      document.getElementById("previewBalance").textContent = money(totalBalance);
+      document.getElementById("previewLimit").textContent = money(totalLimit);
+      document.getElementById("previewUtilization").textContent = percent(totalUtil);
+
+      let cardAdvice = "Add your first card so the app can calculate utilization.";
+      if (totalLimit > 0 && totalUtil > goal) {
+        cardAdvice = `Pay about ${money(paydown)} before your statement closes to move closer to under ${goal}% utilization.`;
+      } else if (totalLimit > 0) {
+        cardAdvice = `Your utilization is already near your selected goal. Keep reported balances low and avoid unnecessary applications.`;
+      }
+
+      let scoreAdvice = "";
+      if (["under500", "500-579", "580-619"].includes(profile.scoreRange)) {
+        scoreAdvice = "Since your selected score range is in rebuilding territory, secured cards or beginner unsecured cards are usually safer categories to study first.";
+      } else if (["620-659", "660-699"].includes(profile.scoreRange)) {
+        scoreAdvice = "Your selected score range may fit starter cards, but fees, inquiries, and utilization still matter.";
+      } else {
+        scoreAdvice = "With a stronger selected score range, protect your profile by keeping utilization low and only applying when the card fits your goals.";
+      }
+
+      document.getElementById("previewPlan").innerHTML = `
+        <strong>Your move:</strong> ${cardAdvice}<br><br>
+        <strong>Profile note:</strong> ${scoreAdvice}<br><br>
+        <strong>Setup saved:</strong> Score range ${scoreText(profile.scoreRange)}, income range ${profile.incomeRange}, recent inquiries ${profile.inquiries}.
+      `;
+    }
+
+    function loadProgress() {
+      const saved = JSON.parse(localStorage.getItem(ONBOARDING_KEY) || "null");
+      const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
+      const cards = JSON.parse(localStorage.getItem(CARDS_KEY) || "[]");
+
+      if (saved && saved.profile) {
+        applyProfile(saved.profile);
+        setupCards = saved.cards || [];
+      } else if (settings) {
+        applyProfile(settings);
+        setupCards = cards || [];
+      } else {
+        setupCards = cards || [];
+      }
+
+      renderSetupCards();
+    }
+
+    function applyProfile(profile) {
+      if (profile.scoreRange) document.getElementById("scoreRange").value = profile.scoreRange;
+      if (profile.incomeRange) document.getElementById("incomeRange").value = profile.incomeRange;
+      if (profile.inquiries) document.getElementById("inquiries").value = profile.inquiries;
+      if (profile.goal) document.getElementById("goalPercent").value = profile.goal;
+
+      if (profile.mainGoal) {
+        const button = document.querySelector(`#goalChoices .choice[data-value="${profile.mainGoal}"]`);
+        if (button) selectChoice("goalChoices", button);
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2600);
+    }
+
+    loadProgress();
+    setStep(1);
+  </script>
+</body>
+</html>

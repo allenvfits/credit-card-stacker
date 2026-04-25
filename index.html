@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Credit Card Stacker | Build Credit Smarter</title>
+  <meta name="description" content="Credit Card Stacker helps beginners plan credit card usage, lower utilization, track payment dates, and compare card options without hard credit pulls." />
+  <style>
+    :root {
+      --bg: #08111f;
+      --bg-soft: #0d1b2f;
+      --card: rgba(255, 255, 255, 0.08);
+      --card-strong: rgba(255, 255, 255, 0.13);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --line: rgba(255, 255, 255, 0.14);
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --radius: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.22), transparent 34%),
+        radial-gradient(circle at top right, rgba(167, 139, 250, 0.22), transparent 32%),
+        linear-gradient(180deg, #08111f 0%, #0a1424 55%, #07101d 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .page-shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(8, 17, 31, 0.76);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav-inner {
+      height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      font-size: 1.2rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      box-shadow: 0 12px 40px rgba(96, 165, 250, 0.3);
+      color: #07101d;
+      font-weight: 1000;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 18px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96, 165, 250, 0.28);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.09);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-wide {
+      width: 100%;
+    }
+
+    .hero {
+      padding: 80px 0 44px;
+      display: grid;
+      grid-template-columns: 1.04fr 0.96fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      background: rgba(110, 231, 183, 0.11);
+      color: #c9ffee;
+      border: 1px solid rgba(110, 231, 183, 0.24);
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 6.4rem);
+      line-height: 0.92;
+      letter-spacing: -0.085em;
+      max-width: 760px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, var(--brand) 35%, var(--brand-2) 70%, var(--brand-3) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.17rem;
+      line-height: 1.75;
+      margin: 24px 0 28px;
+      max-width: 650px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .hero-proof {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 28px;
+      max-width: 680px;
+    }
+
+    .proof-card {
+      background: rgba(255, 255, 255, 0.065);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .proof-card strong {
+      display: block;
+      font-size: 1.35rem;
+      letter-spacing: -0.04em;
+      margin-bottom: 4px;
+    }
+
+    .proof-card span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .phone-wrap {
+      position: relative;
+    }
+
+    .phone-glow {
+      position: absolute;
+      inset: 8% 3%;
+      background: linear-gradient(135deg, rgba(110, 231, 183, 0.32), rgba(96, 165, 250, 0.28), rgba(167, 139, 250, 0.26));
+      filter: blur(42px);
+      border-radius: 36px;
+      z-index: 0;
+    }
+
+    .phone {
+      position: relative;
+      z-index: 1;
+      max-width: 440px;
+      margin-left: auto;
+      border-radius: 42px;
+      padding: 14px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.035));
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: var(--shadow);
+    }
+
+    .phone-screen {
+      min-height: 680px;
+      border-radius: 32px;
+      overflow: hidden;
+      background: #091426;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 18px;
+    }
+
+    .app-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .app-title {
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .pill {
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.09);
+      border: 1px solid var(--line);
+      padding: 8px 11px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .score-card {
+      border-radius: 28px;
+      padding: 24px;
+      background:
+        radial-gradient(circle at top right, rgba(110, 231, 183, 0.24), transparent 38%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.055));
+      border: 1px solid var(--line);
+      margin-bottom: 16px;
+    }
+
+    .score-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 12px;
+    }
+
+    .score-number {
+      font-size: 4rem;
+      font-weight: 1000;
+      letter-spacing: -0.08em;
+      line-height: 0.95;
+    }
+
+    .score-tag {
+      color: #07101d;
+      background: var(--brand);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .progress {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      margin-top: 22px;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 42%;
+      background: linear-gradient(90deg, var(--danger), var(--warning), var(--brand));
+      border-radius: inherit;
+    }
+
+    .action-card {
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.075);
+      border: 1px solid var(--line);
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .action-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .action-head strong {
+      letter-spacing: -0.03em;
+    }
+
+    .action-card p {
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 0.92rem;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .mini-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .mini-item strong {
+      color: var(--text);
+    }
+
+    section {
+      padding: 58px 0;
+    }
+
+    .section-head {
+      max-width: 720px;
+      margin-bottom: 28px;
+    }
+
+    .section-head.center {
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+
+    .eyebrow {
+      color: var(--brand);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.78rem;
+      margin-bottom: 10px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(2.1rem, 4vw, 4rem);
+      letter-spacing: -0.07em;
+      line-height: 1;
+      margin-bottom: 15px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      font-size: 1.06rem;
+      line-height: 1.7;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .feature-card, .glass-card {
+      border-radius: var(--radius);
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.14);
+    }
+
+    .feature-card {
+      padding: 24px;
+      min-height: 240px;
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      background: rgba(110, 231, 183, 0.12);
+      border: 1px solid rgba(110, 231, 183, 0.22);
+      margin-bottom: 18px;
+      font-size: 1.3rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      letter-spacing: -0.04em;
+      margin-bottom: 10px;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.97rem;
+    }
+
+    .calculator-layout {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .glass-card {
+      padding: 24px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--text);
+      padding: 14px 15px;
+      outline: none;
+    }
+
+    .field select option {
+      color: #07101d;
+    }
+
+    .field input:focus, .field select:focus {
+      border-color: rgba(110, 231, 183, 0.7);
+      box-shadow: 0 0 0 4px rgba(110, 231, 183, 0.09);
+    }
+
+    .result-box {
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top right, rgba(96, 165, 250, 0.18), transparent 34%),
+        rgba(255, 255, 255, 0.075);
+    }
+
+    .result-main {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.075);
+      border: 1px solid var(--line);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+    }
+
+    .stat strong {
+      font-size: 1.5rem;
+      letter-spacing: -0.05em;
+    }
+
+    .recommendation {
+      border-radius: 22px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.075);
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .recommendation strong {
+      color: var(--text);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      counter-reset: step;
+    }
+
+    .step-card {
+      position: relative;
+      border-radius: 24px;
+      padding: 22px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--line);
+      overflow: hidden;
+      min-height: 230px;
+    }
+
+    .step-card::before {
+      counter-increment: step;
+      content: "0" counter(step);
+      display: inline-grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #07101d;
+      font-weight: 1000;
+      margin-bottom: 24px;
+    }
+
+    .step-card h3 {
+      letter-spacing: -0.04em;
+      margin-bottom: 10px;
+    }
+
+    .step-card p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .pricing-wrap {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    .price-card {
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--line);
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .price-card.featured {
+      background:
+        radial-gradient(circle at top right, rgba(110, 231, 183, 0.18), transparent 38%),
+        rgba(255, 255, 255, 0.11);
+      border-color: rgba(110, 231, 183, 0.36);
+      box-shadow: 0 24px 80px rgba(96, 165, 250, 0.18);
+    }
+
+    .price-card h3 {
+      font-size: 1.45rem;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+
+    .price-card p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .price {
+      font-size: 3rem;
+      font-weight: 1000;
+      letter-spacing: -0.08em;
+      margin-bottom: 16px;
+    }
+
+    .price small {
+      font-size: 1rem;
+      color: var(--muted);
+      letter-spacing: -0.02em;
+    }
+
+    .check-list {
+      list-style: none;
+      display: grid;
+      gap: 11px;
+      margin: 18px 0 22px;
+      color: var(--muted);
+    }
+
+    .check-list li {
+      display: flex;
+      gap: 9px;
+      line-height: 1.45;
+    }
+
+    .check-list li::before {
+      content: "✓";
+      color: var(--brand);
+      font-weight: 1000;
+    }
+
+    .disclaimer {
+      border-radius: 24px;
+      padding: 22px;
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.24);
+      color: #f9eac0;
+      line-height: 1.7;
+    }
+
+    .disclaimer strong {
+      color: #fff5d6;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    details {
+      border-radius: 20px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid var(--line);
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    details p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-top: 12px;
+    }
+
+    .cta {
+      text-align: center;
+      padding: 74px 28px;
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at top left, rgba(110, 231, 183, 0.2), transparent 38%),
+        radial-gradient(circle at top right, rgba(167, 139, 250, 0.2), transparent 38%),
+        rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .cta h2 {
+      font-size: clamp(2.4rem, 5vw, 5rem);
+      letter-spacing: -0.08em;
+      line-height: 0.98;
+      margin-bottom: 16px;
+    }
+
+    .cta p {
+      max-width: 680px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0 auto 24px;
+      font-size: 1.05rem;
+    }
+
+    footer {
+      padding: 42px 0;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+      margin-top: 42px;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      line-height: 1.6;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.68);
+      backdrop-filter: blur(10px);
+      padding: 22px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      width: min(520px, 100%);
+      border-radius: 28px;
+      background: #0b1729;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+
+    .modal h3 {
+      font-size: 1.8rem;
+      letter-spacing: -0.05em;
+      margin-bottom: 10px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 18px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 980px) {
+      .hero, .calculator-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .phone {
+        margin: 0 auto;
+      }
+
+      .features-grid, .steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page-shell {
+        width: min(100% - 22px, 1180px);
+      }
+
+      .nav-inner {
+        height: auto;
+        padding: 14px 0;
+        align-items: flex-start;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .nav-actions .btn-secondary {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 48px;
+      }
+
+      .hero-actions, .modal-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hero-proof, .features-grid, .steps, .pricing-wrap, .faq-grid, .result-main {
+        grid-template-columns: 1fr;
+      }
+
+      .phone-screen {
+        min-height: auto;
+      }
+
+      .score-number {
+        font-size: 3.2rem;
+      }
+
+      section {
+        padding: 44px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="page-shell nav-inner">
+      <a class="logo" href="#top" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <div class="nav-links" aria-label="Primary navigation">
+        <a href="#features">Features</a>
+        <a href="#calculator">Calculator</a>
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </div>
+
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="#calculator">Try calculator</a>
+        <button class="btn btn-primary" onclick="openModal('signup')">Start free</button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <div class="page-shell hero">
+      <div>
+        <div class="badge">No hard pull • Beginner-friendly • Built for rebuilding credit</div>
+        <h1>Stack smarter. <span class="gradient-text">Build credit</span> step by step.</h1>
+        <p>
+          Credit Card Stacker helps you plan which credit cards to consider, when to pay balances, and how to keep utilization under control. No confusing finance talk. Just a simple credit card game plan.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="openModal('signup')">Create my free plan</button>
+          <a class="btn btn-secondary" href="#calculator">Check utilization</a>
+        </div>
+
+        <div class="hero-proof">
+          <div class="proof-card">
+            <strong>0%</strong>
+            <span>Hard credit pulls in the starter version</span>
+          </div>
+          <div class="proof-card">
+            <strong>30%</strong>
+            <span>Common utilization target to stay under</span>
+          </div>
+          <div class="proof-card">
+            <strong>10%</strong>
+            <span>A stricter target many rebuilders aim for</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone-wrap" aria-hidden="true">
+        <div class="phone-glow"></div>
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="app-top">
+              <div class="app-title">Today’s Plan</div>
+              <div class="pill">Starter Mode</div>
+            </div>
+
+            <div class="score-card">
+              <div class="score-label">Estimated score range</div>
+              <div class="score-row">
+                <div class="score-number">580–619</div>
+                <div class="score-tag">Rebuilding</div>
+              </div>
+              <div class="progress"><span></span></div>
+            </div>
+
+            <div class="action-card">
+              <div class="action-head">
+                <strong>Pay before statement closes</strong>
+                <span class="pill">Important</span>
+              </div>
+              <p>Try to report a lower balance before your statement date, not just your due date.</p>
+            </div>
+
+            <div class="action-card">
+              <div class="action-head">
+                <strong>Utilization target</strong>
+                <span class="pill">Under 10%</span>
+              </div>
+              <p>Bring Card 1 below $50 if your limit is $500. Lower reported balances may help your profile look cleaner.</p>
+            </div>
+
+            <div class="action-card">
+              <div class="action-head">
+                <strong>Next card type</strong>
+                <span class="pill">Low risk</span>
+              </div>
+              <p>Consider secured or starter cards first. Avoid premium cards until your profile is stronger.</p>
+              <div class="mini-list">
+                <div class="mini-item"><span>Card balance</span><strong>$238</strong></div>
+                <div class="mini-item"><span>Credit limit</span><strong>$500</strong></div>
+                <div class="mini-item"><span>Current utilization</span><strong>47.6%</strong></div>
+                <div class="mini-item"><span>Pay to reach 10%</span><strong>$188</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section id="features">
+      <div class="page-shell">
+        <div class="section-head">
+          <div class="eyebrow">What it does</div>
+          <h2>A credit card strategy app, not another boring score dashboard.</h2>
+          <p>
+            The goal is to help users understand what action to take next: pay down, wait, apply, or avoid applying too soon.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <article class="feature-card">
+            <div class="icon">💳</div>
+            <h3>Card stacking plan</h3>
+            <p>Users enter their score range, income range, current cards, balances, and limits. The app creates a simple path for what type of card to consider next.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="icon">📉</div>
+            <h3>Utilization calculator</h3>
+            <p>Shows current utilization and how much to pay to reach common targets like under 30%, under 10%, or close to 1%.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="icon">⏰</div>
+            <h3>Statement reminders</h3>
+            <p>Reminds users to pay before the statement closing date, which is often more useful than only tracking the due date.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="icon">🧠</div>
+            <h3>Beginner explanations</h3>
+            <p>Explains credit terms in plain English: utilization, hard inquiries, secured cards, annual fees, APR, and payment history.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="icon">🛡️</div>
+            <h3>No hard pull MVP</h3>
+            <p>The first version uses manual score ranges instead of pulling private credit reports. This keeps the app easier and safer to launch.</p>
+          </article>
+
+          <article class="feature-card">
+            <div class="icon">⚖️</div>
+            <h3>Clear disclaimers</h3>
+            <p>The app does not guarantee approval or score increases. It gives educational guidance and keeps recommendations transparent.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="calculator">
+      <div class="page-shell">
+        <div class="section-head">
+          <div class="eyebrow">Live demo</div>
+          <h2>Try the utilization calculator.</h2>
+          <p>
+            This small demo is already working inside this single HTML file. Enter a balance and credit limit to see what the app would recommend.
+          </p>
+        </div>
+
+        <div class="calculator-layout">
+          <div class="glass-card">
+            <div class="form-grid">
+              <div class="field">
+                <label for="scoreRange">Estimated credit score range</label>
+                <select id="scoreRange" onchange="calculatePlan()">
+                  <option value="under500">Under 500</option>
+                  <option value="500-579">500–579</option>
+                  <option value="580-619" selected>580–619</option>
+                  <option value="620-659">620–659</option>
+                  <option value="660-699">660–699</option>
+                  <option value="700plus">700+</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="balance">Current card balance</label>
+                <input id="balance" type="number" min="0" step="1" value="238" oninput="calculatePlan()" />
+              </div>
+
+              <div class="field">
+                <label for="limit">Credit limit</label>
+                <input id="limit" type="number" min="1" step="1" value="500" oninput="calculatePlan()" />
+              </div>
+
+              <div class="field">
+                <label for="goal">Utilization goal</label>
+                <select id="goal" onchange="calculatePlan()">
+                  <option value="30">Under 30%</option>
+                  <option value="10" selected>Under 10%</option>
+                  <option value="1">Close to 1%</option>
+                </select>
+              </div>
+
+              <button class="btn btn-primary btn-wide" onclick="calculatePlan()">Update my plan</button>
+            </div>
+          </div>
+
+          <div class="glass-card result-box">
+            <div class="result-main">
+              <div class="stat">
+                <span>Current utilization</span>
+                <strong id="utilizationOut">47.6%</strong>
+              </div>
+              <div class="stat">
+                <span>Target balance</span>
+                <strong id="targetBalanceOut">$50</strong>
+              </div>
+              <div class="stat">
+                <span>Pay down</span>
+                <strong id="payDownOut">$188</strong>
+              </div>
+            </div>
+
+            <div class="recommendation" id="recommendationOut">
+              <strong>Your move:</strong> Your utilization is high right now. Try paying about $188 before your statement closes to report under 10%. Based on your estimated score range, secured cards or beginner unsecured cards may be more realistic than premium cards.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="page-shell">
+        <div class="section-head center">
+          <div class="eyebrow">How it works</div>
+          <h2>Simple enough for beginners.</h2>
+          <p>The app should feel more like a checklist than a finance textbook.</p>
+        </div>
+
+        <div class="steps">
+          <article class="step-card">
+            <h3>Add your profile</h3>
+            <p>Enter estimated score range, income range, cards, limits, balances, due dates, and statement closing dates.</p>
+          </article>
+
+          <article class="step-card">
+            <h3>Get your action plan</h3>
+            <p>The app tells you what to fix first, such as lowering utilization or waiting before another application.</p>
+          </article>
+
+          <article class="step-card">
+            <h3>Track your timing</h3>
+            <p>Get reminders before statement closing dates so lower balances have a better chance of reporting.</p>
+          </article>
+
+          <article class="step-card">
+            <h3>Compare card options</h3>
+            <p>View cards by category and approval range. No guaranteed approvals and no fake promises.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="page-shell">
+        <div class="section-head center">
+          <div class="eyebrow">Pricing idea</div>
+          <h2>Free to start. Premium when users want deeper planning.</h2>
+          <p>This pricing section is just a front-end mockup. Connect it to Stripe later when you are ready.</p>
+        </div>
+
+        <div class="pricing-wrap">
+          <article class="price-card">
+            <h3>Free</h3>
+            <p>For users who want basic credit card organization.</p>
+            <div class="price">$0 <small>/ month</small></div>
+            <ul class="check-list">
+              <li>Manual score range entry</li>
+              <li>One-card utilization calculator</li>
+              <li>Beginner education checklist</li>
+              <li>Basic card category guidance</li>
+            </ul>
+            <button class="btn btn-secondary btn-wide" onclick="openModal('free')">Start free</button>
+          </article>
+
+          <article class="price-card featured">
+            <div class="badge">Most useful</div>
+            <h3>Premium</h3>
+            <p>For users rebuilding credit and tracking multiple cards.</p>
+            <div class="price">$4.99 <small>/ month</small></div>
+            <ul class="check-list">
+              <li>Multi-card utilization tracking</li>
+              <li>Statement date reminders</li>
+              <li>Card stacking timeline</li>
+              <li>Advanced payoff targets</li>
+              <li>Premium educational lessons</li>
+            </ul>
+            <button class="btn btn-primary btn-wide" onclick="openModal('premium')">Unlock Premium</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="page-shell">
+        <div class="disclaimer">
+          <strong>Important disclaimer:</strong> Credit Card Stacker is for educational and informational purposes only. It is not a bank, lender, credit bureau, financial advisor, or credit repair company. The app does not guarantee approval for any credit product and does not guarantee any credit score increase. If card links or offers are added later, clearly disclose any affiliate compensation near the offer.
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="page-shell">
+        <div class="section-head">
+          <div class="eyebrow">FAQ</div>
+          <h2>Questions users will ask.</h2>
+        </div>
+
+        <div class="faq-grid">
+          <details open>
+            <summary>Does this app pull my real credit score?</summary>
+            <p>Not in the starter version. Users manually enter an estimated score range. A real credit-score connection can be added later through a credit bureau or approved data provider.</p>
+          </details>
+
+          <details>
+            <summary>Will this hurt my credit?</summary>
+            <p>The basic app does not run a credit check. If real score access is added later, the app should clearly explain whether it is a soft inquiry and ask for user consent first.</p>
+          </details>
+
+          <details>
+            <summary>Does the app guarantee approval?</summary>
+            <p>No. Lenders make approval decisions. The app can show general card categories that may fit a user profile, but approval should never be promised.</p>
+          </details>
+
+          <details>
+            <summary>Is this credit repair?</summary>
+            <p>No. The app is designed as an educational credit card planning tool. It should not claim to remove negative items, dispute credit reports for users, or guarantee score changes.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="page-shell">
+        <div class="cta">
+          <h2>Turn credit confusion into a simple plan.</h2>
+          <p>
+            Start with the calculator, then build the full app around user accounts, card tracking, reminders, premium plans, and transparent card comparisons.
+          </p>
+          <div class="hero-actions" style="justify-content: center;">
+            <button class="btn btn-primary" onclick="openModal('signup')">Start building my plan</button>
+            <a class="btn btn-secondary" href="#features">View features</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="page-shell footer-inner">
+      <div>
+        <strong>Credit Card Stacker</strong><br />
+        Educational credit card planning for beginners.
+      </div>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#calculator">Calculator</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h3 id="modalTitle">Demo button</h3>
+      <p id="modalText">
+        This is only the front-end demo. Later, connect this button to Supabase authentication and Stripe checkout.
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        <button class="btn btn-primary" onclick="closeModal()">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function money(value) {
+      if (!Number.isFinite(value)) return "$0";
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(Math.max(0, value));
+    }
+
+    function calculatePlan() {
+      const scoreRange = document.getElementById("scoreRange").value;
+      const balanceInput = Number(document.getElementById("balance").value);
+      const limitInput = Number(document.getElementById("limit").value);
+      const goal = Number(document.getElementById("goal").value);
+
+      const balance = Number.isFinite(balanceInput) ? Math.max(0, balanceInput) : 0;
+      const limit = Number.isFinite(limitInput) ? Math.max(1, limitInput) : 1;
+      const utilization = (balance / limit) * 100;
+      const targetBalance = limit * (goal / 100);
+      const payDown = Math.max(0, balance - targetBalance);
+
+      document.getElementById("utilizationOut").textContent = utilization.toFixed(1) + "%";
+      document.getElementById("targetBalanceOut").textContent = money(targetBalance);
+      document.getElementById("payDownOut").textContent = money(payDown);
+
+      let profileAdvice = "starter unsecured cards or secured cards may be a better fit than premium cards.";
+      if (scoreRange === "under500" || scoreRange === "500-579") {
+        profileAdvice = "secured cards may be the safest starting point. Avoid applying for too many cards at once.";
+      } else if (scoreRange === "580-619") {
+        profileAdvice = "secured cards and beginner unsecured cards may be more realistic than premium cards.";
+      } else if (scoreRange === "620-659") {
+        profileAdvice = "some starter unsecured cards may fit, but compare fees and approval ranges carefully.";
+      } else if (scoreRange === "660-699") {
+        profileAdvice = "you may have more options, but utilization and recent inquiries still matter.";
+      } else if (scoreRange === "700plus") {
+        profileAdvice = "you may qualify for stronger cards, but approvals are never guaranteed.";
+      }
+
+      let utilizationAdvice = "Your utilization is in a healthier range. Keep balances low before the statement closes.";
+      if (utilization >= 50) {
+        utilizationAdvice = "Your utilization is very high. Paying it down before the statement closes may make your profile look cleaner.";
+      } else if (utilization >= 30) {
+        utilizationAdvice = "Your utilization is above 30%. Try lowering it before the statement closes.";
+      } else if (utilization >= 10) {
+        utilizationAdvice = "Your utilization is under 30%, but getting closer to 10% may look cleaner.";
+      }
+
+      const paymentSentence = payDown > 0
+        ? `Try paying about ${money(payDown)} before your statement closes to report under ${goal}%.`
+        : `You are already near or under the ${goal}% target based on the numbers entered.`;
+
+      document.getElementById("recommendationOut").innerHTML = `
+        <strong>Your move:</strong> ${utilizationAdvice} ${paymentSentence} Based on your estimated score range, ${profileAdvice}
+      `;
+    }
+
+    function openModal(type) {
+      const title = document.getElementById("modalTitle");
+      const text = document.getElementById("modalText");
+
+      if (type === "premium") {
+        title.textContent = "Premium checkout coming later";
+        text.textContent = "This button is ready for Stripe later. For now, it is only a front-end demo. Connect it to your payment flow when your app is ready.";
+      } else if (type === "free" || type === "signup") {
+        title.textContent = "Sign up coming later";
+        text.textContent = "This button is ready for Supabase Auth later. For now, it is only a front-end demo so you can test the design in VS Code.";
+      } else {
+        title.textContent = "Demo button";
+        text.textContent = "This is only the front-end demo. Later, connect this button to Supabase authentication and Stripe checkout.";
+      }
+
+      document.getElementById("modalBackdrop").classList.add("active");
+    }
+
+    function closeModal() {
+      document.getElementById("modalBackdrop").classList.remove("active");
+    }
+
+    document.getElementById("modalBackdrop").addEventListener("click", function(event) {
+      if (event.target.id === "modalBackdrop") {
+        closeModal();
+      }
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    });
+
+    calculatePlan();
+  </script>
+</body>
+</html>

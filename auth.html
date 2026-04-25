@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In | Credit Card Stacker</title>
+  <meta name="description" content="Sign in or create a Credit Card Stacker account. Front-end auth page ready for Supabase Auth integration." />
+  <style>
+    :root {
+      --bg: #07101d;
+      --bg-2: #0b1729;
+      --panel: rgba(255,255,255,.075);
+      --panel-2: rgba(255,255,255,.115);
+      --line: rgba(255,255,255,.14);
+      --text: #f8fbff;
+      --muted: #aebcd0;
+      --brand: #6ee7b7;
+      --brand-2: #60a5fa;
+      --brand-3: #a78bfa;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --success: #34d399;
+      --radius: 28px;
+      --shadow: 0 24px 80px rgba(0,0,0,.34);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(96,165,250,.22), transparent 33%),
+        radial-gradient(circle at top right, rgba(110,231,183,.16), transparent 31%),
+        linear-gradient(180deg, var(--bg) 0%, #091426 54%, #050b14 100%);
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+
+    .shell { width: min(1180px, calc(100% - 30px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(7,16,29,.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .topbar-inner {
+      min-height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 1000;
+      letter-spacing: -.04em;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2), var(--brand-3));
+      color: #06111f;
+      box-shadow: 0 12px 40px rgba(96,165,250,.28);
+    }
+
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-size: .94rem;
+      flex-wrap: wrap;
+    }
+
+    .top-links a:hover { color: var(--text); }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+    .btn:disabled { cursor: not-allowed; opacity: .5; transform: none; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #06111f;
+      box-shadow: 0 18px 44px rgba(96,165,250,.25);
+    }
+
+    .btn-ghost {
+      background: rgba(255,255,255,.075);
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-full { width: 100%; }
+
+    .auth-layout {
+      min-height: calc(100vh - 74px);
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 28px;
+      align-items: center;
+      padding: 50px 0 70px;
+    }
+
+    .hero-card {
+      position: relative;
+      border-radius: 40px;
+      padding: clamp(28px, 5vw, 54px);
+      background:
+        radial-gradient(circle at top right, rgba(110,231,183,.17), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(167,139,250,.16), transparent 34%),
+        rgba(255,255,255,.075);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c9ffee;
+      background: rgba(110,231,183,.11);
+      border: 1px solid rgba(110,231,183,.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: .84rem;
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 6vw, 6.2rem);
+      letter-spacing: -.085em;
+      line-height: .92;
+      max-width: 760px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #fff, var(--brand), var(--brand-2), var(--brand-3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-card p {
+      color: var(--muted);
+      line-height: 1.75;
+      margin-top: 20px;
+      font-size: 1.08rem;
+      max-width: 680px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .feature {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+
+    .feature strong {
+      display: block;
+      letter-spacing: -.035em;
+      margin-bottom: 7px;
+    }
+
+    .feature span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: .92rem;
+    }
+
+    .auth-card {
+      border-radius: 34px;
+      padding: 24px;
+      background: rgba(255,255,255,.085);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .auth-inner {
+      border-radius: 26px;
+      background: #091426;
+      border: 1px solid rgba(255,255,255,.1);
+      padding: 24px;
+    }
+
+    .auth-head { margin-bottom: 20px; }
+
+    .auth-head h2 {
+      font-size: 2rem;
+      letter-spacing: -.06em;
+      margin-bottom: 8px;
+    }
+
+    .auth-head p {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: .95rem;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid var(--line);
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 12px;
+      cursor: pointer;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .tab.active {
+      color: #06111f;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    }
+
+    .form-panel { display: none; animation: fadeUp .22s ease both; }
+    .form-panel.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-grid { display: grid; gap: 14px; }
+
+    .field label {
+      display: block;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 7px;
+      font-size: .9rem;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px;
+      outline: none;
+      min-height: 48px;
+    }
+
+    .field input:focus {
+      border-color: rgba(110,231,183,.72);
+      box-shadow: 0 0 0 4px rgba(110,231,183,.09);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .helper-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .helper-row button {
+      background: none;
+      border: 0;
+      color: #c9ffee;
+      cursor: pointer;
+      font-weight: 900;
+    }
+
+    .check-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: .9rem;
+    }
+
+    .check-row input { width: 18px; height: 18px; accent-color: var(--brand); margin-top: 2px; }
+
+    .divider {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: .86rem;
+      margin: 18px 0;
+    }
+
+    .divider::before, .divider::after {
+      content: "";
+      height: 1px;
+      background: var(--line);
+    }
+
+    .demo-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .notice {
+      border-radius: 20px;
+      padding: 15px;
+      color: #f9eac0;
+      background: rgba(251,191,36,.08);
+      border: 1px solid rgba(251,191,36,.24);
+      line-height: 1.65;
+      font-size: .9rem;
+      margin-top: 16px;
+    }
+
+    .success-note {
+      display: none;
+      border-radius: 20px;
+      padding: 15px;
+      color: #d8fff1;
+      background: rgba(52,211,153,.09);
+      border: 1px solid rgba(52,211,153,.24);
+      line-height: 1.65;
+      font-size: .9rem;
+      margin-bottom: 16px;
+    }
+
+    .success-note.active { display: block; }
+
+    .small-link {
+      color: #c9ffee;
+      font-weight: 900;
+      cursor: pointer;
+      background: none;
+      border: 0;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 110;
+      max-width: 390px;
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: #0f2138;
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      line-height: 1.5;
+      transform: translateY(130%);
+      transition: transform .24s ease;
+    }
+
+    .toast.active { transform: translateY(0); }
+
+    @media (max-width: 1040px) {
+      .auth-layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner { display: block; }
+      .top-links { margin-top: 12px; }
+      .feature-grid, .two-col, .demo-buttons { grid-template-columns: 1fr; }
+      .tabs { grid-template-columns: 1fr; border-radius: 22px; }
+      .auth-card, .auth-inner, .hero-card { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="logo" href="index.html" aria-label="Credit Card Stacker home">
+        <span class="logo-mark">S</span>
+        <span>Credit Card Stacker</span>
+      </a>
+
+      <nav class="top-links" aria-label="Navigation">
+        <a href="index.html">Home</a>
+        <a href="onboarding.html">Onboarding</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="card-finder.html">Card Finder</a>
+        <a href="learn.html">Learn</a>
+        <a href="premium.html">Premium</a>
+        <a href="settings.html">Settings</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell auth-layout">
+    <section class="hero-card">
+      <div class="badge">Auth page • Supabase-ready • Demo login included</div>
+      <h1>Sign in to your <span class="gradient-text">credit game plan.</span></h1>
+      <p>
+        This page is a front-end authentication screen. It saves a demo session in the browser for now, and later you can connect the same forms to Supabase Auth.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature"><strong>Secure account flow</strong><span>Sign up, sign in, reset password, and save basic profile info.</span></div>
+        <div class="feature"><strong>Demo session</strong><span>Test the app without a backend while building in VS Code.</span></div>
+        <div class="feature"><strong>Supabase-ready</strong><span>Button actions are separated so you can replace demo logic later.</span></div>
+        <div class="feature"><strong>Privacy-first wording</strong><span>No real credit score, SSN, or bank account is collected here.</span></div>
+      </div>
+    </section>
+
+    <section class="auth-card">
+      <div class="auth-inner">
+        <div class="auth-head">
+          <h2 id="authTitle">Welcome back</h2>
+          <p id="authSubtitle">Sign in to continue to your dashboard.</p>
+        </div>
+
+        <div class="success-note" id="successNote"></div>
+
+        <div class="tabs" role="tablist" aria-label="Authentication tabs">
+          <button class="tab active" onclick="showPanel('signin', this)">Sign In</button>
+          <button class="tab" onclick="showPanel('signup', this)">Sign Up</button>
+          <button class="tab" onclick="showPanel('reset', this)">Reset</button>
+        </div>
+
+        <div class="form-panel active" id="panel-signin">
+          <div class="form-grid">
+            <div class="field">
+              <label for="signinEmail">Email</label>
+              <input id="signinEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+            </div>
+            <div class="field">
+              <label for="signinPassword">Password</label>
+              <input id="signinPassword" type="password" placeholder="Enter your password" autocomplete="current-password" />
+            </div>
+            <div class="helper-row">
+              <label class="check-row"><input id="rememberMe" type="checkbox" checked /> Keep me signed in on this device</label>
+              <button onclick="switchToReset()">Forgot password?</button>
+            </div>
+            <button class="btn btn-primary btn-full" onclick="demoSignIn()">Sign In</button>
+          </div>
+        </div>
+
+        <div class="form-panel" id="panel-signup">
+          <div class="form-grid">
+            <div class="two-col">
+              <div class="field">
+                <label for="signupName">Name</label>
+                <input id="signupName" placeholder="Allen" autocomplete="name" />
+              </div>
+              <div class="field">
+                <label for="signupEmail">Email</label>
+                <input id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="signupPassword">Password</label>
+              <input id="signupPassword" type="password" placeholder="Create a password" autocomplete="new-password" />
+            </div>
+            <label class="check-row">
+              <input id="agreeTerms" type="checkbox" />
+              <span>I understand this app is educational only and does not guarantee credit approval or score changes.</span>
+            </label>
+            <button class="btn btn-primary btn-full" onclick="demoSignUp()">Create Account</button>
+          </div>
+        </div>
+
+        <div class="form-panel" id="panel-reset">
+          <div class="form-grid">
+            <div class="field">
+              <label for="resetEmail">Email</label>
+              <input id="resetEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+            </div>
+            <button class="btn btn-primary btn-full" onclick="demoResetPassword()">Send Reset Link</button>
+            <button class="btn btn-ghost btn-full" onclick="switchToSignIn()">Back to Sign In</button>
+          </div>
+        </div>
+
+        <div class="divider">Demo shortcuts</div>
+
+        <div class="demo-buttons">
+          <button class="btn btn-ghost" onclick="quickDemoUser()">Demo User</button>
+          <button class="btn btn-ghost" onclick="signOutDemo()">Sign Out</button>
+        </div>
+
+        <div class="notice">
+          Backend note: this page does not use real authentication yet. Replace the demo functions with Supabase Auth later. Never store real passwords in localStorage.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const SESSION_KEY = "creditCardStackerSession";
+    const PROFILE_KEY = "creditCardStackerUserProfile";
+    const SETTINGS_KEY = "creditCardStackerSettings";
+
+    function showPanel(name, button) {
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".form-panel").forEach(panel => panel.classList.remove("active"));
+      if (button) button.classList.add("active");
+      document.getElementById(`panel-${name}`).classList.add("active");
+
+      const title = document.getElementById("authTitle");
+      const subtitle = document.getElementById("authSubtitle");
+      if (name === "signin") {
+        title.textContent = "Welcome back";
+        subtitle.textContent = "Sign in to continue to your dashboard.";
+      } else if (name === "signup") {
+        title.textContent = "Create your account";
+        subtitle.textContent = "Start with manual credit planning. No real credit pull.";
+      } else {
+        title.textContent = "Reset password";
+        subtitle.textContent = "Demo reset flow. Supabase can send real reset emails later.";
+      }
+    }
+
+    function switchToReset() {
+      const resetTab = document.querySelectorAll(".tab")[2];
+      showPanel("reset", resetTab);
+    }
+
+    function switchToSignIn() {
+      const signInTab = document.querySelectorAll(".tab")[0];
+      showPanel("signin", signInTab);
+    }
+
+    function demoSignIn() {
+      const email = document.getElementById("signinEmail").value.trim();
+      const password = document.getElementById("signinPassword").value;
+      if (!email || !email.includes("@")) {
+        showToast("Enter a valid email.");
+        return;
+      }
+      if (!password) {
+        showToast("Enter a password for the demo.");
+        return;
+      }
+
+      const existingProfile = getJson(PROFILE_KEY, {});
+      saveJson(SESSION_KEY, {
+        signedIn: true,
+        email,
+        name: existingProfile.displayName || email.split("@")[0],
+        provider: "demo-local",
+        signedInAt: new Date().toISOString()
+      });
+      saveJson(PROFILE_KEY, {
+        ...existingProfile,
+        email,
+        displayName: existingProfile.displayName || email.split("@")[0],
+        updatedAt: new Date().toISOString()
+      });
+
+      showSuccess("Signed in with demo session. Redirecting to dashboard...");
+      setTimeout(() => window.location.href = "dashboard.html", 700);
+    }
+
+    function demoSignUp() {
+      const name = document.getElementById("signupName").value.trim() || "User";
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value;
+      const agreed = document.getElementById("agreeTerms").checked;
+
+      if (!email || !email.includes("@")) {
+        showToast("Enter a valid email.");
+        return;
+      }
+      if (password.length < 6) {
+        showToast("Use at least 6 characters for the demo password.");
+        return;
+      }
+      if (!agreed) {
+        showToast("Check the educational disclaimer box first.");
+        return;
+      }
+
+      saveJson(SESSION_KEY, {
+        signedIn: true,
+        email,
+        name,
+        provider: "demo-local",
+        signedInAt: new Date().toISOString()
+      });
+      saveJson(PROFILE_KEY, {
+        displayName: name,
+        email,
+        scoreRange: "580-619",
+        incomeRange: "$25k–$49k",
+        inquiries: "1–2",
+        goal: "10",
+        mainGoal: "lower-utilization",
+        updatedAt: new Date().toISOString()
+      });
+      saveJson(SETTINGS_KEY, {
+        scoreRange: "580-619",
+        incomeRange: "$25k–$49k",
+        inquiries: "1–2",
+        goal: "10"
+      });
+
+      showSuccess("Account created in demo mode. Redirecting to onboarding...");
+      setTimeout(() => window.location.href = "onboarding.html", 700);
+    }
+
+    function demoResetPassword() {
+      const email = document.getElementById("resetEmail").value.trim();
+      if (!email || !email.includes("@")) {
+        showToast("Enter a valid email.");
+        return;
+      }
+      showSuccess(`Demo reset link prepared for ${email}. Supabase can send the real email later.`);
+    }
+
+    function quickDemoUser() {
+      saveJson(SESSION_KEY, {
+        signedIn: true,
+        email: "demo@creditcardstacker.app",
+        name: "Demo User",
+        provider: "demo-local",
+        signedInAt: new Date().toISOString()
+      });
+      saveJson(PROFILE_KEY, {
+        displayName: "Demo User",
+        email: "demo@creditcardstacker.app",
+        scoreRange: "580-619",
+        incomeRange: "$25k–$49k",
+        inquiries: "1–2",
+        goal: "10",
+        mainGoal: "lower-utilization",
+        updatedAt: new Date().toISOString()
+      });
+      showSuccess("Demo user signed in. Redirecting to dashboard...");
+      setTimeout(() => window.location.href = "dashboard.html", 700);
+    }
+
+    function signOutDemo() {
+      localStorage.removeItem(SESSION_KEY);
+      showSuccess("Demo session signed out.");
+    }
+
+    function getJson(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+      catch { return fallback; }
+    }
+
+    function saveJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function showSuccess(message) {
+      const note = document.getElementById("successNote");
+      note.textContent = message;
+      note.classList.add("active");
+      showToast(message);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("active");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
+    }
+
+    function prefillFromSession() {
+      const session = getJson(SESSION_KEY, null);
+      const profile = getJson(PROFILE_KEY, {});
+      if (session && session.email) {
+        document.getElementById("signinEmail").value = session.email;
+      }
+      if (profile.email) {
+        document.getElementById("signupEmail").value = profile.email;
+        document.getElementById("resetEmail").value = profile.email;
+      }
+      if (profile.displayName) {
+        document.getElementById("signupName").value = profile.displayName;
+      }
+    }
+
+    prefillFromSession();
+  </script>
+</body>
+</html>
