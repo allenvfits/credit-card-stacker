@@ -4,11 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign In | Credit Card Stacker</title>
-  <meta name="description" content="Sign in or create a Credit Card Stacker account. Front-end auth page ready for Supabase Auth integration." />
+  <meta name="description" content="Sign in or create a Credit Card Stacker account using Supabase Auth." />
+
   <style>
     :root {
       --bg: #07101d;
-      --bg-2: #0b1729;
       --panel: rgba(255,255,255,.075);
       --panel-2: rgba(255,255,255,.115);
       --line: rgba(255,255,255,.14);
@@ -20,12 +20,15 @@
       --danger: #fb7185;
       --warning: #fbbf24;
       --success: #34d399;
-      --radius: 28px;
       --shadow: 0 24px 80px rgba(0,0,0,.34);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       min-height: 100vh;
       color: var(--text);
@@ -37,10 +40,20 @@
       overflow-x: hidden;
     }
 
-    a { color: inherit; text-decoration: none; }
-    button, input { font: inherit; }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-    .shell { width: min(1180px, calc(100% - 30px)); margin: 0 auto; }
+    button,
+    input {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 30px));
+      margin: 0 auto;
+    }
 
     .topbar {
       position: sticky;
@@ -89,7 +102,9 @@
       flex-wrap: wrap;
     }
 
-    .top-links a:hover { color: var(--text); }
+    .top-links a:hover {
+      color: var(--text);
+    }
 
     .btn {
       border: 0;
@@ -105,8 +120,9 @@
       white-space: nowrap;
     }
 
-    .btn:hover { transform: translateY(-2px); }
-    .btn:disabled { cursor: not-allowed; opacity: .5; transform: none; }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
 
     .btn-primary {
       background: linear-gradient(135deg, var(--brand), var(--brand-2));
@@ -120,7 +136,9 @@
       border: 1px solid var(--line);
     }
 
-    .btn-full { width: 100%; }
+    .btn-full {
+      width: 100%;
+    }
 
     .auth-layout {
       min-height: calc(100vh - 74px);
@@ -222,7 +240,9 @@
       padding: 24px;
     }
 
-    .auth-head { margin-bottom: 20px; }
+    .auth-head {
+      margin-bottom: 20px;
+    }
 
     .auth-head h2 {
       font-size: 2rem;
@@ -262,15 +282,30 @@
       background: linear-gradient(135deg, var(--brand), var(--brand-2));
     }
 
-    .form-panel { display: none; animation: fadeUp .22s ease both; }
-    .form-panel.active { display: block; }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    .form-panel {
+      display: none;
+      animation: fadeUp .22s ease both;
     }
 
-    .form-grid { display: grid; gap: 14px; }
+    .form-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+    }
 
     .field label {
       display: block;
@@ -329,7 +364,12 @@
       font-size: .9rem;
     }
 
-    .check-row input { width: 18px; height: 18px; accent-color: var(--brand); margin-top: 2px; }
+    .check-row input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--brand);
+      margin-top: 2px;
+    }
 
     .divider {
       display: grid;
@@ -341,7 +381,8 @@
       margin: 18px 0;
     }
 
-    .divider::before, .divider::after {
+    .divider::before,
+    .divider::after {
       content: "";
       height: 1px;
       background: var(--line);
@@ -376,14 +417,8 @@
       margin-bottom: 16px;
     }
 
-    .success-note.active { display: block; }
-
-    .small-link {
-      color: #c9ffee;
-      font-weight: 900;
-      cursor: pointer;
-      background: none;
-      border: 0;
+    .success-note.active {
+      display: block;
     }
 
     .toast {
@@ -403,23 +438,45 @@
       transition: transform .24s ease;
     }
 
-    .toast.active { transform: translateY(0); }
+    .toast.active {
+      transform: translateY(0);
+    }
 
     @media (max-width: 1040px) {
-      .auth-layout { grid-template-columns: 1fr; }
+      .auth-layout {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 720px) {
-      .topbar-inner { display: block; }
-      .top-links { margin-top: 12px; }
-      .feature-grid, .two-col, .demo-buttons { grid-template-columns: 1fr; }
-      .tabs { grid-template-columns: 1fr; border-radius: 22px; }
-      .auth-card, .auth-inner, .hero-card { padding: 18px; }
+      .topbar-inner {
+        display: block;
+      }
+
+      .top-links {
+        margin-top: 12px;
+      }
+
+      .feature-grid,
+      .two-col,
+      .demo-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        grid-template-columns: 1fr;
+        border-radius: 22px;
+      }
+
+      .auth-card,
+      .auth-inner,
+      .hero-card {
+        padding: 18px;
+      }
     }
   </style>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase-client.js"></script>
+
 <body>
   <header class="topbar">
     <div class="shell topbar-inner">
@@ -442,17 +499,37 @@
 
   <main class="shell auth-layout">
     <section class="hero-card">
-      <div class="badge">Auth page • Supabase-ready • Demo login included</div>
-      <h1>Sign in to your <span class="gradient-text">credit game plan.</span></h1>
+      <div class="badge">Supabase Auth • Real sign-in • Credit planning app</div>
+
+      <h1>
+        Sign in to your
+        <span class="gradient-text">credit game plan.</span>
+      </h1>
+
       <p>
-        This page is a front-end authentication screen. It saves a demo session in the browser for now, and later you can connect the same forms to Supabase Auth.
+        Create an account, sign in, or reset your password. This page connects to Supabase Auth, while your app can still use local demo data until the database tables are connected.
       </p>
 
       <div class="feature-grid">
-        <div class="feature"><strong>Secure account flow</strong><span>Sign up, sign in, reset password, and save basic profile info.</span></div>
-        <div class="feature"><strong>Demo session</strong><span>Test the app without a backend while building in VS Code.</span></div>
-        <div class="feature"><strong>Supabase-ready</strong><span>Button actions are separated so you can replace demo logic later.</span></div>
-        <div class="feature"><strong>Privacy-first wording</strong><span>No real credit score, SSN, or bank account is collected here.</span></div>
+        <div class="feature">
+          <strong>Real account login</strong>
+          <span>Uses Supabase Auth for sign-up, sign-in, sign-out, and password reset.</span>
+        </div>
+
+        <div class="feature">
+          <strong>No credit pull</strong>
+          <span>This app does not pull credit reports or access Credit Karma accounts.</span>
+        </div>
+
+        <div class="feature">
+          <strong>Privacy-first setup</strong>
+          <span>No SSN, bank login, or card number is collected in this front-end app.</span>
+        </div>
+
+        <div class="feature">
+          <strong>Ready for database</strong>
+          <span>Next step is connecting profiles, cards, goals, and reports to Supabase tables.</span>
+        </div>
       </div>
     </section>
 
@@ -466,9 +543,9 @@
         <div class="success-note" id="successNote"></div>
 
         <div class="tabs" role="tablist" aria-label="Authentication tabs">
-          <button class="tab active" onclick="showPanel('signin', this)">Sign In</button>
-          <button class="tab" onclick="showPanel('signup', this)">Sign Up</button>
-          <button class="tab" onclick="showPanel('reset', this)">Reset</button>
+          <button class="tab active" type="button" onclick="showPanel('signin', this)">Sign In</button>
+          <button class="tab" type="button" onclick="showPanel('signup', this)">Sign Up</button>
+          <button class="tab" type="button" onclick="showPanel('reset', this)">Reset</button>
         </div>
 
         <div class="form-panel active" id="panel-signin">
@@ -477,15 +554,22 @@
               <label for="signinEmail">Email</label>
               <input id="signinEmail" type="email" placeholder="you@example.com" autocomplete="email" />
             </div>
+
             <div class="field">
               <label for="signinPassword">Password</label>
               <input id="signinPassword" type="password" placeholder="Enter your password" autocomplete="current-password" />
             </div>
+
             <div class="helper-row">
-              <label class="check-row"><input id="rememberMe" type="checkbox" checked /> Keep me signed in on this device</label>
-              <button onclick="switchToReset()">Forgot password?</button>
+              <label class="check-row">
+                <input id="rememberMe" type="checkbox" checked />
+                Keep me signed in on this device
+              </label>
+
+              <button type="button" onclick="switchToReset()">Forgot password?</button>
             </div>
-            <button class="btn btn-primary btn-full" onclick="demoSignIn()">Sign In</button>
+
+            <button class="btn btn-primary btn-full" type="button" onclick="demoSignIn()">Sign In</button>
           </div>
         </div>
 
@@ -496,20 +580,24 @@
                 <label for="signupName">Name</label>
                 <input id="signupName" placeholder="Allen" autocomplete="name" />
               </div>
+
               <div class="field">
                 <label for="signupEmail">Email</label>
                 <input id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email" />
               </div>
             </div>
+
             <div class="field">
               <label for="signupPassword">Password</label>
               <input id="signupPassword" type="password" placeholder="Create a password" autocomplete="new-password" />
             </div>
+
             <label class="check-row">
               <input id="agreeTerms" type="checkbox" />
               <span>I understand this app is educational only and does not guarantee credit approval or score changes.</span>
             </label>
-            <button class="btn btn-primary btn-full" onclick="demoSignUp()">Create Account</button>
+
+            <button class="btn btn-primary btn-full" type="button" onclick="demoSignUp()">Create Account</button>
           </div>
         </div>
 
@@ -519,20 +607,21 @@
               <label for="resetEmail">Email</label>
               <input id="resetEmail" type="email" placeholder="you@example.com" autocomplete="email" />
             </div>
-            <button class="btn btn-primary btn-full" onclick="demoResetPassword()">Send Reset Link</button>
-            <button class="btn btn-ghost btn-full" onclick="switchToSignIn()">Back to Sign In</button>
+
+            <button class="btn btn-primary btn-full" type="button" onclick="demoResetPassword()">Send Reset Link</button>
+            <button class="btn btn-ghost btn-full" type="button" onclick="switchToSignIn()">Back to Sign In</button>
           </div>
         </div>
 
-        <div class="divider">Demo shortcuts</div>
+        <div class="divider">Quick actions</div>
 
         <div class="demo-buttons">
-          <button class="btn btn-ghost" onclick="quickDemoUser()">Demo User</button>
-          <button class="btn btn-ghost" onclick="signOutDemo()">Sign Out</button>
+          <button class="btn btn-ghost" type="button" onclick="quickDemoUser()">Fill Demo Login</button>
+          <button class="btn btn-ghost" type="button" onclick="signOutDemo()">Sign Out</button>
         </div>
 
         <div class="notice">
-          Backend note: this page does not use real authentication yet. Replace the demo functions with Supabase Auth later. Never store real passwords in localStorage.
+          Backend note: this page uses Supabase Auth. Make sure <strong>js/supabase-client.js</strong> has your Supabase URL and anon public key only.
         </div>
       </div>
     </section>
@@ -540,195 +629,256 @@
 
   <div class="toast" id="toast"></div>
 
-  <script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase-client.js"></script>
+  <script src="js/supabase-client.js"></script>
 
-<script>
-  function showPanel(name, button) {
-    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-    document.querySelectorAll(".form-panel").forEach(panel => panel.classList.remove("active"));
+  <script>
+    function showPanel(name, button) {
+      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+      document.querySelectorAll(".form-panel").forEach(panel => panel.classList.remove("active"));
 
-    if (button) button.classList.add("active");
-    document.getElementById(`panel-${name}`).classList.add("active");
+      if (button) button.classList.add("active");
 
-    const title = document.getElementById("authTitle");
-    const subtitle = document.getElementById("authSubtitle");
+      const panel = document.getElementById(`panel-${name}`);
+      if (panel) panel.classList.add("active");
 
-    if (name === "signin") {
-      title.textContent = "Welcome back";
-      subtitle.textContent = "Sign in to continue to your dashboard.";
-    } else if (name === "signup") {
-      title.textContent = "Create your account";
-      subtitle.textContent = "Start with manual credit planning. No real credit pull.";
-    } else {
-      title.textContent = "Reset password";
-      subtitle.textContent = "Enter your email to reset your password.";
-    }
-  }
+      const title = document.getElementById("authTitle");
+      const subtitle = document.getElementById("authSubtitle");
 
-  function switchToReset() {
-    const resetTab = document.querySelectorAll(".tab")[2];
-    showPanel("reset", resetTab);
-  }
-
-  function switchToSignIn() {
-    const signInTab = document.querySelectorAll(".tab")[0];
-    showPanel("signin", signInTab);
-  }
-
-  async function demoSignIn() {
-    const email = document.getElementById("signinEmail").value.trim();
-    const password = document.getElementById("signinPassword").value;
-
-    if (!email || !email.includes("@")) {
-      showToast("Enter a valid email.");
-      return;
-    }
-
-    if (!password) {
-      showToast("Enter your password.");
-      return;
-    }
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) {
-      showToast(error.message);
-      return;
-    }
-
-    showSuccess("Signed in. Redirecting to dashboard...");
-    setTimeout(() => {
-      window.location.href = "dashboard.html";
-    }, 700);
-  }
-
-  async function demoSignUp() {
-    const name = document.getElementById("signupName").value.trim() || "User";
-    const email = document.getElementById("signupEmail").value.trim();
-    const password = document.getElementById("signupPassword").value;
-    const agreed = document.getElementById("agreeTerms").checked;
-
-    if (!email || !email.includes("@")) {
-      showToast("Enter a valid email.");
-      return;
-    }
-
-    if (password.length < 6) {
-      showToast("Use at least 6 characters for your password.");
-      return;
-    }
-
-    if (!agreed) {
-      showToast("Check the educational disclaimer box first.");
-      return;
-    }
-
-    const { data, error } = await supabaseClient.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          display_name: name
-        }
+      if (name === "signin") {
+        title.textContent = "Welcome back";
+        subtitle.textContent = "Sign in to continue to your dashboard.";
+      } else if (name === "signup") {
+        title.textContent = "Create your account";
+        subtitle.textContent = "Start with manual credit planning. No real credit pull.";
+      } else {
+        title.textContent = "Reset password";
+        subtitle.textContent = "Enter your email to reset your password.";
       }
-    });
-
-    if (error) {
-      showToast(error.message);
-      return;
     }
 
-    localStorage.setItem("creditCardStackerUserProfile", JSON.stringify({
-      displayName: name,
-      email,
-      scoreRange: "580-619",
-      incomeRange: "$25k–$49k",
-      inquiries: "1–2",
-      goal: "10",
-      mainGoal: "lower-utilization",
-      updatedAt: new Date().toISOString()
-    }));
-
-    showSuccess("Account created. Check your email if confirmation is required.");
-
-    setTimeout(() => {
-      window.location.href = "onboarding.html";
-    }, 1000);
-  }
-
-  async function demoResetPassword() {
-    const email = document.getElementById("resetEmail").value.trim();
-
-    if (!email || !email.includes("@")) {
-      showToast("Enter a valid email.");
-      return;
+    function switchToReset() {
+      const resetTab = document.querySelectorAll(".tab")[2];
+      showPanel("reset", resetTab);
     }
 
-    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + "/auth.html"
-    });
-
-    if (error) {
-      showToast(error.message);
-      return;
+    function switchToSignIn() {
+      const signInTab = document.querySelectorAll(".tab")[0];
+      showPanel("signin", signInTab);
     }
 
-    showSuccess("Password reset email sent.");
-  }
+    function getSupabaseClient() {
+      if (!window.supabaseClient) {
+        showToast("Supabase is not connected. Check js/supabase-client.js.");
+        return null;
+      }
 
-  async function quickDemoUser() {
-    document.getElementById("signinEmail").value = "demo@creditcardstacker.app";
-    document.getElementById("signinPassword").value = "password123";
-    showToast("Demo user filled in. Create this account first if it does not exist.");
-  }
-
-  async function signOutDemo() {
-    const { error } = await supabaseClient.auth.signOut();
-
-    if (error) {
-      showToast(error.message);
-      return;
+      return window.supabaseClient;
     }
 
-    localStorage.removeItem("creditCardStackerSession");
-    showSuccess("Signed out.");
-  }
+    async function demoSignIn() {
+      const client = getSupabaseClient();
+      if (!client) return;
 
-  async function checkCurrentUser() {
-    const { data } = await supabaseClient.auth.getUser();
+      const email = document.getElementById("signinEmail").value.trim();
+      const password = document.getElementById("signinPassword").value;
 
-    if (data && data.user) {
-      const email = data.user.email || "";
-      document.getElementById("signinEmail").value = email;
-      document.getElementById("signupEmail").value = email;
-      document.getElementById("resetEmail").value = email;
+      if (!email || !email.includes("@")) {
+        showToast("Enter a valid email.");
+        return;
+      }
+
+      if (!password) {
+        showToast("Enter your password.");
+        return;
+      }
+
+      const { data, error } = await client.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        showToast(error.message);
+        return;
+      }
+
+      const displayName = data.user?.user_metadata?.display_name || email.split("@")[0];
+
+      localStorage.setItem("creditCardStackerUserProfile", JSON.stringify({
+        displayName: displayName,
+        email: email,
+        updatedAt: new Date().toISOString()
+      }));
+
+      showSuccess("Signed in. Redirecting to dashboard...");
+
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 700);
     }
-  }
 
-  function showSuccess(message) {
-    const note = document.getElementById("successNote");
-    note.textContent = message;
-    note.classList.add("active");
-    showToast(message);
-  }
+    async function demoSignUp() {
+      const client = getSupabaseClient();
+      if (!client) return;
 
-  function showToast(message) {
-    const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.classList.add("active");
+      const name = document.getElementById("signupName").value.trim() || "User";
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value;
+      const agreed = document.getElementById("agreeTerms").checked;
 
-    clearTimeout(window.toastTimer);
-    window.toastTimer = setTimeout(() => {
-      toast.classList.remove("active");
-    }, 2800);
-  }
+      if (!email || !email.includes("@")) {
+        showToast("Enter a valid email.");
+        return;
+      }
 
-  checkCurrentUser();
-</script>
+      if (password.length < 6) {
+        showToast("Use at least 6 characters for your password.");
+        return;
+      }
+
+      if (!agreed) {
+        showToast("Check the educational disclaimer box first.");
+        return;
+      }
+
+      const { data, error } = await client.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+          data: {
+            display_name: name
+          }
+        }
+      });
+
+      if (error) {
+        showToast(error.message);
+        return;
+      }
+
+      localStorage.setItem("creditCardStackerUserProfile", JSON.stringify({
+        displayName: name,
+        email: email,
+        scoreRange: "580-619",
+        incomeRange: "$25k–$49k",
+        inquiries: "1–2",
+        goal: "10",
+        mainGoal: "lower-utilization",
+        updatedAt: new Date().toISOString()
+      }));
+
+      if (data.session) {
+        showSuccess("Account created. Redirecting to onboarding...");
+
+        setTimeout(() => {
+          window.location.href = "onboarding.html";
+        }, 900);
+      } else {
+        showSuccess("Account created. Check your email if confirmation is required.");
+      }
+    }
+
+    async function demoResetPassword() {
+      const client = getSupabaseClient();
+      if (!client) return;
+
+      const email = document.getElementById("resetEmail").value.trim();
+
+      if (!email || !email.includes("@")) {
+        showToast("Enter a valid email.");
+        return;
+      }
+
+      const { error } = await client.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/auth.html"
+      });
+
+      if (error) {
+        showToast(error.message);
+        return;
+      }
+
+      showSuccess("Password reset email sent.");
+    }
+
+    function quickDemoUser() {
+      document.getElementById("signinEmail").value = "demo@creditcardstacker.app";
+      document.getElementById("signinPassword").value = "password123";
+      showToast("Demo login filled. Create this account first if it does not exist.");
+    }
+
+    async function signOutDemo() {
+      const client = getSupabaseClient();
+      if (!client) return;
+
+      const { error } = await client.auth.signOut();
+
+      if (error) {
+        showToast(error.message);
+        return;
+      }
+
+      localStorage.removeItem("creditCardStackerSession");
+      showSuccess("Signed out.");
+    }
+
+    async function checkCurrentUser() {
+      if (!window.supabaseClient) {
+        console.log("Supabase client not loaded yet.");
+        return;
+      }
+
+      const { data, error } = await window.supabaseClient.auth.getUser();
+
+      if (error) {
+        console.log("No active user:", error.message);
+        return;
+      }
+
+      if (data && data.user) {
+        const email = data.user.email || "";
+
+        const signinEmail = document.getElementById("signinEmail");
+        const signupEmail = document.getElementById("signupEmail");
+        const resetEmail = document.getElementById("resetEmail");
+
+        if (signinEmail) signinEmail.value = email;
+        if (signupEmail) signupEmail.value = email;
+        if (resetEmail) resetEmail.value = email;
+      }
+    }
+
+    function showSuccess(message) {
+      const note = document.getElementById("successNote");
+
+      if (note) {
+        note.textContent = message;
+        note.classList.add("active");
+      }
+
+      showToast(message);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+
+      if (!toast) {
+        alert(message);
+        return;
+      }
+
+      toast.textContent = message;
+      toast.classList.add("active");
+
+      clearTimeout(window.toastTimer);
+
+      window.toastTimer = setTimeout(() => {
+        toast.classList.remove("active");
+      }, 2800);
+    }
+
+    checkCurrentUser();
+  </script>
 </body>
 </html>
