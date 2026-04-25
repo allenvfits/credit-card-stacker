@@ -541,194 +541,194 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const SESSION_KEY = "creditCardStackerSession";
-    const PROFILE_KEY = "creditCardStackerUserProfile";
-    const SETTINGS_KEY = "creditCardStackerSettings";
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-client.js"></script>
 
-    function showPanel(name, button) {
-      document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-      document.querySelectorAll(".form-panel").forEach(panel => panel.classList.remove("active"));
-      if (button) button.classList.add("active");
-      document.getElementById(`panel-${name}`).classList.add("active");
+<script>
+  function showPanel(name, button) {
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll(".form-panel").forEach(panel => panel.classList.remove("active"));
 
-      const title = document.getElementById("authTitle");
-      const subtitle = document.getElementById("authSubtitle");
-      if (name === "signin") {
-        title.textContent = "Welcome back";
-        subtitle.textContent = "Sign in to continue to your dashboard.";
-      } else if (name === "signup") {
-        title.textContent = "Create your account";
-        subtitle.textContent = "Start with manual credit planning. No real credit pull.";
-      } else {
-        title.textContent = "Reset password";
-        subtitle.textContent = "Demo reset flow. Supabase can send real reset emails later.";
+    if (button) button.classList.add("active");
+    document.getElementById(`panel-${name}`).classList.add("active");
+
+    const title = document.getElementById("authTitle");
+    const subtitle = document.getElementById("authSubtitle");
+
+    if (name === "signin") {
+      title.textContent = "Welcome back";
+      subtitle.textContent = "Sign in to continue to your dashboard.";
+    } else if (name === "signup") {
+      title.textContent = "Create your account";
+      subtitle.textContent = "Start with manual credit planning. No real credit pull.";
+    } else {
+      title.textContent = "Reset password";
+      subtitle.textContent = "Enter your email to reset your password.";
+    }
+  }
+
+  function switchToReset() {
+    const resetTab = document.querySelectorAll(".tab")[2];
+    showPanel("reset", resetTab);
+  }
+
+  function switchToSignIn() {
+    const signInTab = document.querySelectorAll(".tab")[0];
+    showPanel("signin", signInTab);
+  }
+
+  async function demoSignIn() {
+    const email = document.getElementById("signinEmail").value.trim();
+    const password = document.getElementById("signinPassword").value;
+
+    if (!email || !email.includes("@")) {
+      showToast("Enter a valid email.");
+      return;
+    }
+
+    if (!password) {
+      showToast("Enter your password.");
+      return;
+    }
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      showToast(error.message);
+      return;
+    }
+
+    showSuccess("Signed in. Redirecting to dashboard...");
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 700);
+  }
+
+  async function demoSignUp() {
+    const name = document.getElementById("signupName").value.trim() || "User";
+    const email = document.getElementById("signupEmail").value.trim();
+    const password = document.getElementById("signupPassword").value;
+    const agreed = document.getElementById("agreeTerms").checked;
+
+    if (!email || !email.includes("@")) {
+      showToast("Enter a valid email.");
+      return;
+    }
+
+    if (password.length < 6) {
+      showToast("Use at least 6 characters for your password.");
+      return;
+    }
+
+    if (!agreed) {
+      showToast("Check the educational disclaimer box first.");
+      return;
+    }
+
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: name
+        }
       }
+    });
+
+    if (error) {
+      showToast(error.message);
+      return;
     }
 
-    function switchToReset() {
-      const resetTab = document.querySelectorAll(".tab")[2];
-      showPanel("reset", resetTab);
+    localStorage.setItem("creditCardStackerUserProfile", JSON.stringify({
+      displayName: name,
+      email,
+      scoreRange: "580-619",
+      incomeRange: "$25k–$49k",
+      inquiries: "1–2",
+      goal: "10",
+      mainGoal: "lower-utilization",
+      updatedAt: new Date().toISOString()
+    }));
+
+    showSuccess("Account created. Check your email if confirmation is required.");
+
+    setTimeout(() => {
+      window.location.href = "onboarding.html";
+    }, 1000);
+  }
+
+  async function demoResetPassword() {
+    const email = document.getElementById("resetEmail").value.trim();
+
+    if (!email || !email.includes("@")) {
+      showToast("Enter a valid email.");
+      return;
     }
 
-    function switchToSignIn() {
-      const signInTab = document.querySelectorAll(".tab")[0];
-      showPanel("signin", signInTab);
+    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + "/auth.html"
+    });
+
+    if (error) {
+      showToast(error.message);
+      return;
     }
 
-    function demoSignIn() {
-      const email = document.getElementById("signinEmail").value.trim();
-      const password = document.getElementById("signinPassword").value;
-      if (!email || !email.includes("@")) {
-        showToast("Enter a valid email.");
-        return;
-      }
-      if (!password) {
-        showToast("Enter a password for the demo.");
-        return;
-      }
+    showSuccess("Password reset email sent.");
+  }
 
-      const existingProfile = getJson(PROFILE_KEY, {});
-      saveJson(SESSION_KEY, {
-        signedIn: true,
-        email,
-        name: existingProfile.displayName || email.split("@")[0],
-        provider: "demo-local",
-        signedInAt: new Date().toISOString()
-      });
-      saveJson(PROFILE_KEY, {
-        ...existingProfile,
-        email,
-        displayName: existingProfile.displayName || email.split("@")[0],
-        updatedAt: new Date().toISOString()
-      });
+  async function quickDemoUser() {
+    document.getElementById("signinEmail").value = "demo@creditcardstacker.app";
+    document.getElementById("signinPassword").value = "password123";
+    showToast("Demo user filled in. Create this account first if it does not exist.");
+  }
 
-      showSuccess("Signed in with demo session. Redirecting to dashboard...");
-      setTimeout(() => window.location.href = "dashboard.html", 700);
+  async function signOutDemo() {
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) {
+      showToast(error.message);
+      return;
     }
 
-    function demoSignUp() {
-      const name = document.getElementById("signupName").value.trim() || "User";
-      const email = document.getElementById("signupEmail").value.trim();
-      const password = document.getElementById("signupPassword").value;
-      const agreed = document.getElementById("agreeTerms").checked;
+    localStorage.removeItem("creditCardStackerSession");
+    showSuccess("Signed out.");
+  }
 
-      if (!email || !email.includes("@")) {
-        showToast("Enter a valid email.");
-        return;
-      }
-      if (password.length < 6) {
-        showToast("Use at least 6 characters for the demo password.");
-        return;
-      }
-      if (!agreed) {
-        showToast("Check the educational disclaimer box first.");
-        return;
-      }
+  async function checkCurrentUser() {
+    const { data } = await supabaseClient.auth.getUser();
 
-      saveJson(SESSION_KEY, {
-        signedIn: true,
-        email,
-        name,
-        provider: "demo-local",
-        signedInAt: new Date().toISOString()
-      });
-      saveJson(PROFILE_KEY, {
-        displayName: name,
-        email,
-        scoreRange: "580-619",
-        incomeRange: "$25k–$49k",
-        inquiries: "1–2",
-        goal: "10",
-        mainGoal: "lower-utilization",
-        updatedAt: new Date().toISOString()
-      });
-      saveJson(SETTINGS_KEY, {
-        scoreRange: "580-619",
-        incomeRange: "$25k–$49k",
-        inquiries: "1–2",
-        goal: "10"
-      });
-
-      showSuccess("Account created in demo mode. Redirecting to onboarding...");
-      setTimeout(() => window.location.href = "onboarding.html", 700);
+    if (data && data.user) {
+      const email = data.user.email || "";
+      document.getElementById("signinEmail").value = email;
+      document.getElementById("signupEmail").value = email;
+      document.getElementById("resetEmail").value = email;
     }
+  }
 
-    function demoResetPassword() {
-      const email = document.getElementById("resetEmail").value.trim();
-      if (!email || !email.includes("@")) {
-        showToast("Enter a valid email.");
-        return;
-      }
-      showSuccess(`Demo reset link prepared for ${email}. Supabase can send the real email later.`);
-    }
+  function showSuccess(message) {
+    const note = document.getElementById("successNote");
+    note.textContent = message;
+    note.classList.add("active");
+    showToast(message);
+  }
 
-    function quickDemoUser() {
-      saveJson(SESSION_KEY, {
-        signedIn: true,
-        email: "demo@creditcardstacker.app",
-        name: "Demo User",
-        provider: "demo-local",
-        signedInAt: new Date().toISOString()
-      });
-      saveJson(PROFILE_KEY, {
-        displayName: "Demo User",
-        email: "demo@creditcardstacker.app",
-        scoreRange: "580-619",
-        incomeRange: "$25k–$49k",
-        inquiries: "1–2",
-        goal: "10",
-        mainGoal: "lower-utilization",
-        updatedAt: new Date().toISOString()
-      });
-      showSuccess("Demo user signed in. Redirecting to dashboard...");
-      setTimeout(() => window.location.href = "dashboard.html", 700);
-    }
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("active");
 
-    function signOutDemo() {
-      localStorage.removeItem(SESSION_KEY);
-      showSuccess("Demo session signed out.");
-    }
+    clearTimeout(window.toastTimer);
+    window.toastTimer = setTimeout(() => {
+      toast.classList.remove("active");
+    }, 2800);
+  }
 
-    function getJson(key, fallback) {
-      try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
-      catch { return fallback; }
-    }
-
-    function saveJson(key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-
-    function showSuccess(message) {
-      const note = document.getElementById("successNote");
-      note.textContent = message;
-      note.classList.add("active");
-      showToast(message);
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.classList.add("active");
-      clearTimeout(window.toastTimer);
-      window.toastTimer = setTimeout(() => toast.classList.remove("active"), 2800);
-    }
-
-    function prefillFromSession() {
-      const session = getJson(SESSION_KEY, null);
-      const profile = getJson(PROFILE_KEY, {});
-      if (session && session.email) {
-        document.getElementById("signinEmail").value = session.email;
-      }
-      if (profile.email) {
-        document.getElementById("signupEmail").value = profile.email;
-        document.getElementById("resetEmail").value = profile.email;
-      }
-      if (profile.displayName) {
-        document.getElementById("signupName").value = profile.displayName;
-      }
-    }
-
-    prefillFromSession();
-  </script>
+  checkCurrentUser();
+</script>
 </body>
 </html>
